@@ -9,6 +9,7 @@ DOTFILES_BACKUP_FOLDER=${DOTFILES_BACKUP_FOLDER:="$HOME/.backup_$(date +%Y%m%d_%
 mkdir -p "$DOTFILES_BACKUP_FOLDER"
 mkdir -p "$HOME/.local/bin"
 mkdir -p "$HOME/.config/systemd/user"
+mkdir -p "$HOME/.local/share/applications"
 
 # ~/.local/bin scripts
 for f in "$DOTFILES"/local-bin/*; do
@@ -41,5 +42,21 @@ while IFS= read -r -d '' src; do
   ln -sf "$src" "$dest"
   printf "\nInstalled systemd unit %s\n\n" "$rel"
 done < <(find "$DOTFILES/systemd-user" -type f -print0 2>/dev/null)
+
+# ~/.local/share/applications desktop-file overrides
+for f in "$DOTFILES"/local-share-applications/*; do
+  [ -e "$f" ] || continue
+  name=$(basename "$f")
+  dest="$HOME/.local/share/applications/$name"
+
+  if [ -e "$dest" ] && [ ! -L "$dest" ]; then
+    mv "$dest" "$DOTFILES_BACKUP_FOLDER/$name"
+    echo "Backed up current $name to $DOTFILES_BACKUP_FOLDER/$name"
+  fi
+
+  ln -sf "$f" "$dest"
+  printf "\nInstalled desktop override %s\n\n" "$name"
+done
+update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 
 systemctl --user daemon-reload

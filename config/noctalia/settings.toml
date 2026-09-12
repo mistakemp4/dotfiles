@@ -87,7 +87,7 @@ widget_order = [
         bands = 32
         centered = true
         mirrored = true
-        show_when_idle = false
+        show_when_idle = true
 
     [desktop_widgets.widget.desktop-widget-0000000000000003]
     box_height = 117.3
@@ -528,7 +528,7 @@ wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "cava", "foot", "gtk3", "gtk4", "kcolorscheme", "mango", "niri", "qt", "umbriel", "wezterm" ]
-    community_ids = [ "zed", "bat", "yazi" ]
+    community_ids = [ "zed", "bat", "yazi", "brave", "discord", "claude-code", "prismlauncher", "vscode" ]
 
 [wallpaper]
 directory = "~/Pictures/WallPapers"
