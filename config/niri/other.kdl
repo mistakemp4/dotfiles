@@ -27,3 +27,9 @@ workspace "2"
 workspace "3"
 workspace "4"
 workspace "5"
+
+debug {
+    // Works around Discord/Vesktop stealing focus from a stale
+    // Noctalia notification's xdg-activation serial.
+    honor-xdg-activation-with-invalid-serial
+}

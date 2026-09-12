@@ -10,6 +10,7 @@ mkdir -p $DOTFILES_BACKUP_FOLDER
 mkdir -p ~/.config/
 
 CONFIG_FILES=(
+  alacritty
   btop
   eza
   fastfetch
@@ -26,6 +27,7 @@ CONFIG_FILES=(
   qt6ct
   starship.toml
   wezterm
+  wireplumber
   yazi
 )
 

@@ -15,7 +15,7 @@ widget_spacing = 16
     right = "exec niri msg action maximize-column"
 
 [control_center.calendar]
-show_events_card = false
+show_events_card = true
 
 [[control_center.shortcuts]]
 type = "wifi"
@@ -53,13 +53,13 @@ widget_order = [
     visible = true
 
     [desktop_widgets.widget.desktop-widget-0000000000000001]
-    box_height = 152.0
-    box_width = 344.0
-    cx = 1712.0
-    cy = 140.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
+    box_height = 202.7
+    box_width = 458.7
+    cx = 2282.7
+    cy = 186.7
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
     rotation = 0.0
     type = "clock"
 
@@ -72,13 +72,13 @@ widget_order = [
         format = "{:%I:%M %p}"
 
     [desktop_widgets.widget.desktop-widget-0000000000000002]
-    box_height = 160.0
-    box_width = 344.0
-    cx = 1712.0
-    cy = 636.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
+    box_height = 213.3
+    box_width = 458.7
+    cx = 2282.7
+    cy = 848.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
     rotation = 0.0
     type = "audio_visualizer"
 
@@ -87,16 +87,16 @@ widget_order = [
         bands = 32
         centered = true
         mirrored = true
-        show_when_idle = true
+        show_when_idle = false
 
     [desktop_widgets.widget.desktop-widget-0000000000000003]
-    box_height = 88.0
-    box_width = 96.0
-    cx = 1588.0
-    cy = 772.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
+    box_height = 117.3
+    box_width = 128.0
+    cx = 2117.3
+    cy = 1029.3
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
     rotation = 0.0
     type = "sysmon"
 
@@ -109,13 +109,13 @@ widget_order = [
         stat2 = "cpu_temp"
 
     [desktop_widgets.widget.desktop-widget-0000000000000004]
-    box_height = 88.0
-    box_width = 104.0
-    cx = 1832.0
-    cy = 772.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
+    box_height = 117.3
+    box_width = 138.7
+    cx = 2442.7
+    cy = 1029.3
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
     rotation = 0.0
     type = "sysmon"
 
@@ -127,13 +127,13 @@ widget_order = [
         stat2 = ""
 
     [desktop_widgets.widget.desktop-widget-0000000000000005]
-    box_height = 88.0
-    box_width = 112.0
-    cx = 1708.0
-    cy = 772.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
+    box_height = 117.3
+    box_width = 149.3
+    cx = 2277.3
+    cy = 1029.3
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
     rotation = 0.0
     type = "sysmon"
 
@@ -145,13 +145,13 @@ widget_order = [
         stat2 = "cpu_temp"
 
     [desktop_widgets.widget.desktop-widget-0000000000000006]
-    box_height = 312.0
-    box_width = 344.0
-    cx = 1748.0
-    cy = 376.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
+    box_height = 416.0
+    box_width = 458.7
+    cx = 2330.7
+    cy = 501.3
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
     rotation = -0.0
     type = "weather"
 
@@ -162,13 +162,13 @@ widget_order = [
         show_forecast = true
 
     [desktop_widgets.widget.desktop-widget-0000000000000007]
-    box_height = 312.0
-    box_width = 344.0
-    cx = 1712.0
-    cy = 384.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
+    box_height = 416.0
+    box_width = 458.7
+    cx = 2282.7
+    cy = 512.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
     rotation = 0.0
     type = "label"
 
@@ -229,7 +229,7 @@ fingerprint = false
 enabled = true
 schema_version = 2
 widget_order = [
-    "lockscreen-login-box@eDP-1",
+    "lockscreen-login-box@DP-1",
     "lockscreen-widget-0000000000000001",
     "lockscreen-widget-0000000000000002",
     "lockscreen-widget-0000000000000003",
@@ -269,18 +269,18 @@ widget_order = [
         show_unlock_hint = true
         show_weather = true
 
-    [lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
-    box_height = 70.0
-    box_width = 400.0
-    cx = 960.0
-    cy = 569.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
+    box_height = 93.3
+    box_width = 533.3
+    cx = 1280.0
+    cy = 758.7
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
     rotation = 0.0
     type = "login_box"
 
-        [lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-1".settings]
         background_color = "surface_variant"
         background_opacity = 0.88
         background_radius = 12.0
@@ -324,13 +324,13 @@ widget_order = [
         show_weather = true
 
     [lockscreen_widgets.widget.lockscreen-widget-0000000000000001]
-    box_height = 144.0
-    box_width = 336.0
-    cx = 1200.0
-    cy = 756.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
+    box_height = 192.0
+    box_width = 448.0
+    cx = 1600.0
+    cy = 1008.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
     rotation = 0.0
     type = "audio_visualizer"
 
@@ -343,11 +343,11 @@ widget_order = [
     [lockscreen_widgets.widget.lockscreen-widget-0000000000000002]
     box_height = 0.0
     box_width = 0.0
-    cx = 729.0
-    cy = 768.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
+    cx = 972.0
+    cy = 1024.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
     rotation = 0.0
     type = "media_player"
 
@@ -360,11 +360,11 @@ widget_order = [
     [lockscreen_widgets.widget.lockscreen-widget-0000000000000003]
     box_height = 0.0
     box_width = 0.0
-    cx = 960.0
-    cy = 1020.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
+    cx = 1280.0
+    cy = 1360.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
     rotation = 0.0
     type = "weather"
 
@@ -376,9 +376,9 @@ widget_order = [
     box_width = 384.0
     cx = 960.0
     cy = 236.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
     rotation = 0.0
     type = "clock"
 
@@ -392,9 +392,9 @@ widget_order = [
     box_width = 416.0
     cx = 960.0
     cy = 316.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
     rotation = 0.0
     type = "clock"
 
