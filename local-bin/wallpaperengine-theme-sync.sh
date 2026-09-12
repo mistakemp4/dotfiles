@@ -12,7 +12,7 @@ STATE_FILE="$CACHE_DIR/last-id"
 mkdir -p "$CACHE_DIR" "$FRAME_DIR"
 
 current_bg_id() {
-    pgrep -a linux-wallpaperengine 2>/dev/null | grep -oP -- '--bg\s+\K[0-9]+' | head -1
+    pgrep -af linux-wallpaperengine 2>/dev/null | grep -oP -- '--bg\s+\K[0-9]+' | head -1
 }
 
 sync_theme_for_id() {
@@ -25,7 +25,7 @@ sync_theme_for_id() {
 
     if [ ! -f "$out_image" ]; then
         local type file preview
-        type=$(python3 -c "import json; print(json.load(open('$project')).get('type','')).lower()" 2>/dev/null)
+        type=$(python3 -c "import json; print(json.load(open('$project')).get('type','').lower())" 2>/dev/null)
         file=$(python3 -c "import json; print(json.load(open('$project')).get('file',''))" 2>/dev/null)
         preview=$(python3 -c "import json; print(json.load(open('$project')).get('preview',''))" 2>/dev/null)
 

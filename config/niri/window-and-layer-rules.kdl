@@ -78,13 +78,12 @@ window-rule {
   match app-id="^vesktop$"
   match app-id="^Bitwarden$"
   match app-id="^Spotify$"
-  match app-id="^steam$"
   match app-id="^PrismLauncher$"
   match app-id=r#"^XIVLauncher\.Core$"#
   match app-id="^code-oss$"
 
   draw-border-with-background false
-  opacity 0.88
+  opacity 0.9
   background-effect {
     blur true
     xray true
