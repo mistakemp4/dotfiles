@@ -24,9 +24,6 @@ overview {
 
 workspace "1"
 workspace "2"
-workspace "3"
-workspace "4"
-workspace "5"
 
 debug {
     // Works around Discord/Vesktop stealing focus from a stale

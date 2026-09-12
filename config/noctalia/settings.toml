@@ -432,7 +432,7 @@ enabled = [ "noctalia/screen_recorder", "noctalia/timer", "noctalia/translator" 
     name = "community"
 
 [shell]
-avatar_path = "~/Pictures/tenma.png"
+avatar_path = "~/Pictures/yochan-seal.png"
 clipboard_auto_paste = "ctrl_shift_v"
 date_format = "%A, %d %B %Y"
 niri_overview_type_to_launch_enabled = true

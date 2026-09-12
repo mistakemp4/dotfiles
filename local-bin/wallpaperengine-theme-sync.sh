@@ -44,6 +44,7 @@ sync_theme_for_id() {
         noctalia msg color-scheme-set wallpaper vibrant >/dev/null 2>&1
         sleep 2
         "$HOME/.local/bin/sync-alacritty-theme.sh" >/dev/null 2>&1
+        "$HOME/.local/bin/sync-btop-theme.sh" >/dev/null 2>&1
         echo "synced theme from wallpaper $id -> $out_image"
         return 0
     else
