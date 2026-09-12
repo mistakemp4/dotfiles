@@ -1,4 +1,5 @@
 spawn-sh-at-startup "noctalia"
 spawn-at-startup    "kdeconnect-indicator"
+spawn-at-startup    "python3" "/home/seal/src/gui-for-linux-wallpaperengine/run_gui.py" "--hidden"
 
 xwayland-satellite { path "xwayland-satellite"; }

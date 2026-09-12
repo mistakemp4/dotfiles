@@ -1,7 +1,7 @@
 input {
     keyboard {
         xkb {
-            options "compose:ralt,caps:swapescape"
+            options "compose:ralt"
         }
         numlock
     }

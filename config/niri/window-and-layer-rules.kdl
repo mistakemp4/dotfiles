@@ -32,13 +32,6 @@ window-rule {
 }
 
 window-rule {
-  match app-id=r#"^at\.yrlf\.wl_mirror$"#
-
-  open-on-output "HDMI-A-1"
-  open-fullscreen true
-}
-
-window-rule {
   match title=r#"^Picture in picture$"#
 
   open-floating true
@@ -82,9 +75,16 @@ window-rule {
   match app-id=r#"^io\.freetubeapp\.FreeTube$"#
   match app-id=r#"^dev\.noctalia\.Noctalia$"#
   match app-id=r#"^heroic$"#
+  match app-id="^vesktop$"
+  match app-id="^Bitwarden$"
+  match app-id="^Spotify$"
+  match app-id="^steam$"
+  match app-id="^PrismLauncher$"
+  match app-id=r#"^XIVLauncher\.Core$"#
+  match app-id="^code-oss$"
 
   draw-border-with-background false
-  opacity 0.9
+  opacity 0.88
   background-effect {
     blur true
     xray true
@@ -110,7 +110,17 @@ window-rule {
 }
 
 window-rule {
-  match app-id=r#"^brave-origin$"#
+  match app-id="^Alacritty$"
+
+  draw-border-with-background false
+  background-effect {
+    blur true
+    xray true
+  }
+}
+
+window-rule {
+  match app-id=r#"^brave-browser$"#
 
   open-on-workspace "1"
   open-focused false
