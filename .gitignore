@@ -1,2 +1,8 @@
 local-bin/__pycache__/
 *.pyc
+
+# rendered by noctalia on every theme change
+config/alacritty/themes/
+config/btop/themes/
+config/fastfetch/themes/
+config/nvim/lua/matugen.lua

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "type": "file-raw",
+    "source": "~/.config/fastfetch/yochan-seal-ascii.txt",
+    "color": {
+      "1": "#ec5f68",
+      "2": "#e99049"
+    }
+  },
+  "display": {
+    "color": {
+      "keys": "#ec5f68",
+      "title": "#e99049"
+    },
+    "percent": {
+      "color": {
+        "green": "#e9e049",
+        "yellow": "#f18d93",
+        "red": "#cb1823"
+      }
+    }
+  }
+}

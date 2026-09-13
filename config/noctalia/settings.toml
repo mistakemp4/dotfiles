@@ -527,8 +527,8 @@ source = "wallpaper"
 wallpaper_scheme = "m3-content"
 
     [theme.templates]
-    builtin_ids = [ "cava", "foot", "gtk3", "gtk4", "kcolorscheme", "mango", "niri", "qt", "umbriel", "wezterm" ]
-    community_ids = [ "zed", "bat", "yazi", "brave", "discord", "claude-code", "prismlauncher", "vscode", "spicetify" ]
+    builtin_ids = [ "alacritty", "btop", "gtk3", "gtk4", "kcolorscheme", "niri", "starship" ]
+    community_ids = [ "claude-code", "spicetify", "brave", "discord", "libreoffice", "neovim", "vscode", "prismlauncher", "bat", "yazi", "fastfetch", "fzf", "lazygit", "micro" ]
 
 [wallpaper]
 directory = "~/Pictures/WallPapers"

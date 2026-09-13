@@ -42,9 +42,10 @@ sync_theme_for_id() {
     if [ -s "$out_image" ]; then
         noctalia msg wallpaper-set "$out_image" >/dev/null 2>&1
         noctalia msg color-scheme-set wallpaper vibrant >/dev/null 2>&1
-        sleep 2
-        "$HOME/.local/bin/sync-alacritty-theme.sh" >/dev/null 2>&1
-        "$HOME/.local/bin/sync-btop-theme.sh" >/dev/null 2>&1
+        # bitwarden has no noctalia template, so render its colors ourselves and re-inject
+        noctalia theme "$out_image" --scheme vibrant --dark \
+            -r "$HOME/.config/noctalia/templates/bitwarden.json:$HOME/.cache/noctalia/bitwarden-colors.json" >/dev/null 2>&1
+        python3 "$HOME/.local/bin/theme_bitwarden.py" >/dev/null 2>&1
         echo "synced theme from wallpaper $id -> $out_image"
         return 0
     else

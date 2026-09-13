@@ -51,7 +51,6 @@ in
       go
       gpu-screen-recorder
       gzip
-      hyprpicker
       imagemagick
       imv
       keepassxc

@@ -5,6 +5,12 @@ set -uo pipefail
 
 PORT=9333
 
+wallpaper=$(noctalia msg wallpaper-get 2>/dev/null)
+if [ -f "$wallpaper" ]; then
+    noctalia theme "$wallpaper" --scheme vibrant --dark \
+        -r "$HOME/.config/noctalia/templates/bitwarden.json:$HOME/.cache/noctalia/bitwarden-colors.json" >/dev/null 2>&1
+fi
+
 bitwarden-desktop --remote-debugging-port="$PORT" "$@" &
 BW_PID=$!
 
