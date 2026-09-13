@@ -25,6 +25,7 @@ CONFIG_FILES=(
   nvim
   qt5ct
   qt6ct
+  spicetify
   starship.toml
   wezterm
   wireplumber

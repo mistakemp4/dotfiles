@@ -1,0 +1,8 @@
+{
+    "security.workspace.trust.untrustedFiles": "open",
+    "editor.fontFamily": "'JetBrains Mono', monospace",
+    "terminal.integrated.fontFamily": "'JetBrains Mono', monospace",
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "git.autofetch": true
+}
