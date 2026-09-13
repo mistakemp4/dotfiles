@@ -79,12 +79,12 @@ local function render()
     table.insert(rows, ui.label({ text = status, fontSize = 20, color = color, textAlign = "center" }))
   else
     -- the persona font's "°" is 1em wide with mostly empty space, which throws off
-    -- centering, so the unit is drawn as a fixed-size icon instead
-    local unitGlyph = weather.fahrenheit and "temperature-fahrenheit" or "temperature-celsius"
+    -- centering, so the unit uses jetbrains mono (matches the sysmon gauges)
+    local unitText = weather.fahrenheit and "°F" or "°C"
     table.insert(rows, ui.row({ gap = 12, align = "center", justify = "center" }, {
       ui.glyph({ name = weather.glyph, size = 60, color = color }),
       ui.label({ text = tostring(weather.temp), fontSize = 60, color = color }),
-      ui.glyph({ name = unitGlyph, size = 44, color = color }),
+      ui.label({ text = unitText, fontSize = 34, fontFamily = "JetBrains Mono", color = color }),
     }))
     table.insert(rows, ui.label({ text = weather.condition, fontSize = 26, color = color, textAlign = "center" }))
 
