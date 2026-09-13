@@ -11,7 +11,9 @@ if [ -f "$wallpaper" ]; then
         -r "$HOME/.config/noctalia/templates/bitwarden.json:$HOME/.cache/noctalia/bitwarden-colors.json" >/dev/null 2>&1
 fi
 
-bitwarden-desktop --remote-debugging-port="$PORT" "$@" &
+# log to the journal, not to whatever launched us: if that was a terminal that later closes,
+# Bitwarden's next log write fails with EIO and crashes its main process
+bitwarden-desktop --remote-debugging-port="$PORT" "$@" </dev/null 2>&1 | systemd-cat -t bitwarden-desktop &
 BW_PID=$!
 
 for _ in $(seq 1 30); do

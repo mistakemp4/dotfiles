@@ -1,10 +1,14 @@
 local-bin/__pycache__/
 *.pyc
 
+# working notes for claude sessions
+HANDOFF.md
+
 # rendered by noctalia on every theme change
 config/alacritty/themes/
 config/btop/themes/
 config/fastfetch/themes/
+config/niri/glow.kdl
 
 # machine state fish rewrites on its own
 config/fish/fish_variables

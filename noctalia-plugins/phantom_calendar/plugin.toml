@@ -1,0 +1,41 @@
+# Persona 5 Royal field calendar HUD (date, weekday, animated weather, time of day), drawn from the game's
+# own sprites. Extract them from your own copy with tools/extract-game-assets.sh; they are never shipped
+# here (Atlus material). Needs rsvg-convert (librsvg).
+id = "seal/phantom_calendar"
+name = "Phantom Calendar"
+version = "3.0.0"
+plugin_api = 26
+author = "seal"
+license = "MIT"
+dependencies = []
+tags = ["calendar", "weather", "desktop"]
+icon = "calendar"
+description = "Persona 5 Royal field calendar HUD from your own game files."
+
+[[desktop_widget]]
+id = "desktop"
+entry = "desktop.luau"
+
+  [[desktop_widget.setting]]
+  key = "game_assets_dir"
+  type = "string"
+  label_key = "settings.game_assets_dir.label"
+  description_key = "settings.game_assets_dir.description"
+  default = "~/.local/share/p5-game-assets/dump/P5_FIELD_DAY"
+
+  [[desktop_widget.setting]]
+  key = "weekday_color"
+  type = "select"
+  label_key = "settings.weekday_color.label"
+  default = "game"
+  options = [
+    { value = "game", label_key = "settings.weekday_color.options.game" },
+    { value = "wallpaper", label_key = "settings.weekday_color.options.wallpaper" },
+  ]
+
+  [[desktop_widget.setting]]
+  key = "address"
+  type = "string"
+  label_key = "settings.address.label"
+  description_key = "settings.address.description"
+  default = ""

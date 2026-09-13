@@ -6,7 +6,7 @@ end = [ "tray", "network", "bluetooth", "volume" ]
 margin_edge = 0
 margin_ends = 0
 radius = 0
-start = [ "launcher", "workspaces", "active_window" ]
+start =[ "launcher", "workspaces", "active_window" ]
 thickness = 32
 widget_spacing = 16
 
@@ -531,6 +531,16 @@ wallpaper_scheme = "m3-content"
     [theme.templates]
     builtin_ids = [ "alacritty", "btop", "gtk3", "gtk4", "kcolorscheme", "niri", "starship" ]
     community_ids = [ "claude-code", "spicetify", "brave", "discord", "libreoffice", "vscode", "prismlauncher", "bat", "yazi", "fastfetch", "fzf", "lazygit", "micro", "papirus-icons" ]
+
+# window glow color for niri, see templates/niri-glow.kdl
+    [theme.templates.user.niri-glow]
+input_path = "$XDG_CONFIG_HOME/noctalia/templates/niri-glow.kdl"
+output_path = "$XDG_CONFIG_HOME/niri/glow.kdl"
+
+    # weekday letter color for the phantom_calendar plugin
+    [theme.templates.user.phantom-calendar-color]
+    input_path = "$XDG_CONFIG_HOME/noctalia/templates/phantom-calendar-color.txt"
+    output_path = "$XDG_CACHE_HOME/noctalia/phantom-calendar-color.txt"
 
 [wallpaper]
 directory = "~/Pictures/WallPapers"

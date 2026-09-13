@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Linux Wallpaper Engine
+GenericName=Wallpaper Picker
+Comment=Pick Wallpaper Engine wallpapers
+# --show: the GUI is single-instance and usually already running hidden in the tray; without it a second
+# launch does nothing. Separate filename so the GUI's own integrator doesn't overwrite this entry.
+Exec=/usr/bin/python3 /home/seal/src/gui-for-linux-wallpaperengine/run_gui.py --show
+Path=/home/seal/src/gui-for-linux-wallpaperengine
+Icon=com.wallpaperengine.gui
+Terminal=false
+Categories=Graphics;
+StartupNotify=true
+StartupWMClass=com.wallpaperengine.gui

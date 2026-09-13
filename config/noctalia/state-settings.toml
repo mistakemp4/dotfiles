@@ -16,9 +16,7 @@ show_events_card = false
 [desktop_widgets]
 schema_version = 2
 widget_order = [
-    "desktop-widget-0000000000000001",
-    "desktop-widget-0000000000000008",
-    "desktop-widget-0000000000000010",
+    "desktop-widget-0000000000000012",
     "desktop-widget-0000000000000009",
     "desktop-widget-0000000000000002",
     "desktop-widget-0000000000000003",
@@ -31,30 +29,25 @@ widget_order = [
     major_interval = 4
     visible = true
 
-    [desktop_widgets.widget.desktop-widget-0000000000000001]
-    box_height = 162.0
-    box_width = 367.0
-    cx = 1826.2
-    cy = 149.0
+    [desktop_widgets.widget.desktop-widget-0000000000000012]
+    box_height = 360.0
+    box_width = 540.0
+    cx = 300.0
+    cy = 225.0
     output = "DP-1"
     placement_height = 1152.0
     placement_width = 2048.0
     rotation = 0.0
-    type = "clock"
+    type = "seal/phantom_calendar:desktop"
 
-        [desktop_widgets.widget.desktop-widget-0000000000000001.settings]
-        background = true
-        background_padding = 20
-        center_text = false
-        clock_style = "digital"
-        font_family = "FOT-Skip Std"
-        format = "{:%I:%M %p}"
+        [desktop_widgets.widget.desktop-widget-0000000000000012.settings]
+        background = false
 
     [desktop_widgets.widget.desktop-widget-0000000000000002]
     box_height = 110.0
     box_width = 335.0
     cx = 1826.2
-    cy = 762.0
+    cy = 265.0
     output = "DP-1"
     placement_height = 1152.0
     placement_width = 2048.0
@@ -62,8 +55,13 @@ widget_order = [
     type = "audio_visualizer"
 
         [desktop_widgets.widget.desktop-widget-0000000000000002.settings]
-        background = false
+        background = true
+        background_color = "#000000"
+        background_opacity = 0.95
+        background_radius = 0.0
         bands = 32
+        color_1 = "#ffffff"
+        color_2 = "primary"
         centered = true
         mirrored = true
         show_when_idle = true
@@ -72,7 +70,7 @@ widget_order = [
     box_height = 94.0
     box_width = 114.33
     cx = 1699.8699999999999
-    cy = 886.0
+    cy = 1080.0
     output = "DP-1"
     placement_height = 1152.0
     placement_width = 2048.0
@@ -81,8 +79,10 @@ widget_order = [
 
         [desktop_widgets.widget.desktop-widget-0000000000000003.settings]
         background = true
+        background_color = "#000000"
+        background_radius = 0.0
         display = "gauge"
-        font_family = "JetBrains Mono"
+        font_family = "Anton"
         gauge_layout = "vertical"
         shadow = true
         stat = "cpu_usage"
@@ -92,7 +92,7 @@ widget_order = [
     box_height = 94.0
     box_width = 114.33
     cx = 1952.53
-    cy = 886.0
+    cy = 1080.0
     output = "DP-1"
     placement_height = 1152.0
     placement_width = 2048.0
@@ -101,8 +101,10 @@ widget_order = [
 
         [desktop_widgets.widget.desktop-widget-0000000000000004.settings]
         background = true
+        background_color = "#000000"
+        background_radius = 0.0
         display = "gauge"
-        font_family = "JetBrains Mono"
+        font_family = "Anton"
         gauge_layout = "vertical"
         stat = "ram_pct"
         stat2 = ""
@@ -111,7 +113,7 @@ widget_order = [
     box_height = 94.0
     box_width = 114.33
     cx = 1826.2
-    cy = 886.0
+    cy = 1080.0
     output = "DP-1"
     placement_height = 1152.0
     placement_width = 2048.0
@@ -119,33 +121,19 @@ widget_order = [
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000005.settings]
-        background_opacity = 0.80000000000000004
+        background_color = "#000000"
+        background_radius = 0.0
         display = "gauge"
-        font_family = "JetBrains Mono"
+        font_family = "Anton"
         gauge_layout = "vertical"
         stat = "cpu_temp"
         stat2 = "cpu_temp"
-
-    [desktop_widgets.widget.desktop-widget-0000000000000008]
-    box_height = 333.0
-    box_width = 367.0
-    cx = 1826.2
-    cy = 408.5
-    output = "DP-1"
-    placement_height = 1152.0
-    placement_width = 2048.0
-    rotation = 0.0
-    type = "seal/centered_weather:desktop"
-
-        [desktop_widgets.widget.desktop-widget-0000000000000008.settings]
-        background = true
-        background_padding = 16
 
     [desktop_widgets.widget.desktop-widget-0000000000000009]
     box_height = 110.0
     box_width = 335.0
     cx = 1826.2
-    cy = 652.0
+    cy = 155.0
     output = "DP-1"
     placement_height = 1152.0
     placement_width = 2048.0
@@ -153,27 +141,15 @@ widget_order = [
     type = "media_player"
 
         [desktop_widgets.widget.desktop-widget-0000000000000009.settings]
-        background = false
-        color = "on_surface"
+        background = true
+        background_color = "#000000"
+        background_opacity = 0.95
+        background_radius = 0.0
+        color = "#ffffff"
+        font_family = "Anton"
         hide_when_no_media = false
         layout = "horizontal"
         shadow = true
-
-    [desktop_widgets.widget.desktop-widget-0000000000000010]
-    box_height = 240.0
-    box_width = 367.0
-    cx = 1826.2
-    cy = 707.0
-    output = "DP-1"
-    placement_height = 1152.0
-    placement_width = 2048.0
-    rotation = 0.0
-    type = "label"
-
-        [desktop_widgets.widget.desktop-widget-0000000000000010.settings]
-        background = true
-        opacity = 1.0
-        title = ""
 
 [location]
 auto_locate = false
@@ -219,7 +195,13 @@ widget_order = [ "lockscreen-login-box@DP-1" ]
 enabled = true
 
 [plugins]
-enabled = [ "noctalia/screen_recorder", "noctalia/timer", "noctalia/translator", "seal/centered_weather" ]
+enabled = [
+    "noctalia/screen_recorder",
+    "noctalia/timer",
+    "noctalia/translator",
+    "seal/centered_weather",
+    "seal/phantom_calendar"
+]
 
 [shell]
 lang = "en"

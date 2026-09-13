@@ -11,7 +11,17 @@ layout {
     default-column-width { proportion 0.5; }
 
     focus-ring {
-        width 3
+        off
+    }
+
+    // glow instead of a border; glow.kdl overrides these colors to match the wallpaper
+    shadow {
+        on
+        softness 8
+        spread 5
+        offset x=0 y=0
+        color          "#ec5f68ff"
+        inactive-color "#ec5f6826"
     }
 
     background-color   "#00000000"

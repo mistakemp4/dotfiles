@@ -1,0 +1,23 @@
+{
+  "settings": {
+    "game_assets_dir": {
+      "label": "Game Sprites Folder",
+      "description": "Folder with the dumped P5_FIELD_DAY sprites, created by tools/extract-game-assets.sh from your own Persona 5 Royal."
+    },
+    "weekday_color": {
+      "label": "Weekday Color",
+      "options": {
+        "game": "Game red",
+        "wallpaper": "Wallpaper color"
+      }
+    },
+    "address": {
+      "label": "Address",
+      "description": "City to show weather for, e.g. \"Portland, United States\". Leave empty to use the address from Noctalia's Location settings."
+    }
+  },
+  "status": {
+    "no_rsvg": "Install librsvg (rsvg-convert) for the calendar",
+    "missing_assets": "Run tools/extract-game-assets.sh (needs your own Persona 5 Royal). Sprites expected in"
+  }
+}
