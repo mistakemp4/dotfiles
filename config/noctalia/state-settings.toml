@@ -78,6 +78,7 @@ widget_order = [
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000003.settings]
+        font_family = "JetBrains Mono"
         background = true
         display = "gauge"
         gauge_layout = "vertical"
@@ -97,6 +98,7 @@ widget_order = [
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000004.settings]
+        font_family = "JetBrains Mono"
         background = true
         display = "gauge"
         gauge_layout = "vertical"
@@ -115,6 +117,7 @@ widget_order = [
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000005.settings]
+        font_family = "JetBrains Mono"
         background_opacity = 0.80000000000000004
         display = "gauge"
         gauge_layout = "vertical"
