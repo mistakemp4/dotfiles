@@ -1,5 +1,4 @@
 spawn-sh-at-startup "noctalia"
 spawn-sh-at-startup "alacritty --title Keybinds -e bat --paging=always --style=full ~/.config/niri/keybinds.md"
-spawn-at-startup    "python3" "/home/seal/src/gui-for-linux-wallpaperengine/run_gui.py" "--hidden"
 
 xwayland-satellite { path "xwayland-satellite"; }

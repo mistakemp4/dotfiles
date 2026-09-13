@@ -12,8 +12,10 @@ mkdir -p ~/.config/
 # paths relative to config/, linked to the same path under ~/.config
 CONFIG_FILES=(
   alacritty
+  autostart
   btop
   fastfetch
+  fish
   niri
   noctalia
   nvim

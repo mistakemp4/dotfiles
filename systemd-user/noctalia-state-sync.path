@@ -1,0 +1,8 @@
+[Unit]
+Description=Watch Noctalia's GUI-saved settings for changes
+
+[Path]
+PathChanged=%h/.local/state/noctalia/settings.toml
+
+[Install]
+WantedBy=default.target

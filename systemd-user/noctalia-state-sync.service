@@ -1,0 +1,7 @@
+[Unit]
+Description=Copy Noctalia's GUI-saved settings into the dotfiles repo
+
+# noctalia replaces this file on every save, so a symlink wouldn't survive; copy it instead
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/cp %h/.local/state/noctalia/settings.toml %h/src/dotfiles/config/noctalia/state-settings.toml

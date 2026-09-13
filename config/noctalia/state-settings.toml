@@ -1,0 +1,230 @@
+config_version = 14
+
+[bar.default]
+background_opacity = 0.87999998033046722
+start = [ "workspaces", "active_window", "launcher" ]
+
+[calendar]
+enabled = true
+
+    [calendar.account.personal_google]
+    type = "google"
+
+[desktop_widgets]
+schema_version = 2
+widget_order = [
+    "desktop-widget-0000000000000007",
+    "desktop-widget-0000000000000001",
+    "desktop-widget-0000000000000002",
+    "desktop-widget-0000000000000003",
+    "desktop-widget-0000000000000004",
+    "desktop-widget-0000000000000005",
+    "desktop-widget-0000000000000006"
+]
+
+    [desktop_widgets.grid]
+    cell_size = 8
+    major_interval = 4
+    visible = true
+
+    [desktop_widgets.widget.desktop-widget-0000000000000001]
+    box_height = 202.69999694824219
+    box_width = 458.70001220703125
+    cx = 1826.159912109375
+    cy = 149.36000061035156
+    output = "DP-1"
+    placement_height = 1152.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "clock"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000001.settings]
+        background = true
+        background_padding = 20
+        center_text = false
+        clock_style = "digital"
+        font_family = ""
+        format = "{:%I:%M %p}"
+
+    [desktop_widgets.widget.desktop-widget-0000000000000002]
+    box_height = 213.30000305175781
+    box_width = 458.70001220703125
+    cx = 1826.159912109375
+    cy = 678.40008544921875
+    output = "DP-1"
+    placement_height = 1152.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "audio_visualizer"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000002.settings]
+        background = true
+        bands = 32
+        centered = true
+        mirrored = true
+        show_when_idle = true
+
+    [desktop_widgets.widget.desktop-widget-0000000000000003]
+    box_height = 117.30000305175781
+    box_width = 128.0
+    cx = 1693.840087890625
+    cy = 823.44012451171875
+    output = "DP-1"
+    placement_height = 1152.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "sysmon"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000003.settings]
+        background = true
+        display = "gauge"
+        gauge_layout = "vertical"
+        shadow = true
+        stat = "cpu_usage"
+        stat2 = "cpu_temp"
+
+    [desktop_widgets.widget.desktop-widget-0000000000000004]
+    box_height = 117.30000305175781
+    box_width = 138.69999694824219
+    cx = 1954.159912109375
+    cy = 823.44012451171875
+    output = "DP-1"
+    placement_height = 1152.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "sysmon"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000004.settings]
+        background = true
+        display = "gauge"
+        gauge_layout = "vertical"
+        stat = "ram_pct"
+        stat2 = ""
+
+    [desktop_widgets.widget.desktop-widget-0000000000000005]
+    box_height = 117.30000305175781
+    box_width = 149.30000305175781
+    cx = 1821.840087890625
+    cy = 823.44012451171875
+    output = "DP-1"
+    placement_height = 1152.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "sysmon"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000005.settings]
+        background_opacity = 0.80000000000000004
+        display = "gauge"
+        gauge_layout = "vertical"
+        stat = "cpu_temp"
+        stat2 = "cpu_temp"
+
+    [desktop_widgets.widget.desktop-widget-0000000000000006]
+    box_height = 416.0
+    box_width = 458.70001220703125
+    cx = 1864.5599365234375
+    cy = 401.0400390625
+    output = "DP-1"
+    placement_height = 1152.0
+    placement_width = 2048.0
+    rotation = -0.0
+    type = "weather"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000006.settings]
+        background = false
+        background_padding = 30
+        font_family = "Adwaita Mono"
+        show_forecast = true
+
+    [desktop_widgets.widget.desktop-widget-0000000000000007]
+    box_height = 416.0
+    box_width = 458.70001220703125
+    cx = 1826.159912109375
+    cy = 409.60003662109375
+    output = "DP-1"
+    placement_height = 1152.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "label"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000007.settings]
+        opacity = 1.0
+        title = ""
+
+[location]
+auto_locate = true
+
+[lockscreen_widgets]
+enabled = false
+schema_version = 2
+widget_order = [ "lockscreen-login-box@DP-1" ]
+
+    [lockscreen_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 1024.0
+    cy = 1006.4000854492188
+    output = "DP-1"
+    placement_height = 1152.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-1".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+[theme]
+builtin = "Noctalia"
+community_palette = "Oxocarbon"
+custom_palette = "motherboard"
+mode = "dark"
+source = "wallpaper"
+wallpaper_scheme = "vibrant"
+
+    [theme.templates]
+    community_ids = [
+        "claude-code",
+        "spicetify",
+        "brave",
+        "discord",
+        "libreoffice",
+        "neovim",
+        "vscode",
+        "prismlauncher",
+        "bat",
+        "yazi",
+        "fastfetch",
+        "fzf",
+        "lazygit",
+        "micro"
+    ]
+
+[wallpaper.default]
+path = "/home/seal/Pictures/WallPapers/we-3163965761.jpg"
+
+[wallpaper.last]
+path = "/home/seal/Pictures/WallPapers/we-3163965761.jpg"
+
+[wallpaper.monitors.DP-1]
+path = "/home/seal/Pictures/WallPapers/we-3163965761.jpg"
+
+[weather]
+unit = "imperial"

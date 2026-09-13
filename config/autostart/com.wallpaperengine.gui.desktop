@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Linux Wallpaper Engine
+Comment=Wallpaper Engine for Linux (GUI)
+Exec=/usr/bin/python3 "/home/seal/src/gui-for-linux-wallpaperengine/run_gui.py" --hidden
+Icon=com.wallpaperengine.gui
+Path=/home/seal/src/gui-for-linux-wallpaperengine
+Terminal=false
+Categories=Utility;Graphics;
+StartupNotify=true
+StartupWMClass=com.wallpaperengine.gui
+X-GNOME-Autostart-enabled=true

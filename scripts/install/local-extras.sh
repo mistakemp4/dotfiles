@@ -60,3 +60,18 @@ done
 update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 
 systemctl --user daemon-reload
+
+# noctalia replaces its gui-saved settings on every save, so it's copied rather than linked
+state_settings="$HOME/.local/state/noctalia/settings.toml"
+if [ ! -e "$state_settings" ] && [ -f "$DOTFILES/config/noctalia/state-settings.toml" ]; then
+  mkdir -p "$(dirname "$state_settings")"
+  cp "$DOTFILES/config/noctalia/state-settings.toml" "$state_settings"
+  echo "Restored noctalia state settings"
+fi
+
+# linking a unit doesn't enable it; skip units without [Install] (they're triggered by others)
+for f in "$DOTFILES"/systemd-user/*.service "$DOTFILES"/systemd-user/*.path; do
+  [ -e "$f" ] || continue
+  grep -q '^\[Install\]' "$f" || continue
+  systemctl --user enable --now "$(basename "$f")"
+done
