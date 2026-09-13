@@ -61,6 +61,7 @@ rgb_vars = {
 }
 
 all_vars = {**hex_vars, **rgb_vars}
+FONT_FAMILY = "FOT-Skip Std"
 js = f"""
 (() => {{
   const vars = {json.dumps(all_vars)};
@@ -68,6 +69,15 @@ js = f"""
   for (const [k, v] of Object.entries(vars)) {{
     root.style.setProperty(k, v);
   }}
+
+  const styleId = 'noctalia-font-override';
+  if (!document.getElementById(styleId)) {{
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `* {{ font-family: '{FONT_FAMILY}' !important; }}`;
+    document.head.appendChild(style);
+  }}
+
   return Object.keys(vars).length;
 }})()
 """

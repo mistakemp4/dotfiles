@@ -68,7 +68,7 @@ widget_order = [
         background_padding = 20
         center_text = false
         clock_style = "digital"
-        font_family = ""
+        font_family = "FOT-Skip Std"
         format = "{:%I:%M %p}"
 
     [desktop_widgets.widget.desktop-widget-0000000000000002]
@@ -158,7 +158,7 @@ widget_order = [
         [desktop_widgets.widget.desktop-widget-0000000000000006.settings]
         background = false
         background_padding = 30
-        font_family = "Adwaita Mono"
+        font_family = "FOT-Skip Std"
         show_forecast = true
 
     [desktop_widgets.widget.desktop-widget-0000000000000007]
@@ -536,13 +536,13 @@ enabled = true
 transition_on_startup = true
 
     [wallpaper.default]
-    path = "/home/moucheh/Pictures/WallPapers/e46.jpg"
+    path = "~/Pictures/WallPapers/we-3163965761.jpg"
 
     [wallpaper.last]
-    path = "/home/moucheh/Pictures/WallPapers/e46.jpg"
+    path = "~/Pictures/WallPapers/we-3163965761.jpg"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/moucheh/Pictures/WallPapers/e46.jpg"
+    path = "~/Pictures/WallPapers/we-3163965761.jpg"
 
     [[wallpaper.favorite]]
     path = "~/Pictures/WallPapers/tp-wallpaper.jpg"
@@ -567,8 +567,6 @@ format = "{:%I:%M ~ %d}"
 tooltip_format = "{:%d %B %Y}"
 
 [widget.launcher]
-custom_image = "/home/moucheh/Pictures/nixos.svg"
-custom_image_colorize = true
 
     [widget.launcher.actions]
     right = "exec wezterm -e ~/.config/niri/scripts/fastfetch.sh"
