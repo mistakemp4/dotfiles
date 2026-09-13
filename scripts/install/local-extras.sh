@@ -59,6 +59,15 @@ for f in "$DOTFILES"/local-share-applications/*; do
 done
 update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 
+# local noctalia plugins (enable afterwards with: noctalia msg plugins enable <author/plugin>)
+mkdir -p "$HOME/.local/share/noctalia/plugins"
+for d in "$DOTFILES"/noctalia-plugins/*/; do
+  [ -d "$d" ] || continue
+  name=$(basename "$d")
+  ln -sfn "${d%/}" "$HOME/.local/share/noctalia/plugins/$name"
+  printf "\nInstalled noctalia plugin %s\n\n" "$name"
+done
+
 systemctl --user daemon-reload
 
 # noctalia replaces its gui-saved settings on every save, so it's copied rather than linked

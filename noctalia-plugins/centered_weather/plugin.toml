@@ -1,0 +1,47 @@
+# Weather desktop widget with every line centered, fed by open-meteo (no api key).
+id = "seal/centered_weather"
+name = "Centered Weather"
+version = "1.0.0"
+plugin_api = 26
+author = "seal"
+license = "MIT"
+dependencies = []
+tags = ["weather", "desktop"]
+icon = "cloud-sun"
+description = "Current weather and forecast, centered, using open-meteo."
+
+[[desktop_widget]]
+id = "desktop"
+entry = "desktop.luau"
+
+  [[desktop_widget.setting]]
+  key = "address"
+  type = "string"
+  label_key = "settings.address.label"
+  description_key = "settings.address.description"
+  default = ""
+
+  [[desktop_widget.setting]]
+  key = "unit"
+  type = "select"
+  label_key = "settings.unit.label"
+  default = "auto"
+  options = [
+    { value = "auto", label_key = "settings.unit.options.auto" },
+    { value = "fahrenheit", label_key = "settings.unit.options.fahrenheit" },
+    { value = "celsius", label_key = "settings.unit.options.celsius" },
+  ]
+
+  [[desktop_widget.setting]]
+  key = "forecast_days"
+  type = "int"
+  label_key = "settings.forecast_days.label"
+  default = 3
+  min = 0
+  max = 6
+
+  [[desktop_widget.setting]]
+  key = "color"
+  type = "color"
+  label_key = "settings.color.label"
+  default = "on_surface"

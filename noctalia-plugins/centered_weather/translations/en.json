@@ -1,0 +1,28 @@
+{
+  "settings": {
+    "address": {
+      "label": "Address",
+      "description": "City to show weather for, e.g. \"Portland, United States\". Leave empty to use the address from Noctalia's Location settings."
+    },
+    "unit": {
+      "label": "Temperature Unit",
+      "options": {
+        "auto": "Match weather settings",
+        "fahrenheit": "Fahrenheit",
+        "celsius": "Celsius"
+      }
+    },
+    "forecast_days": {
+      "label": "Forecast Days"
+    },
+    "color": {
+      "label": "Color"
+    }
+  },
+  "status": {
+    "loading": "Loading weather…",
+    "no_location": "Set an Address in Location settings",
+    "not_found": "Couldn't find that address",
+    "error": "Weather unavailable"
+  }
+}

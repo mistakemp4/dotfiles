@@ -1,5 +1,6 @@
 [bar.default]
 background_opacity = 0.64999998547136784
+font_family = "FOT-Skip Std"
 center = [ "clock", "notifications", "privacy" ]
 end = [ "tray", "network", "bluetooth", "volume", "battery" ]
 margin_edge = 0
@@ -433,6 +434,7 @@ enabled = [ "noctalia/screen_recorder", "noctalia/timer", "noctalia/translator" 
 
 [shell]
 avatar_path = "~/Pictures/yochan-seal.png"
+font_family = "FOT-Skip Std"
 clipboard_auto_paste = "ctrl_shift_v"
 date_format = "%A, %d %B %Y"
 niri_overview_type_to_launch_enabled = true
