@@ -18,7 +18,6 @@ CONFIG_FILES=(
   fish
   niri
   noctalia
-  nvim
   spicetify
   starship.toml
   wireplumber

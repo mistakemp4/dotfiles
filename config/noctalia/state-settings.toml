@@ -31,40 +31,6 @@ widget_order = [
     major_interval = 4
     visible = true
 
-    [desktop_widgets.widget.desktop-widget-0000000000000010]
-    box_height = 240.0
-    box_width = 367.0
-    cx = 1826.2
-    cy = 707.0
-    output = "DP-1"
-    placement_height = 1152.0
-    placement_width = 2048.0
-    rotation = 0.0
-    type = "label"
-
-        [desktop_widgets.widget.desktop-widget-0000000000000010.settings]
-        background = true
-        opacity = 1.0
-        title = ""
-
-    [desktop_widgets.widget.desktop-widget-0000000000000009]
-    box_height = 110.0
-    box_width = 335.0
-    cx = 1826.2
-    cy = 652.0
-    output = "DP-1"
-    placement_height = 1152.0
-    placement_width = 2048.0
-    rotation = 0.0
-    type = "media_player"
-
-        [desktop_widgets.widget.desktop-widget-0000000000000009.settings]
-        background = false
-        color = "on_surface"
-        hide_when_no_media = false
-        layout = "horizontal"
-        shadow = true
-
     [desktop_widgets.widget.desktop-widget-0000000000000001]
     box_height = 162.0
     box_width = 367.0
@@ -105,7 +71,7 @@ widget_order = [
     [desktop_widgets.widget.desktop-widget-0000000000000003]
     box_height = 94.0
     box_width = 114.33
-    cx = 1699.87
+    cx = 1699.8699999999999
     cy = 886.0
     output = "DP-1"
     placement_height = 1152.0
@@ -114,9 +80,9 @@ widget_order = [
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000003.settings]
-        font_family = "JetBrains Mono"
         background = true
         display = "gauge"
+        font_family = "JetBrains Mono"
         gauge_layout = "vertical"
         shadow = true
         stat = "cpu_usage"
@@ -134,9 +100,9 @@ widget_order = [
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000004.settings]
-        font_family = "JetBrains Mono"
         background = true
         display = "gauge"
+        font_family = "JetBrains Mono"
         gauge_layout = "vertical"
         stat = "ram_pct"
         stat2 = ""
@@ -153,9 +119,9 @@ widget_order = [
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000005.settings]
-        font_family = "JetBrains Mono"
         background_opacity = 0.80000000000000004
         display = "gauge"
+        font_family = "JetBrains Mono"
         gauge_layout = "vertical"
         stat = "cpu_temp"
         stat2 = "cpu_temp"
@@ -174,6 +140,40 @@ widget_order = [
         [desktop_widgets.widget.desktop-widget-0000000000000008.settings]
         background = true
         background_padding = 16
+
+    [desktop_widgets.widget.desktop-widget-0000000000000009]
+    box_height = 110.0
+    box_width = 335.0
+    cx = 1826.2
+    cy = 652.0
+    output = "DP-1"
+    placement_height = 1152.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "media_player"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000009.settings]
+        background = false
+        color = "on_surface"
+        hide_when_no_media = false
+        layout = "horizontal"
+        shadow = true
+
+    [desktop_widgets.widget.desktop-widget-0000000000000010]
+    box_height = 240.0
+    box_width = 367.0
+    cx = 1826.2
+    cy = 707.0
+    output = "DP-1"
+    placement_height = 1152.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "label"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000010.settings]
+        background = true
+        opacity = 1.0
+        title = ""
 
 [location]
 auto_locate = false
@@ -239,7 +239,6 @@ wallpaper_scheme = "vibrant"
         "brave",
         "discord",
         "libreoffice",
-        "neovim",
         "vscode",
         "prismlauncher",
         "bat",

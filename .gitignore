@@ -5,7 +5,6 @@ local-bin/__pycache__/
 config/alacritty/themes/
 config/btop/themes/
 config/fastfetch/themes/
-config/nvim/lua/matugen.lua
 
 # machine state fish rewrites on its own
 config/fish/fish_variables
