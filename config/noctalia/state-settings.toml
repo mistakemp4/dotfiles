@@ -17,6 +17,7 @@ show_events_card = false
 schema_version = 2
 widget_order = [
     "desktop-widget-0000000000000012",
+    "desktop-widget-0000000000000010",
     "desktop-widget-0000000000000009",
     "desktop-widget-0000000000000002",
     "desktop-widget-0000000000000003",
@@ -28,20 +29,6 @@ widget_order = [
     cell_size = 8
     major_interval = 4
     visible = true
-
-    [desktop_widgets.widget.desktop-widget-0000000000000012]
-    box_height = 360.0
-    box_width = 540.0
-    cx = 300.0
-    cy = 225.0
-    output = "DP-1"
-    placement_height = 1152.0
-    placement_width = 2048.0
-    rotation = 0.0
-    type = "seal/phantom_calendar:desktop"
-
-        [desktop_widgets.widget.desktop-widget-0000000000000012.settings]
-        background = false
 
     [desktop_widgets.widget.desktop-widget-0000000000000002]
     box_height = 110.0
@@ -55,13 +42,8 @@ widget_order = [
     type = "audio_visualizer"
 
         [desktop_widgets.widget.desktop-widget-0000000000000002.settings]
-        background = true
-        background_color = "#000000"
-        background_opacity = 0.95
-        background_radius = 0.0
+        background = false
         bands = 32
-        color_1 = "#ffffff"
-        color_2 = "primary"
         centered = true
         mirrored = true
         show_when_idle = true
@@ -69,7 +51,7 @@ widget_order = [
     [desktop_widgets.widget.desktop-widget-0000000000000003]
     box_height = 94.0
     box_width = 114.33
-    cx = 1699.8699999999999
+    cx = 897.66999999999996
     cy = 1080.0
     output = "DP-1"
     placement_height = 1152.0
@@ -78,9 +60,9 @@ widget_order = [
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000003.settings]
+        background_color = "surface"
         background = true
-        background_color = "#000000"
-        background_radius = 0.0
+        background_radius = 12.0
         display = "gauge"
         font_family = "Anton"
         gauge_layout = "vertical"
@@ -91,7 +73,7 @@ widget_order = [
     [desktop_widgets.widget.desktop-widget-0000000000000004]
     box_height = 94.0
     box_width = 114.33
-    cx = 1952.53
+    cx = 1150.3299999999999
     cy = 1080.0
     output = "DP-1"
     placement_height = 1152.0
@@ -100,9 +82,9 @@ widget_order = [
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000004.settings]
+        background_color = "surface"
         background = true
-        background_color = "#000000"
-        background_radius = 0.0
+        background_radius = 12.0
         display = "gauge"
         font_family = "Anton"
         gauge_layout = "vertical"
@@ -112,7 +94,7 @@ widget_order = [
     [desktop_widgets.widget.desktop-widget-0000000000000005]
     box_height = 94.0
     box_width = 114.33
-    cx = 1826.2
+    cx = 1024.0
     cy = 1080.0
     output = "DP-1"
     placement_height = 1152.0
@@ -121,8 +103,8 @@ widget_order = [
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000005.settings]
-        background_color = "#000000"
-        background_radius = 0.0
+        background_color = "surface"
+        background_radius = 12.0
         display = "gauge"
         font_family = "Anton"
         gauge_layout = "vertical"
@@ -141,15 +123,44 @@ widget_order = [
     type = "media_player"
 
         [desktop_widgets.widget.desktop-widget-0000000000000009.settings]
-        background = true
-        background_color = "#000000"
-        background_opacity = 0.95
-        background_radius = 0.0
-        color = "#ffffff"
-        font_family = "Anton"
+        background = false
+        color = "on_surface"
         hide_when_no_media = false
         layout = "horizontal"
         shadow = true
+
+    [desktop_widgets.widget.desktop-widget-0000000000000010]
+    box_height = 240.0
+    box_width = 367.0
+    cx = 1826.2
+    cy = 210.0
+    output = "DP-1"
+    placement_height = 1152.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "label"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000010.settings]
+        background = true
+        opacity = 1.0
+        title = ""
+
+    [desktop_widgets.widget.desktop-widget-0000000000000012]
+    box_height = 426.0
+    box_width = 596.0
+    cx = 308.0
+    cy = 249.0
+    output = "DP-1"
+    placement_height = 1152.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "seal/phantom_calendar:desktop"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000012.settings]
+        weekday_color = "wallpaper"
+        background = false
+        preview_banner = "none"
+        preview_date = ""
 
 [location]
 auto_locate = false
@@ -233,13 +244,13 @@ wallpaper_scheme = "vibrant"
     ]
 
 [wallpaper.default]
-path = "/home/seal/Pictures/WallPapers/we-3163965761.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3479030273.jpg"
 
 [wallpaper.last]
-path = "/home/seal/Pictures/WallPapers/we-3163965761.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3479030273.jpg"
 
 [wallpaper.monitors.DP-1]
-path = "/home/seal/Pictures/WallPapers/we-3163965761.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3479030273.jpg"
 
 [weather]
 unit = "imperial"

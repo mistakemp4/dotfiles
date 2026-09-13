@@ -12,3 +12,7 @@ config/niri/glow.kdl
 
 # machine state fish rewrites on its own
 config/fish/fish_variables
+
+# dotnet build output
+obj/
+bin/

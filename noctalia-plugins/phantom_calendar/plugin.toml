@@ -1,9 +1,9 @@
-# Persona 5 Royal field calendar HUD (date, weekday, animated weather, time of day), drawn from the game's
-# own sprites. Extract them from your own copy with tools/extract-game-assets.sh; they are never shipped
-# here (Atlus material). Needs rsvg-convert (librsvg).
+# Persona 5 Royal field calendar HUD (date, weekday, animated weather, time of day, holidays, special weather
+# banners), drawn from the game's own sprites. Extract them from your own copy with
+# tools/extract-game-assets.sh; they are never shipped here (Atlus material). Needs rsvg-convert (librsvg).
 id = "seal/phantom_calendar"
 name = "Phantom Calendar"
-version = "3.0.0"
+version = "3.1.0"
 plugin_api = 26
 author = "seal"
 license = "MIT"
@@ -39,3 +39,27 @@ entry = "desktop.luau"
   label_key = "settings.address.label"
   description_key = "settings.address.description"
   default = ""
+
+  [[desktop_widget.setting]]
+  key = "preview_date"
+  type = "string"
+  label_key = "settings.preview_date.label"
+  description_key = "settings.preview_date.description"
+  default = ""
+
+  [[desktop_widget.setting]]
+  key = "preview_banner"
+  type = "select"
+  label_key = "settings.preview_banner.label"
+  default = "none"
+  options = [
+    { value = "none", label_key = "settings.preview_banner.options.none" },
+    { value = "typhoon", label_key = "settings.preview_banner.options.typhoon" },
+    { value = "torrential_rain", label_key = "settings.preview_banner.options.torrential_rain" },
+    { value = "heat_wave", label_key = "settings.preview_banner.options.heat_wave" },
+    { value = "hot_night", label_key = "settings.preview_banner.options.hot_night" },
+    { value = "cold_wave", label_key = "settings.preview_banner.options.cold_wave" },
+    { value = "rainy_season", label_key = "settings.preview_banner.options.rainy_season" },
+    { value = "pollen", label_key = "settings.preview_banner.options.pollen" },
+    { value = "flu_season", label_key = "settings.preview_banner.options.flu_season" },
+  ]

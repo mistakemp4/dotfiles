@@ -14,6 +14,24 @@
     "address": {
       "label": "Address",
       "description": "City to show weather for, e.g. \"Portland, United States\". Leave empty to use the address from Noctalia's Location settings."
+    },
+    "preview_date": {
+      "label": "Preview Date",
+      "description": "Show another day as MM-DD (e.g. 10-31) to preview its holiday. Leave empty for today."
+    },
+    "preview_banner": {
+      "label": "Preview Weather Banner",
+      "options": {
+        "none": "None (use live weather)",
+        "typhoon": "Typhoon Warning",
+        "torrential_rain": "Torrential Rain",
+        "heat_wave": "Heat Wave",
+        "hot_night": "Hot Night",
+        "cold_wave": "Cold Wave",
+        "rainy_season": "Rainy Season",
+        "pollen": "Pollen Warning",
+        "flu_season": "Flu Season"
+      }
     }
   },
   "status": {

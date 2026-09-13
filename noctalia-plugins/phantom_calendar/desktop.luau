@@ -1,27 +1,33 @@
 --!nonstrict
 -- Persona 5 Royal field calendar HUD, drawn from the game's own sprites. Those come from the user's own
 -- copy of the game via tools/extract-game-assets.sh and are never shipped with this plugin.
--- Every sprite is a white alpha mask that gets tinted per layer (like the game does); the HUD is composed
--- as SVG, rendered to PNG with rsvg-convert, and the weather icon animates by cycling frames.
+-- Plain sprites are white alpha masks tinted per layer (like the game does); holiday art is already
+-- colored and drawn as-is. The HUD is composed as SVG, rendered to PNG with rsvg-convert, and the weather
+-- icon animates by cycling frames.
 
 local REFRESH_SECONDS = 15 * 60
 local SETUP_RETRY_SECONDS = 60
--- composition space = pixels of the 1920x1080 in-game screenshot the layout was traced from
-local SVG_W, SVG_H = 460, 330
-local SHOW_W, SHOW_H = 490, 352
-local RENDER_W = 1104
+local SVG_W, SVG_H = 560, 400
+-- the date cluster's layout is in pixels of the 1920x1080 in-game screenshot it was traced from;
+-- this offset leaves room around it for holiday decorations
+local ORIGIN_X, ORIGIN_Y = 50, 45
+local SHOW_W, SHOW_H = 596, 426
+local RENDER_W = 1344
 local WEATHER_FRAMES = 3
 local DEFAULT_ASSETS = "~/.local/share/p5-game-assets/dump/P5_FIELD_DAY"
 local COLOR_FILE = "~/.cache/noctalia/phantom-calendar-color.txt"
 local GAME_RED = "#e6191e"
 local DARK = "#1a0d0a"
 
--- sprite ids in P5_FIELD_DAY.SPD
+-- sprite ids in P5_FIELD_DAY.SPD; weather condition 0 sunny, 1 rain, 2 cloudy, 3 snow
 local WEATHER_CARD = 96
 local WEATHER_ICONS = { [0] = { 97, 109, 110 }, [1] = { 98, 111, 112 }, [2] = { 99, 113, 114 }, [3] = { 100, 115, 116 } }
--- weekday and time of day sprites are in these orders
 local WEEKDAY = { Sun = 0, Mon = 1, Tue = 2, Wed = 3, Thu = 4, Fri = 5, Sat = 6 }
 local TIME_OF_DAY = { EARLY_MORNING = 0, MORNING = 1, DAYTIME = 2, LUNCHTIME = 3, AFTERNOON = 4, AFTER_SCHOOL = 5, EVENING = 6, LATE_NIGHT = 7 }
+local BANNERS = {
+  rainy_season = 101, typhoon = 102, pollen = 103, torrential_rain = 105,
+  heat_wave = 106, flu_season = 107, hot_night = 117, cold_wave = 300,
+}
 
 -- { cx, cy, scale, rotation } per element, matched against an in-game screenshot
 local LAYOUT = {
@@ -32,6 +38,43 @@ local LAYOUT = {
   weather = { 365, 62, 0.42, 10 },
   weekday = { 279, 155, 0.47, -26 },
   timeOfDay = { 102, 259, 0.43, -24 },
+  banner = { 352, 250, 0.38, -6 },
+}
+
+-- holiday art: numeral/month replacements and { id, cx, cy, scale, rotation } decorations (arranged by eye;
+-- the game's own placement isn't in the extracted files)
+local HOLIDAYS = {
+  halloween = {
+    month = 230,
+    numerals = { [0] = 219, [1] = 220, [2] = 221, [3] = 222, [4] = 223, [5] = 224, [6] = 225, [7] = 226, [8] = 227, [9] = 228 },
+    extras = { { 231, 398, 120, 0.42, 0 }, { 232, 398, 164, 0.55, 0 }, { 233, 30, 186, 0.5, -12 }, { 235, 424, 150, 0.42, 8 }, { 236, 20, 40, 0.42, 0 } },
+  },
+  christmas = {
+    month = 149,
+    extras = { { 140, 226, 6, 0.5, -4 }, { 144, 436, 8, 0.42, 10 }, { 146, 26, 50, 0.42, -10 }, { 147, 170, 214, 0.42, 0 }, { 145, 438, 138, 0.42, 20 } },
+  },
+  newyear = {
+    month = 244,
+    numerals = { [1] = 242, [2] = 243, [3] = 239, [4] = 240, [5] = 241 },
+    icons = { [0] = { 251, 252, 253 }, [1] = { 297, 298, 299 }, [2] = { 254, 255, 256 }, [3] = { 257, 258, 260 } },
+    extras = { { 245, 12, 70, 0.42, 0 }, { 246, 440, 150, 0.42, 0 }, { 248, 40, 206, 0.42, 0 }, { 247, 424, 12, 0.42, 0 }, { 249, 350, 206, 0.38, 0 } },
+  },
+  valentine = {
+    tuesday = 264,
+    extras = { { 271, 150, 136, 0.3, -6 }, { 272, 312, 118, 0.3, 12 }, { 265, 230, 112, 0.42, -8 }, { 266, 318, 108, 0.42, 0 }, { 267, 336, 136, 0.36, -20 }, { 268, 304, 138, 0.36, 15 } },
+  },
+  whiteday = {
+    extras = { { 276, 226, 112, 0.42, -8 }, { 277, 226, 122, 0.42, -8 }, { 278, 318, 138, 0.36, 0 }, { 279, 346, 140, 0.36, 0 }, { 280, 420, 118, 0.42, 0 } },
+  },
+  hanami = {
+    extras = { { 155, 34, 36, 0.42, 0 }, { 156, 430, 132, 0.42, 0 }, { 157, 186, 232, 0.36, 0 }, { 158, 330, -2, 0.34, 0 }, { 160, 454, 40, 0.42, 20 }, { 161, 20, 190, 0.42, 0 }, { 162, 250, 236, 0.42, 0 }, { 164, 150, -8, 0.42, 0 } },
+  },
+  hanami_night = {
+    extras = { { 195, 438, 150, 0.42, 6 }, { 196, 30, 40, 0.42, 0 }, { 197, 340, 0, 0.36, 0 }, { 198, 190, 230, 0.36, 0 }, { 199, 24, 200, 0.36, 0 }, { 200, 460, 60, 0.42, 30 } },
+  },
+  fireworks = {
+    extras = { { 210, 34, 20, 0.36, 0 }, { 208, 440, 4, 0.34, 0 }, { 211, 120, 232, 0.3, 0 }, { 212, 470, 110, 0.3, 0 }, { 206, 430, 176, 0.42, 18 } },
+  },
 }
 
 noctalia.setUpdateInterval(1000)
@@ -127,6 +170,50 @@ local function conditionFor(code)
   return 2
 end
 
+local function holidayFor(month, day, tod)
+  if month == 10 and day == 31 then
+    return "halloween"
+  elseif month == 12 and (day == 24 or day == 25) then
+    return "christmas"
+  elseif month == 1 and day <= 5 then
+    return "newyear"
+  elseif month == 2 and day == 14 then
+    return "valentine"
+  elseif month == 3 and day == 14 then
+    return "whiteday"
+  elseif (month == 3 and day >= 25) or (month == 4 and day <= 10) then
+    return if tod >= TIME_OF_DAY.EVENING then "hanami_night" else "hanami"
+  elseif month == 8 and day == 20 then
+    return "fireworks"
+  end
+  return nil
+end
+
+-- first matching rule wins; temperatures in °C, rain in mm/h, gusts in km/h
+local function bannerFor(month, day, w)
+  if not w then
+    return nil
+  end
+  if w.gusts >= 90 then
+    return "typhoon"
+  elseif w.rainPerHour >= 20 then
+    return "torrential_rain"
+  elseif w.temp >= 35 then
+    return "heat_wave"
+  elseif not w.isDay and w.temp >= 25 then
+    return "hot_night"
+  elseif w.temp <= -5 then
+    return "cold_wave"
+  elseif w.condition == 1 and (month == 6 or (month == 7 and day <= 15)) then
+    return "rainy_season"
+  elseif (month == 3 or month == 4) and w.condition ~= 1 and w.condition ~= 3 then
+    return "pollen"
+  elseif month == 12 or month <= 2 then
+    return "flu_season"
+  end
+  return nil
+end
+
 local function refreshWallpaperColor()
   local info = noctalia.fileInfo(COLOR_FILE)
   local mtime = if info then info.mtime else 0
@@ -154,7 +241,7 @@ local function tintFilter(id, color)
   )
 end
 
--- one sprite centered on the element's layout point; filter = tint id, or nil to keep it white
+-- one sprite centered on { cx, cy, scale, rotation }; filter = tint id, or nil to draw it as-is
 local function sprite(id, layout, filter)
   local size = sizes[id]
   if not size then
@@ -168,12 +255,15 @@ local function sprite(id, layout, filter)
 end
 
 local function elements(s, frame)
+  local holiday = if s.holiday then HOLIDAYS[s.holiday] else {}
+  local numerals = holiday.numerals or {}
+
   -- layers of one element share its center; false = nothing on that pass
   local list = {
-    { layout = LAYOUT.month, layers = { { s.month }, { 12 + s.month, "black" }, { 24 + s.month } } },
+    { layout = LAYOUT.month, layers = { { s.month }, { 12 + s.month, "black" }, { holiday.month or (24 + s.month) } } },
   }
   local function digit(d, layout)
-    table.insert(list, { layout = layout, layers = { { 37 + d }, { 47 + d, "black" }, { 57 + d } } })
+    table.insert(list, { layout = layout, layers = { { 37 + d }, { 47 + d, "black" }, { numerals[d] or (57 + d) } } })
   end
   if s.day >= 10 then
     digit(math.floor(s.day / 10), LAYOUT.tens)
@@ -182,24 +272,26 @@ local function elements(s, frame)
     digit(s.day, LAYOUT.single)
   end
   if s.weather then
-    local icon = WEATHER_ICONS[s.weather.condition][frame + 1]
-    table.insert(list, { layout = LAYOUT.weather, layers = { { WEATHER_CARD }, false, { icon, "black" } } })
+    local icons = (holiday.icons or WEATHER_ICONS)[s.weather.condition]
+    table.insert(list, { layout = LAYOUT.weather, layers = { { WEATHER_CARD }, false, { icons[frame + 1], "black" } } })
   end
   local w = s.weekday
-  table.insert(list, { layout = LAYOUT.weekday, layers = { { 67 + w }, { 74 + w, "black" }, { 81 + w, "accent" }, { 287 + w, "black" } } })
+  local letters = if holiday.tuesday and w == 2 then holiday.tuesday else 287 + w
+  table.insert(list, { layout = LAYOUT.weekday, layers = { { 67 + w }, { 74 + w, "black" }, { 81 + w, "accent" }, { letters, "black" } } })
   local t = s.timeOfDay
   table.insert(list, { layout = LAYOUT.timeOfDay, layers = { { 88 + t }, { 125 + t, "dark" } } })
-  return list
+  return list, holiday.extras or {}
 end
 
 local function buildSvg(s, frame)
   local out = {
     string.format('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">', SVG_W, SVG_H, SVG_W, SVG_H),
     "<defs>" .. tintFilter("black", "#000") .. tintFilter("dark", DARK) .. tintFilter("accent", s.accent) .. "</defs>",
+    string.format('<g transform="translate(%d %d)">', ORIGIN_X, ORIGIN_Y),
   }
-  -- every element's white base first, then every black base, then the tops, so the white bases
-  -- merge into one sticker the way they do in game
-  local list = elements(s, frame)
+  -- every element's white base first, then every black base, then the tops, so the white bases merge
+  -- into one sticker the way they do in game; holiday decorations go under the weekday letters
+  local list, extras = elements(s, frame)
   for pass = 1, 4 do
     for _, element in list do
       local layer = element.layers[pass]
@@ -207,8 +299,16 @@ local function buildSvg(s, frame)
         table.insert(out, sprite(layer[1], element.layout, layer[2]))
       end
     end
+    if pass == 3 then
+      for _, extra in extras do
+        table.insert(out, sprite(extra[1], { extra[2], extra[3], extra[4], extra[5] }, nil))
+      end
+    end
   end
-  table.insert(out, "</svg>")
+  if s.banner then
+    table.insert(out, sprite(BANNERS[s.banner], LAYOUT.banner, nil))
+  end
+  table.insert(out, "</g></svg>")
   return table.concat(out, "\n")
 end
 
@@ -216,19 +316,37 @@ end
 
 local function currentState()
   local weekday = WEEKDAY[noctalia.formatTime("%a")] or 0
+  local month = tonumber(noctalia.formatTime("%m")) or 1
+  local day = tonumber(noctalia.formatTime("%d")) or 1
+
+  -- preview_date ("MM-DD") shows another day's holiday without waiting for it
+  local previewMonth, previewDay = string.match(noctalia.getConfig("preview_date") or "", "^(%d%d?)-(%d%d?)$")
+  if previewMonth then
+    month, day = tonumber(previewMonth), tonumber(previewDay)
+  end
+
+  local tod = timeOfDay(tonumber(noctalia.formatTime("%H")) or 0, weekday == 0 or weekday == 6)
+  local banner = bannerFor(month, day, weather)
+  local previewBanner = noctalia.getConfig("preview_banner") or "none"
+  if BANNERS[previewBanner] then
+    banner = previewBanner
+  end
+
   return {
-    month = tonumber(noctalia.formatTime("%m")) or 1,
-    day = tonumber(noctalia.formatTime("%d")) or 1,
+    month = month,
+    day = day,
     weekday = weekday,
-    timeOfDay = timeOfDay(tonumber(noctalia.formatTime("%H")) or 0, weekday == 0 or weekday == 6),
+    timeOfDay = tod,
     weather = weather,
     accent = weekdayColor(),
+    holiday = holidayFor(month, day, tod),
+    banner = banner,
   }
 end
 
 local function contentKey(s)
   return table.concat({
-    s.month, s.day, s.weekday, s.timeOfDay, s.accent,
+    s.month, s.day, s.weekday, s.timeOfDay, s.accent, s.holiday or "", s.banner or "",
     if s.weather then s.weather.condition else "",
   }, "|")
 end
@@ -371,7 +489,8 @@ end
 local function fetchCurrent()
   local url = "https://api.open-meteo.com/v1/forecast"
     .. `?latitude={coords.lat}&longitude={coords.lon}`
-    .. "&current=weather_code"
+    .. "&current=weather_code,temperature_2m,precipitation,wind_gusts_10m,is_day"
+    .. "&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm"
 
   noctalia.http({ url = url }, function(res)
     if not res.ok or res.status >= 400 then
@@ -379,11 +498,20 @@ local function fetchCurrent()
       return
     end
     local data = noctalia.json.decode(res.body)
-    if type(data) ~= "table" or type(data.current) ~= "table" then
+    local current = type(data) == "table" and data.current or nil
+    if type(current) ~= "table" or type(current.weather_code) ~= "number" then
       fail("unexpected forecast response")
       return
     end
-    weather = { condition = conditionFor(data.current.weather_code) }
+    -- current values cover the preceding interval (seconds), so scale rain up to mm per hour
+    local interval = if type(current.interval) == "number" and current.interval > 0 then current.interval else 3600
+    weather = {
+      condition = conditionFor(current.weather_code),
+      temp = current.temperature_2m or 0,
+      rainPerHour = (current.precipitation or 0) * 3600 / interval,
+      gusts = current.wind_gusts_10m or 0,
+      isDay = current.is_day ~= 0,
+    }
     redraw()
   end)
 end

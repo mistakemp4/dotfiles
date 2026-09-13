@@ -1,5 +1,7 @@
 [Unit]
 Description=Copy Noctalia's GUI-saved settings into the dotfiles repo
+# GUI saves come in bursts; the default start limit killed the path unit
+StartLimitIntervalSec=0
 
 # noctalia replaces this file on every save, so a symlink wouldn't survive; copy it instead.
 # the repo is public, so location lines (top-level or inside widget settings) are dropped from the copy.
