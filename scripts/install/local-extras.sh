@@ -68,6 +68,12 @@ for d in "$DOTFILES"/noctalia-plugins/*/; do
   printf "\nInstalled noctalia plugin %s\n\n" "$name"
 done
 
+# spicetify installs to ~/.spicetify, which isn't on PATH for noctalia's template hooks
+if [ -x "$HOME/.spicetify/spicetify" ]; then
+  ln -sfn "$HOME/.spicetify/spicetify" "$HOME/.local/bin/spicetify"
+  echo "Linked spicetify into ~/.local/bin"
+fi
+
 systemctl --user daemon-reload
 
 # noctalia replaces its gui-saved settings on every save, so it's copied rather than linked
