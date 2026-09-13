@@ -9,20 +9,6 @@ input {
     mouse {
         accel-profile "flat"
     }
-
-    touchpad {
-        tap
-        dwt
-        natural-scroll
-        accel-profile "flat"
-        scroll-method "two-finger"
-        click-method  "clickfinger"
-    }
-
-    trackpoint {
-        accel-speed 0.2
-        accel-profile "flat"
-    }
 }
 
 gestures {
