@@ -4,5 +4,9 @@
     "terminal.integrated.fontFamily": "'JetBrains Mono', monospace",
     "git.enableSmartCommit": true,
     "git.confirmSync": false,
-    "git.autofetch": true
+    "git.autofetch": true,
+    "workbench.editorAssociations": {
+        "*.copilotmd": "vscode.markdown.preview.editor",
+        "*.md": "default"
+    }
 }

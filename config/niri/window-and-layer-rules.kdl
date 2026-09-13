@@ -43,6 +43,7 @@ window-rule {
 window-rule {
   match app-id=r#"^brave"#
   match app-id=r#"^org\.gnome\.Nautilus$"#
+  match app-id="^thunar$"
   match app-id="^xdg-desktop-portal-gtk$"
   match app-id=r#"^org\.pulseaudio\.pavucontrol$"#
   match app-id="^blueman-manager$"

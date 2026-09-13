@@ -211,7 +211,8 @@ wallpaper_scheme = "vibrant"
         "fastfetch",
         "fzf",
         "lazygit",
-        "micro"
+        "micro",
+        "papirus-icons"
     ]
 
 [wallpaper.default]

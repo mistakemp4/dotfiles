@@ -530,7 +530,7 @@ wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "alacritty", "btop", "gtk3", "gtk4", "kcolorscheme", "niri", "starship" ]
-    community_ids = [ "claude-code", "spicetify", "brave", "discord", "libreoffice", "neovim", "vscode", "prismlauncher", "bat", "yazi", "fastfetch", "fzf", "lazygit", "micro" ]
+    community_ids = [ "claude-code", "spicetify", "brave", "discord", "libreoffice", "neovim", "vscode", "prismlauncher", "bat", "yazi", "fastfetch", "fzf", "lazygit", "micro", "papirus-icons" ]
 
 [wallpaper]
 directory = "~/Pictures/WallPapers"
