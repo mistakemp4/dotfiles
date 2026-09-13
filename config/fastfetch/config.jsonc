@@ -3,12 +3,17 @@
   "logo": {
     "type": "file-raw",
     "source": "~/.config/fastfetch/yochan-seal-ascii.txt",
+    "padding": {
+      "top": 0,
+      "right": 2
+    },
     "color": {
       "1": "#ec5f68",
       "2": "#e99049"
     }
   },
   "display": {
+    "separator": "  ",
     "color": {
       "keys": "#ec5f68",
       "title": "#e99049"
@@ -20,5 +25,79 @@
         "red": "#cb1823"
       }
     }
-  }
+  },
+  "modules": [
+    "break",
+    "break",
+    "break",
+    "break",
+    {
+      "type": "os",
+      "key": "OS "
+    },
+    {
+      "type": "kernel",
+      "key": "├ 󰌽"
+    },
+    {
+      "type": "packages",
+      "key": "├ 󰏖"
+    },
+    {
+      "type": "shell",
+      "key": "└ "
+    },
+    "break",
+    {
+      "type": "wm",
+      "key": "WM 󰖯"
+    },
+    {
+      "type": "terminal",
+      "key": "├ 󰆍"
+    },
+    {
+      "type": "terminalfont",
+      "key": "├ 󰛖"
+    },
+    {
+      "type": "font",
+      "key": "├ ",
+      "format": "{font2}"
+    },
+    {
+      "type": "uptime",
+      "key": "└ 󱎫"
+    },
+    "break",
+    {
+      "type": "board",
+      "key": "PC 󰇅",
+      "format": "{name}"
+    },
+    {
+      "type": "cpu",
+      "key": "├ ",
+      "format": "{name}"
+    },
+    {
+      "type": "gpu",
+      "key": "├ 󰢮",
+      "format": "{name}"
+    },
+    {
+      "type": "memory",
+      "key": "├ 󰍛"
+    },
+    {
+      "type": "disk",
+      "key": "├ 󰋊",
+      "format": "{size-used} / {size-total} ({size-percentage})"
+    },
+    {
+      "type": "display",
+      "key": "└ 󰍹",
+      "format": "{width}x{height} @ {refresh-rate} Hz"
+    }
+  ]
 }

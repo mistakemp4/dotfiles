@@ -1,7 +1,7 @@
 [bar.default]
 background_opacity = 0.64999998547136784
 font_family = "FOT-Skip Std"
-center = [ "clock", "notifications", "privacy" ]
+center = [ "media", "clock", "notifications", "privacy" ]
 end = [ "tray", "network", "bluetooth", "volume", "battery" ]
 margin_edge = 0
 margin_ends = 0
@@ -563,9 +563,15 @@ width = 10
 hide_when_no_connected_device = true
 show_label = true
 
+[widget.workspaces]
+capsule = true
+show_icons = true
+style = "focus_hint"
+
 [widget.clock]
 enabled = true
-format = "{:%I:%M ~ %d}"
+format = "{:%I:%M %p • %A, %d %b %Y}"
+capsule = true
 tooltip_format = "{:%d %B %Y}"
 
 [widget.launcher]
@@ -574,6 +580,8 @@ tooltip_format = "{:%d %B %Y}"
     right = "exec alacritty -e ~/.config/niri/scripts/fastfetch.sh"
 
 [widget.media]
+artist_first = true
+capsule = true
 hide_when_no_media = true
 title_scroll = "always"
 
