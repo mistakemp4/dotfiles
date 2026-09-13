@@ -70,7 +70,6 @@
 | `Ctrl+Alt+E` | Power menu |
 | `Ctrl+Alt+S` | Noctalia settings |
 | `Ctrl+Alt+Q` | Lock screen |
-| `Ctrl+Alt+D` | Dim screen |
 | `Ctrl+Alt+C` | Enlarge cursor |
 
 ## Power menu (after `Ctrl+Alt+E`)

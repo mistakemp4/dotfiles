@@ -25,7 +25,6 @@ window-rule {
 }
 
 window-rule {
-  match app-id=r#"^org\.keepassxc\.KeePassXC$"#
   match app-id=r#"^com\.obsproject\.Studio$"#
 
   block-out-from "screen-capture"
@@ -42,39 +41,12 @@ window-rule {
 }
 
 window-rule {
-  match app-id=r#"^org\.kde\.kdeconnect\.(handler|daemon)$"#
-
-  open-floating true
-  default-floating-position x=20 y=20 relative-to="bottom-right"
-}
-
-window-rule {
-  match title="^Solitaire$"
-
-  open-maximized true
-}
-
-window-rule {
-  match app-id="neovide"
-  match app-id="st-256color"
-
-  background-effect {
-    blur true
-    xray true
-  }
-}
-
-window-rule {
   match app-id=r#"^brave"#
   match app-id=r#"^org\.gnome\.Nautilus$"#
-  match app-id=r#"^org\.gnome\.Calculator$"#
-  match app-id=r#"^org\.gnome\.Evince$"#
   match app-id="^xdg-desktop-portal-gtk$"
   match app-id=r#"^org\.pulseaudio\.pavucontrol$"#
   match app-id="^blueman-manager$"
-  match app-id=r#"^io\.freetubeapp\.FreeTube$"#
   match app-id=r#"^dev\.noctalia\.Noctalia$"#
-  match app-id=r#"^heroic$"#
   match app-id="^vesktop$"
   match app-id="^Bitwarden$"
   match app-id="^Spotify$"
@@ -98,14 +70,6 @@ window-rule {
       blur true
     }
   }
-}
-
-window-rule {
-  match app-id=r#"^io\.freetubeapp\.FreeTube$"#
-
-  open-on-workspace "2"
-  open-focused false
-  open-maximized true
 }
 
 window-rule {

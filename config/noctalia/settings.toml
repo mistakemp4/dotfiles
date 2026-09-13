@@ -183,7 +183,7 @@ enabled = true
 item_spacing = 8
 launcher_position = "end"
 magnification_scale = 1.1500000022351742
-pinned = [ "brave-origin", "io.freetubeapp.FreeTube", "org.wezfurlong.wezterm" ]
+pinned = [ "brave-browser", "Alacritty" ]
 radius = 32
 reserve_space = false
 show_dots = true
@@ -521,7 +521,7 @@ time_format = "{:%I:%M}"
 
 [theme]
 builtin = "Noctalia"
-custom_palette = "abstract-mc"
+custom_palette = "motherboard"
 mode = "dark"
 source = "wallpaper"
 wallpaper_scheme = "m3-content"
@@ -569,7 +569,7 @@ tooltip_format = "{:%d %B %Y}"
 [widget.launcher]
 
     [widget.launcher.actions]
-    right = "exec wezterm -e ~/.config/niri/scripts/fastfetch.sh"
+    right = "exec alacritty -e ~/.config/niri/scripts/fastfetch.sh"
 
 [widget.media]
 hide_when_no_media = true
