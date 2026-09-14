@@ -60,8 +60,9 @@ widget_order = [
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000003.settings]
-        background_color = "surface"
+        background_opacity = 0.92
         background = true
+        background_color = "surface"
         background_radius = 12.0
         display = "gauge"
         font_family = "Anton"
@@ -82,8 +83,9 @@ widget_order = [
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000004.settings]
-        background_color = "surface"
+        background_opacity = 0.92
         background = true
+        background_color = "surface"
         background_radius = 12.0
         display = "gauge"
         font_family = "Anton"
@@ -103,6 +105,7 @@ widget_order = [
     type = "sysmon"
 
         [desktop_widgets.widget.desktop-widget-0000000000000005.settings]
+        background_opacity = 0.92
         background_color = "surface"
         background_radius = 12.0
         display = "gauge"
@@ -141,14 +144,16 @@ widget_order = [
     type = "label"
 
         [desktop_widgets.widget.desktop-widget-0000000000000010.settings]
+        background_opacity = 0.92
+        background_color = "surface"
         background = true
         opacity = 1.0
         title = ""
 
     [desktop_widgets.widget.desktop-widget-0000000000000012]
     box_height = 426.0
-    box_width = 596.0
-    cx = 308.0
+    box_width = 681.0
+    cx = 350.5
     cy = 249.0
     output = "DP-1"
     placement_height = 1152.0
@@ -157,10 +162,11 @@ widget_order = [
     type = "seal/phantom_calendar:desktop"
 
         [desktop_widgets.widget.desktop-widget-0000000000000012.settings]
-        weekday_color = "wallpaper"
         background = false
+        black_opacity = "0.8"
         preview_banner = "none"
         preview_date = ""
+        weekday_color = "wallpaper"
 
 [location]
 auto_locate = false
@@ -244,13 +250,13 @@ wallpaper_scheme = "vibrant"
     ]
 
 [wallpaper.default]
-path = "/home/seal/Pictures/WallPapers/we-3479030273.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3368100581.jpg"
 
 [wallpaper.last]
-path = "/home/seal/Pictures/WallPapers/we-3479030273.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3368100581.jpg"
 
 [wallpaper.monitors.DP-1]
-path = "/home/seal/Pictures/WallPapers/we-3479030273.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3368100581.jpg"
 
 [weather]
 unit = "imperial"

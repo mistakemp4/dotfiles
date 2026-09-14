@@ -9,6 +9,7 @@ config/alacritty/themes/
 config/btop/themes/
 config/fastfetch/themes/
 config/niri/glow.kdl
+config/niri/cursor.kdl
 
 # machine state fish rewrites on its own
 config/fish/fish_variables

@@ -1,0 +1,4 @@
+# rendered by noctalia from templates/alacritty-selection.toml: text selection in the accent color
+[colors.selection]
+text = '{{colors.on_primary.default.hex}}'
+background = '{{colors.primary.default.hex}}'

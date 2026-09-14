@@ -1,0 +1,2 @@
+{{colors.primary.default.hex}}
+{{colors.on_surface.default.hex}}

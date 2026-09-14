@@ -542,6 +542,17 @@ output_path = "$XDG_CONFIG_HOME/niri/glow.kdl"
     input_path = "$XDG_CONFIG_HOME/noctalia/templates/phantom-calendar-color.txt"
     output_path = "$XDG_CACHE_HOME/noctalia/phantom-calendar-color.txt"
 
+    # brighter alacritty selection; imported after the builtin alacritty theme
+    [theme.templates.user.alacritty-selection]
+    input_path = "$XDG_CONFIG_HOME/noctalia/templates/alacritty-selection.toml"
+    output_path = "$XDG_CONFIG_HOME/alacritty/themes/noctalia-selection.toml"
+
+    # cursor colors; the hook rebuilds the recolored cursor theme (local-bin/noctalia-cursors.py)
+    [theme.templates.user.cursor-colors]
+    input_path = "$XDG_CONFIG_HOME/noctalia/templates/cursor-colors.txt"
+    output_path = "$XDG_CACHE_HOME/noctalia/cursor-colors.txt"
+    post_hook = "python3 \"$HOME/.local/bin/noctalia-cursors.py\""
+
 [wallpaper]
 directory = "~/Pictures/WallPapers"
 enabled = true

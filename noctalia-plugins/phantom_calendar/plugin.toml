@@ -34,6 +34,18 @@ entry = "desktop.luau"
   ]
 
   [[desktop_widget.setting]]
+  key = "black_opacity"
+  type = "select"
+  label_key = "settings.black_opacity.label"
+  default = "0.6"
+  options = [
+    { value = "1", label_key = "settings.black_opacity.options.solid" },
+    { value = "0.8", label_key = "settings.black_opacity.options.80" },
+    { value = "0.6", label_key = "settings.black_opacity.options.60" },
+    { value = "0.4", label_key = "settings.black_opacity.options.40" },
+  ]
+
+  [[desktop_widget.setting]]
   key = "address"
   type = "string"
   label_key = "settings.address.label"

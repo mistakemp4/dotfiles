@@ -4,6 +4,8 @@ prefer-no-csd
 
 environment {
     QT_QPA_PLATFORMTHEME "gtk3"
+    // stable name for apps that load cursors themselves; niri's own cursor comes from cursor.kdl
+    XCURSOR_THEME "Noctalia-Cursors"
 }
 
 hotkey-overlay {

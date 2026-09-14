@@ -18,7 +18,7 @@ layout {
     shadow {
         on
         softness 8
-        spread 5
+        spread 4
         offset x=0 y=0
         color          "#ec5f68ff"
         inactive-color "#ec5f6826"

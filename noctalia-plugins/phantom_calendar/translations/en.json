@@ -5,10 +5,19 @@
       "description": "Folder with the dumped P5_FIELD_DAY sprites, created by tools/extract-game-assets.sh from your own Persona 5 Royal."
     },
     "weekday_color": {
-      "label": "Weekday Color",
+      "label": "Weekday + Weather Banner Color",
       "options": {
         "game": "Game red",
         "wallpaper": "Wallpaper color"
+      }
+    },
+    "black_opacity": {
+      "label": "Black Opacity",
+      "options": {
+        "solid": "Solid (like the game)",
+        "80": "80%",
+        "60": "60%",
+        "40": "40%"
       }
     },
     "address": {

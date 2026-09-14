@@ -7,12 +7,12 @@
 
 local REFRESH_SECONDS = 15 * 60
 local SETUP_RETRY_SECONDS = 60
-local SVG_W, SVG_H = 560, 400
+local SVG_W, SVG_H = 640, 400
 -- the date cluster's layout is in pixels of the 1920x1080 in-game screenshot it was traced from;
 -- this offset leaves room around it for holiday decorations
 local ORIGIN_X, ORIGIN_Y = 50, 45
-local SHOW_W, SHOW_H = 596, 426
-local RENDER_W = 1344
+local SHOW_W, SHOW_H = 681, 426
+local RENDER_W = 1536
 local WEATHER_FRAMES = 3
 local DEFAULT_ASSETS = "~/.local/share/p5-game-assets/dump/P5_FIELD_DAY"
 local COLOR_FILE = "~/.cache/noctalia/phantom-calendar-color.txt"
@@ -38,7 +38,7 @@ local LAYOUT = {
   weather = { 365, 62, 0.42, 10 },
   weekday = { 279, 155, 0.47, -26 },
   timeOfDay = { 102, 259, 0.43, -24 },
-  banner = { 352, 250, 0.38, -6 },
+  banner = { 445, 188, 0.46, -5 },
 }
 
 -- holiday art: numeral/month replacements and { id, cx, cy, scale, rotation } decorations (arranged by eye;
@@ -241,6 +241,17 @@ local function tintFilter(id, color)
   )
 end
 
+-- banner art is only red, white and black: swap the red for another color, keeping its shading
+local function retintFilter(id, color)
+  local r = tonumber(string.sub(color, 2, 3), 16) / 255 * 1.06
+  local g = tonumber(string.sub(color, 4, 5), 16) / 255 * 1.06
+  local b = tonumber(string.sub(color, 6, 7), 16) / 255 * 1.06
+  return string.format(
+    '<filter id="%s" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="%g 0 0 0 0 %g 0 0 0 0 %g 0 0 0 0 1.5 -1.5 0 0 0"/><feComposite in2="SourceAlpha" operator="in"/><feComposite in2="SourceGraphic" operator="over"/></filter>',
+    id, r, g, b
+  )
+end
+
 -- one sprite centered on { cx, cy, scale, rotation }; filter = tint id, or nil to draw it as-is
 local function sprite(id, layout, filter)
   local size = sizes[id]
@@ -286,27 +297,45 @@ end
 local function buildSvg(s, frame)
   local out = {
     string.format('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">', SVG_W, SVG_H, SVG_W, SVG_H),
-    "<defs>" .. tintFilter("black", "#000") .. tintFilter("dark", DARK) .. tintFilter("accent", s.accent) .. "</defs>",
+    "<defs>" .. tintFilter("black", "#000") .. tintFilter("dark", DARK) .. tintFilter("accent", s.accent)
+      .. retintFilter("banner", s.accent) .. "</defs>",
     string.format('<g transform="translate(%d %d)">', ORIGIN_X, ORIGIN_Y),
   }
   -- every element's white base first, then every black base, then the tops, so the white bases merge
   -- into one sticker the way they do in game; holiday decorations go under the weekday letters
   local list, extras = elements(s, frame)
+  local passes = { {}, {}, {}, {} }
   for pass = 1, 4 do
     for _, element in list do
       local layer = element.layers[pass]
       if layer then
-        table.insert(out, sprite(layer[1], element.layout, layer[2]))
-      end
-    end
-    if pass == 3 then
-      for _, extra in extras do
-        table.insert(out, sprite(extra[1], { extra[2], extra[3], extra[4], extra[5] }, nil))
+        table.insert(passes[pass], sprite(layer[1], element.layout, layer[2]))
       end
     end
   end
+  local whites, blacks = table.concat(passes[1], "\n"), table.concat(passes[2], "\n")
+
+  if s.blackOpacity < 1 then
+    -- see-through black: cut the black shapes out of the white sticker so the wallpaper shows through
+    -- instead of white, and fade the black as one group so overlapping shapes don't stack darker
+    table.insert(out, string.format(
+      '<mask id="knockout" maskUnits="userSpaceOnUse" x="%d" y="%d" width="%d" height="%d"><rect x="%d" y="%d" width="%d" height="%d" fill="#fff"/>%s</mask>',
+      -ORIGIN_X, -ORIGIN_Y, SVG_W, SVG_H, -ORIGIN_X, -ORIGIN_Y, SVG_W, SVG_H, blacks
+    ))
+    table.insert(out, `<g mask="url(#knockout)">{whites}</g>`)
+    table.insert(out, `<g opacity="{s.blackOpacity}">{blacks}</g>`)
+  else
+    table.insert(out, whites)
+    table.insert(out, blacks)
+  end
+  table.insert(out, table.concat(passes[3], "\n"))
+  for _, extra in extras do
+    table.insert(out, sprite(extra[1], { extra[2], extra[3], extra[4], extra[5] }, nil))
+  end
+  table.insert(out, table.concat(passes[4], "\n"))
   if s.banner then
-    table.insert(out, sprite(BANNERS[s.banner], LAYOUT.banner, nil))
+    -- the game's own red stays untouched
+    table.insert(out, sprite(BANNERS[s.banner], LAYOUT.banner, if s.accent ~= GAME_RED then "banner" else nil))
   end
   table.insert(out, "</g></svg>")
   return table.concat(out, "\n")
@@ -339,6 +368,7 @@ local function currentState()
     timeOfDay = tod,
     weather = weather,
     accent = weekdayColor(),
+    blackOpacity = math.clamp(tonumber(noctalia.getConfig("black_opacity")) or 1, 0, 1),
     holiday = holidayFor(month, day, tod),
     banner = banner,
   }
@@ -346,7 +376,7 @@ end
 
 local function contentKey(s)
   return table.concat({
-    s.month, s.day, s.weekday, s.timeOfDay, s.accent, s.holiday or "", s.banner or "",
+    s.month, s.day, s.weekday, s.timeOfDay, s.accent, s.blackOpacity, s.holiday or "", s.banner or "",
     if s.weather then s.weather.condition else "",
   }, "|")
 end
