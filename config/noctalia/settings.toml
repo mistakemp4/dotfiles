@@ -2,7 +2,7 @@
 background_opacity = 0.64999998547136784
 font_family = "FOT-Skip Std"
 center = [ "media", "clock", "notifications", "privacy" ]
-end = [ "tray", "network", "bluetooth", "volume" ]
+end = [ "dotnetrob/cat:cat", "tray", "network", "bluetooth", "volume" ]
 margin_edge = 0
 margin_ends = 0
 radius = 0
@@ -35,6 +35,10 @@ type = "clipboard"
 
 [[control_center.shortcuts]]
 type = "caffeine"
+
+# synced lyrics panel (the bar uses the built-in media widget, its scroll is smoother)
+[[control_center.shortcuts]]
+type = "tranzem/media-lyrics:toggle"
 
 [desktop_widgets]
 schema_version = 2
@@ -529,8 +533,8 @@ source = "wallpaper"
 wallpaper_scheme = "m3-content"
 
     [theme.templates]
-    builtin_ids = [ "alacritty", "btop", "gtk3", "gtk4", "kcolorscheme", "niri", "starship" ]
-    community_ids = [ "claude-code", "spicetify", "brave", "discord", "libreoffice", "vscode", "prismlauncher", "bat", "yazi", "fastfetch", "fzf", "lazygit", "micro", "papirus-icons" ]
+    builtin_ids = [ "alacritty", "btop", "gtk3", "gtk4", "kcolorscheme", "niri", "starship", "cava" ]
+    community_ids = [ "claude-code", "spicetify", "brave", "discord", "libreoffice", "vscode", "prismlauncher", "bat", "yazi", "fastfetch", "fzf", "lazygit", "micro", "papirus-icons", "zathura" ]
 
 # window glow color for niri, see templates/niri-glow.kdl
     [theme.templates.user.niri-glow]
@@ -591,7 +595,7 @@ style = "focus_hint"
 
 [widget.clock]
 enabled = true
-format = "{:%I:%M %p • %A, %d %b %Y}"
+format = "{:%I:%M %p}"
 capsule = true
 tooltip_format = "{:%d %B %Y}"
 
@@ -603,6 +607,12 @@ tooltip_format = "{:%d %B %Y}"
 [widget.media]
 artist_first = true
 capsule = true
+hide_when_no_media = true
+title_scroll = "always"
+
+# media-lyrics bar chip (replaces the built-in media widget in the bar)
+[widget."tranzem/media-lyrics:now-playing"]
+artist_first = true
 hide_when_no_media = true
 title_scroll = "always"
 

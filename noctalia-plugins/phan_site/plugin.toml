@@ -1,0 +1,32 @@
+# Persona 5 Phan-Site style desktop widgets: CPU, temperature and RAM as poll meters, and a now-playing
+# speech bubble for the active MPRIS player (click to play/pause). Needs rsvg-convert (librsvg), ImageMagick
+# and busctl. The poll digits come from your own Persona 5 Royal (NET.PAK net_PS4.spd, never shipped here);
+# without them the numbers are drawn in Anton.
+id = "seal/phan_site"
+name = "Phan-Site"
+version = "1.0.0"
+plugin_api = 26
+author = "seal"
+license = "MIT"
+dependencies = []
+tags = ["system", "media", "desktop"]
+icon = "chart-bar"
+description = "Persona 5 Phan-Site poll meters for CPU, temperature and RAM, plus a now-playing speech bubble."
+
+[[desktop_widget]]
+id = "gauges"
+entry = "gauges.luau"
+
+  [[desktop_widget.setting]]
+  key = "color"
+  type = "select"
+  label_key = "settings.color.label"
+  default = "game"
+  options = [
+    { value = "game", label_key = "settings.color.options.game" },
+    { value = "wallpaper", label_key = "settings.color.options.wallpaper" },
+  ]
+
+[[desktop_widget]]
+id = "player"
+entry = "player.luau"

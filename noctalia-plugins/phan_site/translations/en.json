@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "color": {
+      "label": "Poll Color",
+      "options": {
+        "game": "Game red",
+        "wallpaper": "Wallpaper color"
+      }
+    }
+  }
+}

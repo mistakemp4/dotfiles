@@ -17,12 +17,9 @@ show_events_card = false
 schema_version = 2
 widget_order = [
     "desktop-widget-0000000000000012",
-    "desktop-widget-0000000000000010",
-    "desktop-widget-0000000000000009",
     "desktop-widget-0000000000000002",
-    "desktop-widget-0000000000000003",
-    "desktop-widget-0000000000000004",
-    "desktop-widget-0000000000000005"
+    "desktop-widget-0000000000000013",
+    "desktop-widget-0000000000000014"
 ]
 
     [desktop_widgets.grid]
@@ -32,9 +29,9 @@ widget_order = [
 
     [desktop_widgets.widget.desktop-widget-0000000000000002]
     box_height = 110.0
-    box_width = 335.0
-    cx = 1826.2
-    cy = 265.0
+    box_width = 400.0
+    cx = 1818.0
+    cy = 248.0
     output = "DP-1"
     placement_height = 1152.0
     placement_width = 2048.0
@@ -47,108 +44,6 @@ widget_order = [
         centered = true
         mirrored = true
         show_when_idle = true
-
-    [desktop_widgets.widget.desktop-widget-0000000000000003]
-    box_height = 94.0
-    box_width = 114.33
-    cx = 897.66999999999996
-    cy = 1080.0
-    output = "DP-1"
-    placement_height = 1152.0
-    placement_width = 2048.0
-    rotation = 0.0
-    type = "sysmon"
-
-        [desktop_widgets.widget.desktop-widget-0000000000000003.settings]
-        background_opacity = 0.92
-        background = true
-        background_color = "surface"
-        background_radius = 12.0
-        display = "gauge"
-        font_family = "Anton"
-        gauge_layout = "vertical"
-        shadow = true
-        stat = "cpu_usage"
-        stat2 = "cpu_temp"
-
-    [desktop_widgets.widget.desktop-widget-0000000000000004]
-    box_height = 94.0
-    box_width = 114.33
-    cx = 1150.3299999999999
-    cy = 1080.0
-    output = "DP-1"
-    placement_height = 1152.0
-    placement_width = 2048.0
-    rotation = 0.0
-    type = "sysmon"
-
-        [desktop_widgets.widget.desktop-widget-0000000000000004.settings]
-        background_opacity = 0.92
-        background = true
-        background_color = "surface"
-        background_radius = 12.0
-        display = "gauge"
-        font_family = "Anton"
-        gauge_layout = "vertical"
-        stat = "ram_pct"
-        stat2 = ""
-
-    [desktop_widgets.widget.desktop-widget-0000000000000005]
-    box_height = 94.0
-    box_width = 114.33
-    cx = 1024.0
-    cy = 1080.0
-    output = "DP-1"
-    placement_height = 1152.0
-    placement_width = 2048.0
-    rotation = 0.0
-    type = "sysmon"
-
-        [desktop_widgets.widget.desktop-widget-0000000000000005.settings]
-        background_opacity = 0.92
-        background_color = "surface"
-        background_radius = 12.0
-        display = "gauge"
-        font_family = "Anton"
-        gauge_layout = "vertical"
-        stat = "cpu_temp"
-        stat2 = "cpu_temp"
-
-    [desktop_widgets.widget.desktop-widget-0000000000000009]
-    box_height = 110.0
-    box_width = 335.0
-    cx = 1826.2
-    cy = 155.0
-    output = "DP-1"
-    placement_height = 1152.0
-    placement_width = 2048.0
-    rotation = 0.0
-    type = "media_player"
-
-        [desktop_widgets.widget.desktop-widget-0000000000000009.settings]
-        background = false
-        color = "on_surface"
-        hide_when_no_media = false
-        layout = "horizontal"
-        shadow = true
-
-    [desktop_widgets.widget.desktop-widget-0000000000000010]
-    box_height = 240.0
-    box_width = 367.0
-    cx = 1826.2
-    cy = 210.0
-    output = "DP-1"
-    placement_height = 1152.0
-    placement_width = 2048.0
-    rotation = 0.0
-    type = "label"
-
-        [desktop_widgets.widget.desktop-widget-0000000000000010.settings]
-        background_opacity = 0.92
-        background_color = "surface"
-        background = true
-        opacity = 1.0
-        title = ""
 
     [desktop_widgets.widget.desktop-widget-0000000000000012]
     box_height = 426.0
@@ -167,6 +62,35 @@ widget_order = [
         preview_banner = "none"
         preview_date = ""
         weekday_color = "wallpaper"
+
+    [desktop_widgets.widget.desktop-widget-0000000000000013]
+    box_height = 150.0
+    box_width = 420.0
+    cx = 1818.0
+    cy = 118.0
+    output = "DP-1"
+    placement_height = 1152.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "seal/phan_site:player"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000013.settings]
+        background = false
+
+    [desktop_widgets.widget.desktop-widget-0000000000000014]
+    box_height = 448.0
+    box_width = 480.0
+    cx = 1800.0
+    cy = 922.0
+    output = "DP-1"
+    placement_height = 1152.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "seal/phan_site:gauges"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000014.settings]
+        background = false
+        color = "wallpaper"
 
 [location]
 auto_locate = false
@@ -217,7 +141,10 @@ enabled = [
     "noctalia/timer",
     "noctalia/translator",
     "seal/centered_weather",
-    "seal/phantom_calendar"
+    "seal/phantom_calendar",
+    "dotnetrob/cat",
+    "tranzem/media-lyrics",
+    "seal/phan_site"
 ]
 
 [shell]
@@ -246,7 +173,8 @@ wallpaper_scheme = "vibrant"
         "fzf",
         "lazygit",
         "micro",
-        "papirus-icons"
+        "papirus-icons",
+        "zathura"
     ]
 
 [wallpaper.default]
