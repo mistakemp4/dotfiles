@@ -15,6 +15,7 @@
       "label": "Black Opacity",
       "options": {
         "solid": "Solid (like the game)",
+        "88": "88% (like the terminal)",
         "80": "80%",
         "60": "60%",
         "40": "40%"

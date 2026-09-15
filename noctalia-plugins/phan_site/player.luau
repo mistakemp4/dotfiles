@@ -6,17 +6,19 @@
 -- with ImageMagick, since desktop widget images can't be clipped or offset.
 
 local W, H = 420, 150
-local SPLIT_X, SPLIT_Y = 118, 62 -- title band: x >= SPLIT_X, y < SPLIT_Y
+local SPLIT_X, SPLIT_Y = 120, 64 -- title band: x >= SPLIT_X, y < SPLIT_Y; multiples of 4 so tile seams land on whole pixels at 1.25x
 local SCALE = 2 -- render pixels per logical pixel
 local SCAN_SECONDS = 5
 local COLOR_FILE = "~/.cache/noctalia/phantom-calendar-color.txt"
 local FALLBACK_ACCENT = "#e6191e"
 local PAPER, JET, INK_SOFT, TRACK = "#fbf7f2", "#0d0908", "#5b4a44", "#2b1a15"
+-- see-through black matches the terminal's opacity (alacritty opacity 0.88)
+local BLACK_ALPHA = 0.88
 local MPRIS = "org.mpris.MediaPlayer2."
 -- rough text budgets in half-width units (CJK counts double)
 local TITLE_UNITS, ARTIST_UNITS = 200, 44
 -- marquee, in render pixels
-local MARQUEE_PAD, MARQUEE_GAP, MARQUEE_STEP, MARQUEE_AVAIL = 8, 96, 4, 562
+local MARQUEE_PAD, MARQUEE_GAP, MARQUEE_STEP, MARQUEE_AVAIL = 8, 96, 4, 558
 local MARQUEE_FRAME_MS, MARQUEE_HOLD_MS = 50, 1500
 
 -- art tile, title band (one frame, or marquee frames) for a track; prints the frame count
@@ -117,7 +119,7 @@ end
 local function sceneBody(t, color)
   local out = {
     -- black offset shadow keeps the white bubble readable over bright wallpapers
-    string.format('<polygon points="10,26 %d,10 %d,116 36,108" fill="%s" fill-opacity="0.85"/>', W, W - 12, JET),
+    string.format('<polygon points="10,26 %d,10 %d,116 36,108" fill="%s" fill-opacity="%g"/>', W, W - 12, JET, BLACK_ALPHA),
     string.format('<polygon points="4,20 %d,4 %d,110 30,102" fill="%s"/>', W - 6, W - 18, PAPER),
     string.format('<polygon points="44,100 30,117 78,104" fill="%s"/>', PAPER),
     '<g transform="translate(62 58) rotate(-5)">',
@@ -143,7 +145,7 @@ local function sceneBody(t, color)
     local left, right, top, bottomY, slant = 34, 296, 124, 134, 6
     local fillRight = left + (right - left) * pct
     -- dark strip so the bar and time stay readable over bright wallpapers
-    table.insert(out, string.format('<polygon points="18,116 %d,113 %d,149 8,150" fill="%s" fill-opacity="0.82"/>', W, W - 10, JET))
+    table.insert(out, string.format('<polygon points="18,116 %d,113 %d,149 8,150" fill="%s" fill-opacity="%g"/>', W, W - 10, JET, BLACK_ALPHA))
     table.insert(out, string.format('<polygon points="%g,%d %g,%d %g,%d %g,%d" fill="%s"/>', left + slant, top, right + slant, top, right, bottomY, left, bottomY, TRACK))
     if pct > 0 then
       table.insert(out, string.format('<polygon points="%g,%d %g,%d %g,%d %g,%d" fill="%s"/>', left + slant, top, fillRight + slant, top, fillRight, bottomY, left, bottomY, color))

@@ -3,7 +3,7 @@ Description=Auto-correct Spotify volume resets to 100%
 After=pipewire.service wireplumber.service
 
 [Service]
-ExecStart=%h/.local/bin/spotify-volume-watchdog.sh
+ExecStart=%h/.local/bin/spotify-volume-watchdog.py
 Restart=always
 RestartSec=2
 

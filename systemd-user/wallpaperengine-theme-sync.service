@@ -1,6 +1,9 @@
 [Unit]
 Description=Sync Noctalia's wallpaper-adaptive theme when Wallpaper Engine's wallpaper changes
+# start with the session, not default.target: `noctalia msg` finds its socket
+# via WAYLAND_DISPLAY, which niri only imports into systemd at session start
 After=graphical-session.target
+PartOf=graphical-session.target
 
 [Service]
 ExecStart=%h/.local/bin/wallpaperengine-theme-sync.sh
@@ -8,4 +11,4 @@ Restart=always
 RestartSec=5
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical-session.target

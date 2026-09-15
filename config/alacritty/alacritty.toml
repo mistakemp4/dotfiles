@@ -1,7 +1,7 @@
 [general]
 working_directory = "None"
 live_config_reload = true
-import = ["~/.config/alacritty/themes/noctalia.toml"]
+import = ["~/.config/alacritty/themes/noctalia.toml", "~/.config/alacritty/themes/noctalia-selection.toml"]
 
 [env]
 TERM = "xterm-256color"

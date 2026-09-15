@@ -616,6 +616,11 @@ artist_first = true
 hide_when_no_media = true
 title_scroll = "always"
 
+# cat's "theme" mode is hardcoded to secondary (blue here); a role name as custom color keeps it on the wallpaper accent
+[widget."dotnetrob/cat:cat"]
+cat_color_mode = "custom"
+cat_color = "primary"
+
 [widget.notifications]
 hide_when_no_unread = true
 

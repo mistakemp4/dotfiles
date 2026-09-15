@@ -5,12 +5,14 @@
 -- where the game draws them. Our own questions use the game's dialogue font in the style of its question banner.
 -- Composed as SVG and rendered with rsvg-convert (desktop widget UI has no rotation or clipping).
 
-local W, ROW_GAP = 480, 10
+local W, ROW_GAP = 480, -16
 local RENDER_SCALE = 2
 local SPRITES_DIR = "~/.local/share/p5-game-assets/agent-a/spd/good"
 local COLOR_FILE = "~/.cache/noctalia/phantom-calendar-color.txt"
 local GAME_RED = "#e93423"
 local PAPER, JET = "#fbf7f2", "#000000"
+-- black parts get the terminal's opacity (alacritty opacity 0.88) so the wallpaper shows through
+local BLACK_ALPHA = 0.88
 -- the game's dialogue font rebuilt as ~/.local/share/fonts/p5-game/P5Dialogue.otf; FOT-Skip Std stands in without it
 local QUESTION_FONT = "P5 Dialogue, FOT-Skip Std"
 
@@ -198,12 +200,19 @@ local function buildSvg(values, color)
     string.format('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d" color="%s">', W, H, W, H, color),
     -- the digit and fill sprites are white masks, tinted like the game does
     string.format('<defs><filter id="tint" color-interpolation-filters="sRGB"><feFlood flood-color="%s"/><feComposite in2="SourceAlpha" operator="in"/></filter>', color),
-    '<filter id="black" color-interpolation-filters="sRGB"><feFlood flood-color="#000000"/><feComposite in2="SourceAlpha" operator="in"/></filter></defs>',
+    '<filter id="black" color-interpolation-filters="sRGB"><feFlood flood-color="#000000"/><feComposite in2="SourceAlpha" operator="in"/></filter>',
+    -- glass: scale alpha by brightness on the flattened poll, so black -> BLACK_ALPHA and white/accent stay opaque
+    -- (flattening first keeps overlapping black pieces from stacking darker)
+    string.format('<filter id="glass" filterUnits="userSpaceOnUse" x="0" y="0" width="%d" height="%d" color-interpolation-filters="sRGB">', W, H),
+    '<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8 8 8 0 0"/>',
+    string.format('<feComponentTransfer result="alpha"><feFuncA type="linear" slope="%g" intercept="%g"/></feComponentTransfer>', 1 - BLACK_ALPHA, BLACK_ALPHA),
+    '<feComposite in="SourceGraphic" in2="alpha" operator="in"/></filter></defs>',
+    '<g filter="url(#glass)">',
   }
   for i, poll in POLLS do
     table.insert(out, meter(i, poll, values[poll.key], color))
   end
-  table.insert(out, "</svg>")
+  table.insert(out, "</g></svg>")
   return table.concat(out, "\n")
 end
 

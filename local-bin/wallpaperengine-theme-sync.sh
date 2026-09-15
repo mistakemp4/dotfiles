@@ -25,9 +25,18 @@ theme_bitwarden() {
     python3 "$HOME/.local/bin/theme_bitwarden.py" >/dev/null 2>&1
 }
 
+# spotify + brave only load their theme at startup: restart whichever is running
+# once its template hook has run. backgrounded so polling isn't blocked
+restart_themed_apps() {
+    python3 "$HOME/.local/bin/restart-themed-apps.py" "$1" &
+}
+
 apply_fallback() {
+    local since
+    since=$(date +%s)
     noctalia msg color-scheme-set custom "$FALLBACK_PALETTE" >/dev/null 2>&1
     theme_bitwarden --theme-json "$HOME/.config/noctalia/palettes/$FALLBACK_PALETTE.json"
+    restart_themed_apps "$since"
     echo "fell back to $FALLBACK_PALETTE palette"
 }
 
@@ -57,9 +66,13 @@ sync_theme_for_id() {
     fi
 
     if [ -s "$out_image" ]; then
-        noctalia msg wallpaper-set "$out_image" >/dev/null 2>&1
-        noctalia msg color-scheme-set wallpaper vibrant >/dev/null 2>&1
+        # return 2 = noctalia unreachable: retry later, don't fall back
+        local since
+        since=$(date +%s)
+        noctalia msg wallpaper-set "$out_image" >/dev/null 2>&1 || return 2
+        noctalia msg color-scheme-set wallpaper vibrant >/dev/null 2>&1 || return 2
         theme_bitwarden "$out_image" --scheme vibrant
+        restart_themed_apps "$since"
         echo "synced theme from wallpaper $id -> $out_image"
         return 0
     else
@@ -71,14 +84,20 @@ sync_theme_for_id() {
 last_id=""
 [ -f "$STATE_FILE" ] && last_id=$(cat "$STATE_FILE")
 fallback_id=""
+ipc_down_id=""
 
 while true; do
     id=$(current_bg_id)
     if [ -n "$id" ] && [ "$id" != "$last_id" ]; then
-        if sync_theme_for_id "$id"; then
+        sync_theme_for_id "$id"
+        rc=$?
+        if [ "$rc" -eq 0 ]; then
             last_id="$id"
             fallback_id=""
             echo "$last_id" > "$STATE_FILE"
+        elif [ "$rc" -eq 2 ]; then
+            [ "$id" = "$ipc_down_id" ] || echo "noctalia IPC unreachable (WAYLAND_DISPLAY='${WAYLAND_DISPLAY:-}'), retrying"
+            ipc_down_id="$id"
         elif [ "$id" != "$fallback_id" ]; then
             # keep retrying the sync, but only switch palettes once per failing wallpaper.
             # forget last_id so switching back to a working wallpaper re-syncs it
