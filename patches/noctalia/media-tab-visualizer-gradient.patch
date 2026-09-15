@@ -1,0 +1,13 @@
+diff --git a/src/shell/control_center/tabs/media_tab.cpp b/src/shell/control_center/tabs/media_tab.cpp
+index 7709a78..a4ce0c0 100644
+--- a/src/shell/control_center/tabs/media_tab.cpp
++++ b/src/shell/control_center/tabs/media_tab.cpp
+@@ -459,7 +459,7 @@ std::unique_ptr<Flex> MediaTab::create() {
+   });
+ 
+   auto visualizerSpectrum = std::make_unique<AudioVisualizer>();
+-  visualizerSpectrum->setGradient(colorForRole(ColorRole::Secondary), colorForRole(ColorRole::Tertiary));
++  visualizerSpectrum->setGradient(colorForRole(ColorRole::Primary), colorForRole(ColorRole::Secondary));
+   visualizerSpectrum->setOrientation(AudioSpectrumOrientation::Vertical);
+   visualizerSpectrum->setMirrored(true);
+   visualizerSpectrum->setCentered(true);

@@ -6,7 +6,10 @@
 -- with ImageMagick, since desktop widget images can't be clipped or offset.
 
 local W, H = 420, 150
-local SPLIT_X, SPLIT_Y = 120, 64 -- title band: x >= SPLIT_X, y < SPLIT_Y; multiples of 4 so tile seams land on whole pixels at 1.25x
+local SPLIT_X, SPLIT_Y = 118, 62 -- title band: x >= SPLIT_X, y < SPLIT_Y
+-- noctalia antialiases every image edge (50% coverage on the edge line), so butted tiles leave a
+-- see-through seam: earlier tiles render this much past the seam and later tiles overlap them
+local OVERLAP = 3
 local SCALE = 2 -- render pixels per logical pixel
 local SCAN_SECONDS = 5
 local COLOR_FILE = "~/.cache/noctalia/phantom-calendar-color.txt"
@@ -18,7 +21,7 @@ local MPRIS = "org.mpris.MediaPlayer2."
 -- rough text budgets in half-width units (CJK counts double)
 local TITLE_UNITS, ARTIST_UNITS = 200, 44
 -- marquee, in render pixels
-local MARQUEE_PAD, MARQUEE_GAP, MARQUEE_STEP, MARQUEE_AVAIL = 8, 96, 4, 558
+local MARQUEE_PAD, MARQUEE_GAP, MARQUEE_STEP, MARQUEE_AVAIL = 8, 96, 4, 562
 local MARQUEE_FRAME_MS, MARQUEE_HOLD_MS = 50, 1500
 
 -- art tile, title band (one frame, or marquee frames) for a track; prints the frame count
@@ -164,7 +167,7 @@ end
 local function titleDoc(title, color)
   return string.format(
     '<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="%d" viewBox="0 0 2000 %d"><text x="10" y="48" font-family="FOT-Skip Std" font-size="20" fill="%s">%s</text></svg>',
-    SPLIT_Y, SPLIT_Y, color, xml(clip(title, TITLE_UNITS))
+    SPLIT_Y + OVERLAP, SPLIT_Y + OVERLAP, color, xml(clip(title, TITLE_UNITS))
   )
 end
 
@@ -178,10 +181,11 @@ local function show()
   if not head.art or not bottom.path then
     return
   end
-  desktopWidget.render(ui.column({ gap = 0, onClick = togglePlayback }, {
-    ui.row({ gap = 0 }, {
-      ui.image({ path = head.art, width = SPLIT_X, height = SPLIT_Y, fit = "stretch" }),
-      ui.image({ path = framePath(frameIndex), width = W - SPLIT_X, height = SPLIT_Y, fit = "stretch" }),
+  -- negative gaps: later tiles are drawn over the earlier tiles' extra strip
+  desktopWidget.render(ui.column({ gap = -OVERLAP, onClick = togglePlayback }, {
+    ui.row({ gap = -OVERLAP }, {
+      ui.image({ path = head.art, width = SPLIT_X + OVERLAP, height = SPLIT_Y + OVERLAP, fit = "stretch" }),
+      ui.image({ path = framePath(frameIndex), width = W - SPLIT_X, height = SPLIT_Y + OVERLAP, fit = "stretch" }),
     }),
     ui.image({ path = bottom.path, width = W, height = H - SPLIT_Y, fit = "stretch" }),
   }))
@@ -216,16 +220,16 @@ local function renderHead(color)
   local gen = tostring(noctalia.nowMs())
   local artOut = `{dataDir}/head-{gen}.png`
   local body = sceneBody(track, color)
-  noctalia.writeFile(`{dataDir}/art.svg`, svgDoc(body, 0, 0, SPLIT_X, SPLIT_Y))
-  noctalia.writeFile(`{dataDir}/band.svg`, svgDoc(body, SPLIT_X, 0, W - SPLIT_X, SPLIT_Y))
+  noctalia.writeFile(`{dataDir}/art.svg`, svgDoc(body, 0, 0, SPLIT_X + OVERLAP, SPLIT_Y + OVERLAP))
+  noctalia.writeFile(`{dataDir}/band.svg`, svgDoc(body, SPLIT_X, 0, W - SPLIT_X, SPLIT_Y + OVERLAP))
   noctalia.writeFile(`{dataDir}/title.svg`, titleDoc(title, if track then JET else INK_SOFT))
   local script = fill(HEAD_SCRIPT, {
     FONTS = sh(fontsConf),
     DIR = sh(dataDir),
-    ART_W = SPLIT_X * SCALE,
+    ART_W = (SPLIT_X + OVERLAP) * SCALE,
     ART_OUT = sh(artOut),
     BAND_W = (W - SPLIT_X) * SCALE,
-    BAND_H = SPLIT_Y * SCALE,
+    BAND_H = (SPLIT_Y + OVERLAP) * SCALE,
     AVAIL = MARQUEE_AVAIL,
     PAD = MARQUEE_PAD,
     GAP = MARQUEE_GAP,

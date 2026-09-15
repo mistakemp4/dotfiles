@@ -1,0 +1,9 @@
+[Unit]
+Description=Rebuild the patched Noctalia when pacman updates /usr/bin/noctalia
+
+[Path]
+PathChanged=/usr/bin/noctalia
+Unit=noctalia-patched-rebuild.service
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=Rebuild Noctalia with local patches for the installed package version
+# also runs at login, so an update made while logged out still gets rebuilt
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/rebuild-noctalia-patched.sh
+# an LTO build takes minutes
+TimeoutStartSec=infinity
+Nice=10
+
+[Install]
+WantedBy=graphical-session.target

@@ -44,6 +44,8 @@ widget_order = [
         centered = true
         mirrored = true
         show_when_idle = true
+        color_1 = "primary"
+        color_2 = "secondary"
 
     [desktop_widgets.widget.desktop-widget-0000000000000012]
     box_height = 426.0
@@ -67,7 +69,7 @@ widget_order = [
     box_height = 150.0
     box_width = 420.0
     cx = 1818.0
-    cy = 119.0
+    cy = 118.0
     output = "DP-1"
     placement_height = 1152.0
     placement_width = 2048.0
