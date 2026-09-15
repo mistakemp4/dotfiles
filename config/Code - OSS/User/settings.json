@@ -1,5 +1,6 @@
 {
     "security.workspace.trust.untrustedFiles": "open",
+    "workbench.colorTheme": "NoctaliaTheme",
     "editor.fontFamily": "'JetBrains Mono', monospace",
     "terminal.integrated.fontFamily": "'JetBrains Mono', monospace",
     "git.enableSmartCommit": true,

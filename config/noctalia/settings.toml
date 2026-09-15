@@ -534,7 +534,7 @@ wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "alacritty", "btop", "gtk3", "gtk4", "kcolorscheme", "niri", "starship", "cava" ]
-    community_ids = [ "claude-code", "spicetify", "brave", "discord", "libreoffice", "vscode", "prismlauncher", "bat", "yazi", "fastfetch", "fzf", "lazygit", "micro", "papirus-icons", "zathura" ]
+    community_ids = [ "claude-code", "spicetify", "brave", "discord", "libreoffice", "vscode", "prismlauncher", "bat", "yazi", "fastfetch", "fzf", "lazygit", "micro", "papirus-icons", "zathura", "obs", "steam" ]
 
 # window glow color for niri, see templates/niri-glow.kdl
     [theme.templates.user.niri-glow]
@@ -556,6 +556,11 @@ output_path = "$XDG_CONFIG_HOME/niri/glow.kdl"
     input_path = "$XDG_CONFIG_HOME/noctalia/templates/cursor-colors.txt"
     output_path = "$XDG_CACHE_HOME/noctalia/cursor-colors.txt"
     post_hook = "python3 \"$HOME/.local/bin/noctalia-cursors.py\""
+
+    # website colors for the patched Dark Reader in Brave, served by local-bin/darkreader-colors-server.py
+    [theme.templates.user.darkreader-colors]
+    input_path = "$XDG_CONFIG_HOME/noctalia/templates/darkreader-colors.json"
+    output_path = "$XDG_CACHE_HOME/noctalia/darkreader-colors.json"
 
 [wallpaper]
 directory = "~/Pictures/WallPapers"

@@ -1,0 +1,63 @@
+diff --git a/src/shell/bar/widgets/sysmon_widget.cpp b/src/shell/bar/widgets/sysmon_widget.cpp
+--- a/src/shell/bar/widgets/sysmon_widget.cpp
++++ b/src/shell/bar/widgets/sysmon_widget.cpp
+@@ -946,7 +946,7 @@
+ 
+   case SysmonStat::CpuTemp:
+     if (stats.cpuTempAvailable && stats.cpuTempC.has_value()) {
+-      return std::format("{:.0F}°C", *stats.cpuTempC);
++      return std::format("{:.0F}ºC", *stats.cpuTempC);
+     }
+     return std::nullopt;
+   case SysmonStat::CpuFreq:
+@@ -956,7 +956,7 @@
+     return std::nullopt;
+   case SysmonStat::GpuTemp:
+     if (stats.gpuTempC.has_value()) {
+-      return std::format("{:.0F}°C", *stats.gpuTempC);
++      return std::format("{:.0F}ºC", *stats.gpuTempC);
+     }
+     return std::nullopt;
+ 
+diff --git a/src/shell/desktop/widgets/desktop_sysmon_widget.cpp b/src/shell/desktop/widgets/desktop_sysmon_widget.cpp
+--- a/src/shell/desktop/widgets/desktop_sysmon_widget.cpp
++++ b/src/shell/desktop/widgets/desktop_sysmon_widget.cpp
+@@ -770,7 +770,7 @@
+ 
+   case DesktopSysmonStat::CpuTemp:
+     if (stats.cpuTempC.has_value()) {
+-      return std::format("{:.0F}°C", *stats.cpuTempC);
++      return std::format("{:.0F}ºC", *stats.cpuTempC);
+     }
+     return "--";
+ 
+@@ -782,7 +782,7 @@
+ 
+   case DesktopSysmonStat::GpuTemp:
+     if (stats.gpuTempC.has_value()) {
+-      return std::format("{:.0F}°C", *stats.gpuTempC);
++      return std::format("{:.0F}ºC", *stats.gpuTempC);
+     }
+     return "--";
+ 
+diff --git a/src/shell/control_center/tabs/system_tab.cpp b/src/shell/control_center/tabs/system_tab.cpp
+--- a/src/shell/control_center/tabs/system_tab.cpp
++++ b/src/shell/control_center/tabs/system_tab.cpp
+@@ -827,7 +827,7 @@
+   }
+   if (m_cpuTempLabel != nullptr) {
+     if (stats.cpuTempC.has_value()) {
+-      m_cpuTempLabel->setText(std::format("{:.0F}°C", *stats.cpuTempC));
++      m_cpuTempLabel->setText(std::format("{:.0F}ºC", *stats.cpuTempC));
+     } else {
+       m_cpuTempLabel->setText("--");
+     }
+@@ -836,7 +836,7 @@
+     const bool hasTempData = stats.gpuTempC.has_value();
+     m_gpuTempGroup->setVisible(hasTempData);
+     if (hasTempData && m_gpuTempLabel != nullptr) {
+-      m_gpuTempLabel->setText(std::format("{:.0F}°C", *stats.gpuTempC));
++      m_gpuTempLabel->setText(std::format("{:.0F}ºC", *stats.gpuTempC));
+     }
+   }
+   if (m_gpuUsageGroup != nullptr) {

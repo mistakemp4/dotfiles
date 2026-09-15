@@ -1,0 +1,49 @@
+diff --git a/src/background/index.ts b/src/background/index.ts
+--- a/src/background/index.ts
++++ b/src/background/index.ts
+@@ -259,3 +259,45 @@
+     writeInstallationVersion(chrome.storage.local, details);
+     writeInstallationVersion(chrome.storage.sync, details);
+ });
++
++// -------- noctalia palette sync --------
++// applies the wallpaper palette served by dotfiles local-bin/darkreader-colors-server.py
++const PALETTE_URL = 'http://127.0.0.1:6767/';
++const PALETTE_ALARM = 'noctalia-palette';
++const HEX_COLOR = /^#[0-9a-f]{6}$/i;
++
++async function syncPalette() {
++    let colors: {backgroundColor?: unknown; textColor?: unknown};
++    try {
++        const response = await fetch(PALETTE_URL, {cache: 'no-store'});
++        if (!response.ok) {
++            return;
++        }
++        colors = await response.json();
++    } catch {
++        return; // server not running: keep the current colors
++    }
++    const {backgroundColor, textColor} = colors;
++    if (typeof backgroundColor !== 'string' || typeof textColor !== 'string' ||
++        !HEX_COLOR.test(backgroundColor) || !HEX_COLOR.test(textColor)) {
++        return;
++    }
++    await extension;
++    const {settings} = await Extension.collectData();
++    if (settings.theme.darkSchemeBackgroundColor === backgroundColor && settings.theme.darkSchemeTextColor === textColor) {
++        return;
++    }
++    await Extension.changeSettings({
++        theme: {...settings.theme, darkSchemeBackgroundColor: backgroundColor, darkSchemeTextColor: textColor},
++    });
++}
++
++// the MV3 service worker is suspended when idle; the alarm wakes it to catch palette changes
++chrome.alarms.create(PALETTE_ALARM, {periodInMinutes: 0.5});
++chrome.alarms.onAlarm.addListener((alarm) => {
++    if (alarm.name === PALETTE_ALARM) {
++        syncPalette();
++    }
++});
++setInterval(syncPalette, 2000);
++syncPalette();

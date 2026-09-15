@@ -176,7 +176,9 @@ wallpaper_scheme = "vibrant"
         "lazygit",
         "micro",
         "papirus-icons",
-        "zathura"
+        "zathura",
+        "obs",
+        "steam"
     ]
 
 [wallpaper.default]

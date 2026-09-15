@@ -1,0 +1,9 @@
+[Unit]
+Description=Serve the Noctalia palette to the patched Dark Reader on 127.0.0.1:6767
+
+[Service]
+ExecStart=%h/.local/bin/darkreader-colors-server.py
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

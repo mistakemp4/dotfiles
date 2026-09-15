@@ -14,6 +14,7 @@ CONFIG_FILES=(
   alacritty
   autostart
   btop
+  environment.d
   fastfetch
   fish
   niri
