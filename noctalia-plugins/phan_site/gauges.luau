@@ -144,8 +144,8 @@ local function number(text, isTemp)
 
   if isTemp then
     -- the sheet has no degree sign, so draw a ring where the % would go
-    table.insert(backs, string.format('<circle cx="%g" cy="%g" r="34" fill="none" stroke="%s" stroke-width="30"/>', NUMBER.unitX - 30, NUMBER.unitY - 70, JET))
-    table.insert(fronts, string.format('<circle cx="%g" cy="%g" r="34" fill="none" stroke="currentColor" stroke-width="14" filter="url(#tint)"/>', NUMBER.unitX - 30, NUMBER.unitY - 70))
+    table.insert(backs, string.format('<g transform="rotate(14 %g %g)"><ellipse cx="%g" cy="%g" rx="17" ry="24" fill="none" stroke="%s" stroke-width="22"/></g>', NUMBER.unitX - 30, NUMBER.unitY - 72, NUMBER.unitX - 30, NUMBER.unitY - 72, JET))
+    table.insert(fronts, string.format('<g transform="rotate(14 %g %g)"><ellipse cx="%g" cy="%g" rx="17" ry="24" fill="none" stroke="currentColor" stroke-width="10" filter="url(#tint)"/></g>', NUMBER.unitX - 30, NUMBER.unitY - 72, NUMBER.unitX - 30, NUMBER.unitY - 72))
   else
     glyph(PERCENT.front, PERCENT.back, PERCENT.w, PERCENT.h, NUMBER.unitX, NUMBER.unitY, 1)
   end

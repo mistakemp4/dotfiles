@@ -42,10 +42,10 @@ widget_order = [
         background = false
         bands = 32
         centered = true
-        mirrored = true
-        show_when_idle = true
         color_1 = "primary"
         color_2 = "secondary"
+        mirrored = true
+        show_when_idle = true
 
     [desktop_widgets.widget.desktop-widget-0000000000000012]
     box_height = 426.0
@@ -145,8 +145,8 @@ enabled = [
     "seal/centered_weather",
     "dotnetrob/cat",
     "tranzem/media-lyrics",
-    "seal/phan_site",
-    "seal/phantom_calendar"
+    "seal/phantom_calendar",
+    "seal/phan_site"
 ]
 
 [shell]

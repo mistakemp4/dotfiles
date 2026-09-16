@@ -24,7 +24,8 @@ BRAVE_THEME = HOME / ".local/share/noctalia/brave-theme"
 BRAVE_PREFS = HOME / ".config/BraveSoftware/Brave-Browser/Default/Preferences"
 BRAVE_APPLY = HOME / ".local/state/noctalia/community-templates/brave/apply.sh"
 # same as niri's Mod+B bind
-BRAVE_CMD = ["brave", f"--load-extension={BRAVE_THEME}"]
+DARKREADER = HOME / "src/darkreader-noctalia/build/release/chrome-mv3"
+BRAVE_CMD = ["brave", f"--load-extension={BRAVE_THEME},{DARKREADER}"]
 PLAYER_BUS = ["org.mpris.MediaPlayer2.spotify", "/org/mpris/MediaPlayer2"]
 PLAYER_IFACE = "org.mpris.MediaPlayer2.Player"
 UID = str(os.getuid())

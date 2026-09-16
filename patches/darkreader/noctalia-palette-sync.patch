@@ -1,7 +1,21 @@
-diff --git a/src/background/index.ts b/src/background/index.ts
 --- a/src/background/index.ts
 +++ b/src/background/index.ts
-@@ -259,3 +259,45 @@
+@@ -127,11 +127,9 @@
+ 
+     listen();
+ } else if (!__DEBUG__ && !__TEST__) {
+-    chrome.runtime.onInstalled.addListener(({reason}) => {
+-        if (reason === 'install') {
+-            chrome.tabs.create({url: getHelpURL()});
+-        }
+-    });
++    // Noctalia: every local rebuild bumps the version, which chromium treats as a fresh
++    // install -- don't pop the help tab each time brave restarts.
++    void getHelpURL;
+ 
+     chrome.runtime.setUninstallURL(UNINSTALL_URL);
+ }
+@@ -259,3 +257,49 @@
      writeInstallationVersion(chrome.storage.local, details);
      writeInstallationVersion(chrome.storage.sync, details);
  });
@@ -30,10 +44,14 @@ diff --git a/src/background/index.ts b/src/background/index.ts
 +    }
 +    await extension;
 +    const {settings} = await Extension.collectData();
-+    if (settings.theme.darkSchemeBackgroundColor === backgroundColor && settings.theme.darkSchemeTextColor === textColor) {
++    const colorsMatch = settings.theme.darkSchemeBackgroundColor === backgroundColor &&
++        settings.theme.darkSchemeTextColor === textColor;
++    if (colorsMatch && !settings.detectDarkTheme) {
 +        return;
 +    }
 +    await Extension.changeSettings({
++        // sites that ship their own dark theme should still follow the palette
++        detectDarkTheme: false,
 +        theme: {...settings.theme, darkSchemeBackgroundColor: backgroundColor, darkSchemeTextColor: textColor},
 +    });
 +}

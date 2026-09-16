@@ -127,6 +127,12 @@ def main():
     # keep both copies identical, so XCURSOR_THEME=Noctalia-Cursors is always current
     build(other, recolor, stamp)
 
+    # apps that ignore XCURSOR_THEME (Steam inside pressure-vessel) fall back to the "default" theme
+    default_theme = ICONS.parent.parent / ".icons/default"
+    default_theme.mkdir(parents=True, exist_ok=True)
+    write_atomic(default_theme / "index.theme", f"[Icon Theme]\nName=Default\n"
+                 f"Comment=Fallback for apps that ignore XCURSOR_THEME\nInherits={NAMES[0]}\n".encode())
+
 
 if __name__ == "__main__":
     main()

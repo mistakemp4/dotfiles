@@ -1,0 +1,15 @@
+--- a/src/config/dynamic-theme-fixes.config
++++ b/src/config/dynamic-theme-fixes.config
+@@ -41049,6 +41049,12 @@
+ #ytd-player + .efyt-control-bar > button
+ 
+ CSS
++/* Noctalia: ambient mode paints blurred video pixels on a canvas around the
++   player, which no theme engine can recolour -- it shows up as a black box
++   around the video. Drop it so the themed page background shows through. */
++#cinematics {
++    display: none !important;
++}
+ #search-icon-legacy.ytd-searchbox {
+     border: 1px solid var(--ytd-searchbox-legacy-border-color) !important;
+ }

@@ -31,6 +31,16 @@ window-rule {
 }
 
 window-rule {
+  // steam desktop toasts open as their own borderless window (notificationtoasts_<id>_desktop),
+  // which niri would otherwise float dead centre
+  match title=r#"^notificationtoasts_"#
+
+  open-floating true
+  open-focused false
+  default-floating-position x=16 y=16 relative-to="bottom-right"
+}
+
+window-rule {
   match title=r#"^Picture in picture$"#
 
   open-floating true
