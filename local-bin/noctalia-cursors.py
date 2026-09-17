@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-"""Build the Noctalia-Cursors theme: Adwaita's cursors recolored with the current Noctalia palette.
-
-Run by Noctalia's cursor-colors template hook. Reads "fill\\noutline" hex colors from
-~/.cache/noctalia/cursor-colors.txt, or takes them as two arguments.
-
-niri only reloads cursors when the theme name changes, so niri alternates between two identical
-themes via ~/.config/niri/cursor.kdl. Clients that load cursors themselves (XCURSOR_THEME, e.g.
-linux-wallpaperengine) use the stable Noctalia-Cursors name and pick up new colors on restart.
-"""
 import os
 import re
 import shutil
@@ -44,7 +35,7 @@ def make_recolor(fill, outline):
             r, g, b = (min(255, ((pixel >> s) & 255) * 255 // alpha) for s in (16, 8, 0))
             lum = (r * 299 + g * 587 + b * 114) / 255000
             shadow = alpha <= 64 and lum < 0.25
-            colored = max(r, g, b) - min(r, g, b) > 60  # e.g. the red "not-allowed" sign
+            colored = max(r, g, b) - min(r, g, b) > 60
             if not shadow and not colored:
                 r, g, b = (round(f + (o - f) * lum) * alpha // 255 for f, o in zip(fill, outline))
                 out = (alpha << 24) | (r << 16) | (g << 8) | b
@@ -119,15 +110,14 @@ def main():
     other = NAMES[0] if target == NAMES[1] else NAMES[1]
     recolor = make_recolor(fill, outline)
 
-    # niri watches its includes, so switching names swaps the cursor live; gsettings covers GTK apps
+    # niri only reloads cursors on a name change, so alternate between two identical themes
     build(target, recolor, stamp)
-    write_atomic(NIRI_INCLUDE, f'// rendered by noctalia-cursors.py\ncursor {{\n    xcursor-theme "{target}"\n}}\n'.encode())
+    write_atomic(NIRI_INCLUDE, f'cursor {{\n    xcursor-theme "{target}"\n}}\n'.encode())
     if shutil.which("gsettings"):
         subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "cursor-theme", target], check=False)
-    # keep both copies identical, so XCURSOR_THEME=Noctalia-Cursors is always current
     build(other, recolor, stamp)
 
-    # apps that ignore XCURSOR_THEME (Steam inside pressure-vessel) fall back to the "default" theme
+    # for apps that ignore XCURSOR_THEME (steam's pressure-vessel)
     default_theme = ICONS.parent.parent / ".icons/default"
     default_theme.mkdir(parents=True, exist_ok=True)
     write_atomic(default_theme / "index.theme", f"[Icon Theme]\nName=Default\n"

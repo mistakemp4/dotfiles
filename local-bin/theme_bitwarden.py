@@ -89,7 +89,6 @@ hex_vars = {
     "--color-border-focus": c["primary"],
     "--color-hover-default": rgba(c["primary"], 0.1),
     "--color-transparent-hover": rgba(c["primary"], 0.05),
-    # tailwind gray ramp, light (050) to dark (950)
     "--color-gray-050": c["on_surface"], "--color-gray-100": c["on_surface"],
     "--color-gray-200": c["on_surface_variant"], "--color-gray-300": c["on_surface_variant"],
     "--color-gray-400": c["on_surface_variant"], "--color-gray-500": c["outline"],
@@ -100,7 +99,7 @@ hex_vars = {
     "--tw-ring-color": rgba(c["primary"], 0.5),
 }
 
-# space-separated "R G B" values, used inside rgb(var(--x) / a)
+# "R G B" for rgb(var(--x) / a)
 rgb_vars = {
     "--color-background": rgb_str(c["surface"]),
     "--color-background-alt": rgb_str(c["surface_variant"]),
@@ -128,8 +127,7 @@ rgb_vars = {
     "--color-warning-600": rgb_str(c["secondary"]),
 }
 
-# bitwarden's older "html.theme_dark ..." rules use fixed colors instead of variables,
-# so each of those colors ("r,g,b") is swapped for a palette color
+# legacy html.theme_dark rules hardcode colors instead of vars
 legacy_map = {
     "19,21,24": c["surface_container_lowest"],
     "21,24,30": c["surface"],
@@ -231,7 +229,6 @@ JS_TEMPLATE = r"""
   };
 
   const count = remap();
-  // on a fresh page the stylesheets aren't loaded yet, so remap again once they are
   if (document.readyState !== 'complete') window.addEventListener('load', remap, { once: true });
   return `${Object.keys(vars).length} vars, ${count} legacy rules remapped`;
 })()
@@ -245,7 +242,7 @@ js = (JS_TEMPLATE
 cdp = CDP(get_ws_url(PORT))
 print("applied:", cdp.evaluate(js))
 
-# re-run on navigation (lock screen -> vault) so it survives reloads
+# survive navigation (lock screen -> vault)
 cdp.call("Page.enable")
 cdp.call("Page.addScriptToEvaluateOnNewDocument", {"source": js})
 

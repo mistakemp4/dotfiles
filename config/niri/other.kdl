@@ -4,7 +4,7 @@ prefer-no-csd
 
 environment {
     QT_QPA_PLATFORMTHEME "gtk3"
-    // stable name for apps that load cursors themselves; niri's own cursor comes from cursor.kdl
+    // for apps that load cursors themselves; niri uses cursor.kdl
     XCURSOR_THEME "Noctalia-Cursors"
 }
 
@@ -32,7 +32,6 @@ workspace "1"
 workspace "2"
 
 debug {
-    // Works around Discord/Vesktop stealing focus from a stale
-    // Noctalia notification's xdg-activation serial.
+    // vesktop focus stealing via stale notification activation serials
     honor-xdg-activation-with-invalid-serial
 }

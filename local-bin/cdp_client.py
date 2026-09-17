@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Minimal, dependency-free Chrome DevTools Protocol client (stdlib only)."""
 import base64
 import hashlib
 import json
@@ -21,7 +20,6 @@ def get_ws_url(port, title_contains=None):
 
 class CDP:
     def __init__(self, ws_url):
-        # ws_url like ws://localhost:9333/devtools/page/XXXX
         _, _, host_port, *path_parts = ws_url.split("/", 3)
         path = "/" + (path_parts[0] if path_parts else "")
         host, port = host_port.split(":")
@@ -85,7 +83,7 @@ class CDP:
         self._send_frame(json.dumps({"id": msg_id, "method": method, "params": params or {}}).encode())
         for _ in range(timeout_frames):
             opcode, payload = self._recv_frame()
-            if opcode == 0x1:  # text frame
+            if opcode == 0x1:
                 msg = json.loads(payload.decode())
                 if msg.get("id") == msg_id:
                     return msg

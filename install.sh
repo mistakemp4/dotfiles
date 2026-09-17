@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# resolves to wherever this repo is actually checked out, so it works
-# regardless of clone location instead of assuming ~/.dotfiles
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS=$DOTFILES/scripts
 

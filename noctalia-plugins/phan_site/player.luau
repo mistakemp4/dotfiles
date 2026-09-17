@@ -1,30 +1,21 @@
 --!nonstrict
--- Persona 5 Phan-Site style now-playing speech bubble for the active MPRIS player; click it to play/pause.
--- Player state comes from busctl and the bubble is SVG rendered with rsvg-convert, in three tiles so only
--- what changes gets redrawn: the art corner and the title band per track, the bottom band (artist,
--- progress, time) every second. A title too long for its band scrolls as pre-rendered marquee frames made
--- with ImageMagick, since desktop widget images can't be clipped or offset.
-
 local W, H = 420, 150
-local SPLIT_X, SPLIT_Y = 118, 62 -- title band: x >= SPLIT_X, y < SPLIT_Y
--- noctalia antialiases every image edge (50% coverage on the edge line), so butted tiles leave a
--- see-through seam: earlier tiles render this much past the seam and later tiles overlap them
+local SPLIT_X, SPLIT_Y = 118, 62
+-- noctalia antialiases image edges, so tiles overlap to hide seams
 local OVERLAP = 3
-local SCALE = 2 -- render pixels per logical pixel
+local SCALE = 2
 local SCAN_SECONDS = 5
 local COLOR_FILE = "~/.cache/noctalia/phantom-calendar-color.txt"
 local FALLBACK_ACCENT = "#e6191e"
 local PAPER, JET, INK_SOFT, TRACK = "#fbf7f2", "#0d0908", "#5b4a44", "#2b1a15"
--- see-through black matches the terminal's opacity (alacritty opacity 0.88)
+-- alacritty opacity
 local BLACK_ALPHA = 0.88
 local MPRIS = "org.mpris.MediaPlayer2."
--- rough text budgets in half-width units (CJK counts double)
+-- half-width units, CJK counts double
 local TITLE_UNITS, ARTIST_UNITS = 200, 44
--- marquee, in render pixels
 local MARQUEE_PAD, MARQUEE_GAP, MARQUEE_STEP, MARQUEE_AVAIL = 8, 96, 4, 562
 local MARQUEE_FRAME_MS, MARQUEE_HOLD_MS = 50, 1500
 
--- art tile, title band (one frame, or marquee frames) for a track; prints the frame count
 local HEAD_SCRIPT = [[
 set -e
 export FONTCONFIG_FILE=@FONTS@
@@ -116,12 +107,8 @@ local function prop(props, name)
   return if type(v) == "table" then v.data else nil
 end
 
--- ── svg ──────────────────────────────────────────────────────────────────────
-
--- the whole bubble except the title; each tile renders it through its own viewBox
 local function sceneBody(t, color)
   local out = {
-    -- black offset shadow keeps the white bubble readable over bright wallpapers
     string.format('<polygon points="10,26 %d,10 %d,116 36,108" fill="%s" fill-opacity="%g"/>', W, W - 12, JET, BLACK_ALPHA),
     string.format('<polygon points="4,20 %d,4 %d,110 30,102" fill="%s"/>', W - 6, W - 18, PAPER),
     string.format('<polygon points="44,100 30,117 78,104" fill="%s"/>', PAPER),
@@ -147,7 +134,6 @@ local function sceneBody(t, color)
     local pct = math.clamp(t.positionUs / t.lengthUs, 0, 1)
     local left, right, top, bottomY, slant = 34, 296, 124, 134, 6
     local fillRight = left + (right - left) * pct
-    -- dark strip so the bar and time stay readable over bright wallpapers
     table.insert(out, string.format('<polygon points="18,116 %d,113 %d,149 8,150" fill="%s" fill-opacity="%g"/>', W, W - 10, JET, BLACK_ALPHA))
     table.insert(out, string.format('<polygon points="%g,%d %g,%d %g,%d %g,%d" fill="%s"/>', left + slant, top, right + slant, top, right, bottomY, left, bottomY, TRACK))
     if pct > 0 then
@@ -163,15 +149,12 @@ local function svgDoc(body, x, y, w, h)
   return string.format('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="%d %d %d %d">\n%s\n</svg>', w, h, x, y, w, h, body)
 end
 
--- the title alone on a wide canvas at the bubble's baseline, so its width can be measured
 local function titleDoc(title, color)
   return string.format(
     '<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="%d" viewBox="0 0 2000 %d"><text x="10" y="48" font-family="FOT-Skip Std" font-size="20" fill="%s">%s</text></svg>',
     SPLIT_Y + OVERLAP, SPLIT_Y + OVERLAP, color, xml(clip(title, TITLE_UNITS))
   )
 end
-
--- ── tiles ────────────────────────────────────────────────────────────────────
 
 local function framePath(i)
   return string.format("%s/title-%s-%03d.png", dataDir, head.gen, i)
@@ -181,7 +164,6 @@ local function show()
   if not head.art or not bottom.path then
     return
   end
-  -- negative gaps: later tiles are drawn over the earlier tiles' extra strip
   desktopWidget.render(ui.column({ gap = -OVERLAP, onClick = togglePlayback }, {
     ui.row({ gap = -OVERLAP }, {
       ui.image({ path = head.art, width = SPLIT_X + OVERLAP, height = SPLIT_Y + OVERLAP, fit = "stretch" }),
@@ -274,7 +256,7 @@ local function renderBottom(color)
 
   bottom.busy = true
   local svgPath = `{dataDir}/bottom.svg`
-  -- new name every render, so the image can't be served from a stale cache
+  -- new name defeats the image cache
   local pngPath = `{dataDir}/bottom-{noctalia.nowMs()}.png`
   noctalia.writeFile(svgPath, svgDoc(sceneBody(track, color), 0, SPLIT_Y, W, H - SPLIT_Y))
   noctalia.runAsync(`FONTCONFIG_FILE={sh(fontsConf)} rsvg-convert -w {W * SCALE} {sh(svgPath)} -o {sh(pngPath)}`, function(res)
@@ -305,10 +287,10 @@ redraw = function()
   renderBottom(color)
 end
 
--- album art: rsvg-convert only loads images next to the svg, so keep a copy in the data dir
+-- rsvg-convert only loads images next to the svg
 local function refreshArt()
   local url = if track then track.artUrl else ""
-  -- players like Brave reuse one art file name for every track, so key on the title too
+  -- brave reuses one art file name for every track
   local key = url .. "|" .. (if track then track.title else "")
   if key == artKey or artLoading then
     return
@@ -340,8 +322,6 @@ local function refreshArt()
     finish(false)
   end
 end
-
--- ── players ──────────────────────────────────────────────────────────────────
 
 local function scan(done)
   noctalia.runAsync("busctl --user list --no-legend --acquired 2>/dev/null | awk '{print $1}'", function(res)
@@ -380,7 +360,6 @@ local function fetch(bus, done)
   end, 5000)
 end
 
--- prefer a playing player (the current one if several are), then the current one, then any
 local function choose(results)
   local pick = nil
   for _, t in results do
@@ -440,13 +419,10 @@ togglePlayback = function()
   end, 5000)
 end
 
--- ── lifecycle ────────────────────────────────────────────────────────────────
-
 function update()
   poll()
 end
 
--- marquee: hold the start of the title for a moment, then step a frame at a time
 function onFrameTick(deltaMs)
   if head.frames <= 1 then
     return
@@ -462,7 +438,7 @@ function onFrameTick(deltaMs)
 end
 
 if dataDir then
-  -- rsvg-convert only sees fontconfig fonts, so point it at the bundled Anton too
+  -- rsvg-convert only sees fontconfig fonts
   noctalia.writeFile(fontsConf, table.concat({
     '<?xml version="1.0"?>',
     '<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">',
@@ -472,7 +448,6 @@ if dataDir then
     `  <cachedir>{dataDir}/fccache</cachedir>`,
     "</fontconfig>",
   }, "\n"))
-  -- drop renders left over from a previous run
   for _, name in noctalia.listDir(dataDir) or {} do
     if string.match(name, "^title%-%d+%-%d+%.png$") or string.match(name, "^head%-%d+%.png$")
       or string.match(name, "^bottom%-%d+%.png$") or string.match(name, "^player%-%d+%.png$")

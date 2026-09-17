@@ -1,20 +1,17 @@
 --- a/src/inject/dynamic-theme/modify-colors.ts
 +++ b/src/inject/dynamic-theme/modify-colors.ts
-@@ -145,15 +145,30 @@
+@@ -145,15 +145,24 @@
  function modifyBgHSL({h, s, l, a}: HSLA, pole: HSLA): HSLA {
      const isDark = l < 0.5;
      const isBlue = h > 200 && h < 280;
 -    const isNeutral = s < 0.12 || (l > 0.8 && isBlue);
-+    // Noctalia: saturation is misleading near black -- reddit's #0b1416 reads s=0.33 but is
-+    // only 11/255 away from grey. Chroma catches those so they follow the palette too.
++    // Noctalia: saturation misleads near black, use chroma
 +    const chroma = s * (1 - Math.abs(2 * l - 1));
 +    const isNeutral = s < 0.12 || (l > 0.8 && isBlue) || (isDark && chroma < 0.08);
      if (isDark) {
 -        const lx = scale(l, 0, 0.5, 0, MAX_BG_LIGHTNESS);
          if (isNeutral) {
-+            // Noctalia: start neutral dark backgrounds at the palette background instead of black,
-+            // so sites that ship their own dark theme still follow the wallpaper colors. Keep
-+            // upstream's slope so surfaces stay as far apart as they were -- shift, don't squash.
++            // Noctalia: shift neutral dark bgs up to the palette, keep upstream's slope
 +            const lx = pole.l + scale(l, 0, 0.5, 0, MAX_BG_LIGHTNESS);
              const hx = pole.h;
              const sx = pole.s;
@@ -26,10 +23,7 @@
 +
 +    const alpha = a ?? 1;
 +    if (alpha < 0.5 && isNeutral) {
-+        // Noctalia: sites stack raised surfaces by laying a nearly transparent white over the
-+        // page (youtube's chips and description box are rgba(255,255,255,0.05)). Mapped onto a
-+        // palette background that lift disappears, so keep the overlay light and give it enough
-+        // alpha to still read as a step above the page.
++        // Noctalia: keep translucent white overlays visible as raised surfaces
 +        return {h: pole.h, s: pole.s, l: Math.min(1, pole.l + 0.3), a: Math.min(0.4, alpha * 4)};
      }
  

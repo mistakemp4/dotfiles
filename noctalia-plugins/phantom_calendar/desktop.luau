@@ -1,15 +1,8 @@
 --!nonstrict
--- Persona 5 Royal field calendar HUD, drawn from the game's own sprites. Those come from the user's own
--- copy of the game via tools/extract-game-assets.sh and are never shipped with this plugin.
--- Plain sprites are white alpha masks tinted per layer (like the game does); holiday art is already
--- colored and drawn as-is. The HUD is composed as SVG, rendered to PNG with rsvg-convert, and the weather
--- icon animates by cycling frames.
-
 local REFRESH_SECONDS = 15 * 60
 local SETUP_RETRY_SECONDS = 60
 local SVG_W, SVG_H = 640, 400
--- the date cluster's layout is in pixels of the 1920x1080 in-game screenshot it was traced from;
--- this offset leaves room around it for holiday decorations
+-- layout is in 1920x1080 screenshot pixels
 local ORIGIN_X, ORIGIN_Y = 50, 45
 local SHOW_W, SHOW_H = 681, 426
 local RENDER_W = 1536
@@ -19,7 +12,7 @@ local COLOR_FILE = "~/.cache/noctalia/phantom-calendar-color.txt"
 local GAME_RED = "#e6191e"
 local DARK = "#1a0d0a"
 
--- sprite ids in P5_FIELD_DAY.SPD; weather condition 0 sunny, 1 rain, 2 cloudy, 3 snow
+-- P5_FIELD_DAY.SPD ids; weather 0 sunny, 1 rain, 2 cloudy, 3 snow
 local WEATHER_CARD = 96
 local WEATHER_ICONS = { [0] = { 97, 109, 110 }, [1] = { 98, 111, 112 }, [2] = { 99, 113, 114 }, [3] = { 100, 115, 116 } }
 local WEEKDAY = { Sun = 0, Mon = 1, Tue = 2, Wed = 3, Thu = 4, Fri = 5, Sat = 6 }
@@ -29,7 +22,7 @@ local BANNERS = {
   heat_wave = 106, flu_season = 107, hot_night = 117, cold_wave = 300,
 }
 
--- { cx, cy, scale, rotation } per element, matched against an in-game screenshot
+-- { cx, cy, scale, rotation }
 local LAYOUT = {
   month = { 95, 92, 0.45, -6 },
   tens = { 188, 88, 0.42, -4 },
@@ -41,8 +34,6 @@ local LAYOUT = {
   banner = { 445, 188, 0.46, -5 },
 }
 
--- holiday art: numeral/month replacements and { id, cx, cy, scale, rotation } decorations (arranged by eye;
--- the game's own placement isn't in the extracted files)
 local HOLIDAYS = {
   halloween = {
     month = 230,
@@ -79,7 +70,7 @@ local HOLIDAYS = {
 
 noctalia.setUpdateInterval(1000)
 
--- the built-in sysmon widgets use Anton, so keep it registered
+-- builtin sysmon widgets need Anton
 local antonFamily, antonErr = noctalia.loadFont("assets/Anton-Regular.ttf")
 if not antonFamily then
   noctalia.log(`phantom_calendar: couldn't load Anton ({antonErr})`)
@@ -136,7 +127,6 @@ local function currentAddress()
   return ""
 end
 
--- P5 has no school on weekends, so the daytime slots collapse into "Daytime"
 local function timeOfDay(hour, weekend)
   if hour < 5 then
     return TIME_OF_DAY.LATE_NIGHT
@@ -158,7 +148,7 @@ local function timeOfDay(hour, weekend)
   return TIME_OF_DAY.LATE_NIGHT
 end
 
--- P5 only has sunny, rain, cloudy and snow; open-meteo codes: https://open-meteo.com/en/docs
+-- https://open-meteo.com/en/docs
 local function conditionFor(code)
   if code <= 1 then
     return 0
@@ -189,7 +179,7 @@ local function holidayFor(month, day, tod)
   return nil
 end
 
--- first matching rule wins; temperatures in °C, rain in mm/h, gusts in km/h
+-- first match wins; °C, mm/h, km/h
 local function bannerFor(month, day, w)
   if not w then
     return nil
@@ -232,8 +222,6 @@ local function weekdayColor()
   return GAME_RED
 end
 
--- ── svg ──────────────────────────────────────────────────────────────────────
-
 local function tintFilter(id, color)
   return string.format(
     '<filter id="%s" color-interpolation-filters="sRGB"><feFlood flood-color="%s"/><feComposite in2="SourceAlpha" operator="in"/></filter>',
@@ -241,7 +229,6 @@ local function tintFilter(id, color)
   )
 end
 
--- banner art is only red, white and black: swap the red for another color, keeping its shading
 local function retintFilter(id, color)
   local r = tonumber(string.sub(color, 2, 3), 16) / 255 * 1.06
   local g = tonumber(string.sub(color, 4, 5), 16) / 255 * 1.06
@@ -252,7 +239,6 @@ local function retintFilter(id, color)
   )
 end
 
--- one sprite centered on { cx, cy, scale, rotation }; filter = tint id, or nil to draw it as-is
 local function sprite(id, layout, filter)
   local size = sizes[id]
   if not size then
@@ -269,7 +255,6 @@ local function elements(s, frame)
   local holiday = if s.holiday then HOLIDAYS[s.holiday] else {}
   local numerals = holiday.numerals or {}
 
-  -- layers of one element share its center; false = nothing on that pass
   local list = {
     { layout = LAYOUT.month, layers = { { s.month }, { 12 + s.month, "black" }, { holiday.month or (24 + s.month) } } },
   }
@@ -301,8 +286,7 @@ local function buildSvg(s, frame)
       .. retintFilter("banner", s.accent) .. "</defs>",
     string.format('<g transform="translate(%d %d)">', ORIGIN_X, ORIGIN_Y),
   }
-  -- every element's white base first, then every black base, then the tops, so the white bases merge
-  -- into one sticker the way they do in game; holiday decorations go under the weekday letters
+  -- white bases first so they merge into one sticker
   local list, extras = elements(s, frame)
   local passes = { {}, {}, {}, {} }
   for pass = 1, 4 do
@@ -316,8 +300,7 @@ local function buildSvg(s, frame)
   local whites, blacks = table.concat(passes[1], "\n"), table.concat(passes[2], "\n")
 
   if s.blackOpacity < 1 then
-    -- see-through black: cut the black shapes out of the white sticker so the wallpaper shows through
-    -- instead of white, and fade the black as one group so overlapping shapes don't stack darker
+    -- cut black out of the white sticker, fade it as one group
     table.insert(out, string.format(
       '<mask id="knockout" maskUnits="userSpaceOnUse" x="%d" y="%d" width="%d" height="%d"><rect x="%d" y="%d" width="%d" height="%d" fill="#fff"/>%s</mask>',
       -ORIGIN_X, -ORIGIN_Y, SVG_W, SVG_H, -ORIGIN_X, -ORIGIN_Y, SVG_W, SVG_H, blacks
@@ -334,21 +317,17 @@ local function buildSvg(s, frame)
   end
   table.insert(out, table.concat(passes[4], "\n"))
   if s.banner then
-    -- the game's own red stays untouched
     table.insert(out, sprite(BANNERS[s.banner], LAYOUT.banner, if s.accent ~= GAME_RED then "banner" else nil))
   end
   table.insert(out, "</g></svg>")
   return table.concat(out, "\n")
 end
 
--- ── rendering ────────────────────────────────────────────────────────────────
-
 local function currentState()
   local weekday = WEEKDAY[noctalia.formatTime("%a")] or 0
   local month = tonumber(noctalia.formatTime("%m")) or 1
   local day = tonumber(noctalia.formatTime("%d")) or 1
 
-  -- preview_date ("MM-DD") shows another day's holiday without waiting for it
   local previewMonth, previewDay = string.match(noctalia.getConfig("preview_date") or "", "^(%d%d?)-(%d%d?)$")
   if previewMonth then
     month, day = tonumber(previewMonth), tonumber(previewDay)
@@ -437,7 +416,7 @@ local function redraw()
       return
     end
     local svgPath = `{dataDir}/hud-{i}.svg`
-    -- new name every render, so an image can't be served from a stale cache
+    -- new name defeats the image cache
     local pngPath = `{dataDir}/hud-{stamp}-{i}.png`
     local ok, err = noctalia.writeFile(svgPath, buildSvg(s, i - 1))
     if not ok then
@@ -458,8 +437,6 @@ local function redraw()
 
   renderFrame(1)
 end
-
--- ── setup ────────────────────────────────────────────────────────────────────
 
 local function setStatus(text)
   status = text
@@ -491,7 +468,7 @@ local function setup()
     end
   end
 
-  -- rsvg-convert refuses images outside the svg's own directory (symlinks included), so copy them in
+  -- rsvg-convert refuses images outside the svg's dir, even symlinks
   local cmd = `mkdir -p {sh(imgDir)} && cp -f {sh(root)}/spr_*.png {sh(imgDir)}/`
   settingUp = true
   noctalia.runAsync(cmd, function(res)
@@ -507,9 +484,6 @@ local function setup()
   end, 30000)
 end
 
--- ── weather ──────────────────────────────────────────────────────────────────
-
--- weather is optional: on failure just drop it and log why
 local function fail(detail)
   weather = nil
   noctalia.log(`phantom_calendar: {detail}`)
@@ -533,7 +507,7 @@ local function fetchCurrent()
       fail("unexpected forecast response")
       return
     end
-    -- current values cover the preceding interval (seconds), so scale rain up to mm per hour
+    -- current values cover `interval` seconds
     local interval = if type(current.interval) == "number" and current.interval > 0 then current.interval else 3600
     weather = {
       condition = conditionFor(current.weather_code),
@@ -547,7 +521,7 @@ local function fetchCurrent()
 end
 
 local function geocode(address)
-  -- open-meteo searches by place name, so match the country/region part ourselves
+  -- open-meteo only searches place names
   local name, rest = string.match(address, "^([^,]+),?%s*(.*)$")
   name = noctalia.string.trim(name or address)
   rest = string.lower(noctalia.string.trim(rest or ""))
@@ -597,11 +571,8 @@ local function refresh()
   end
 end
 
--- ── lifecycle ────────────────────────────────────────────────────────────────
-
 function update()
   if not ready then
-    -- the sprites may get extracted later, so keep checking
     if not settingUp and now() - (lastSetupTry or 0) >= SETUP_RETRY_SECONDS then
       setup()
     end
@@ -621,7 +592,6 @@ function update()
 end
 
 if dataDir then
-  -- drop renders left over from a previous run
   for _, name in noctalia.listDir(dataDir) or {} do
     if string.match(name, "^hud%-%d+%-%d%.png$") or string.match(name, "^hud%-%d+%.png$") then
       noctalia.removeFile(`{dataDir}/{name}`)

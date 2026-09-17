@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Pulls the field calendar HUD sprites out of YOUR OWN Persona 5 Royal (Steam) install.
-# The output is Atlus material: it stays in ~/.local/share/p5-game-assets and must never be committed.
+# output is Atlus material: never commit it
 set -euo pipefail
 
 TOOLS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

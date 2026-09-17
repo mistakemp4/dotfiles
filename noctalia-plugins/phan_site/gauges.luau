@@ -1,9 +1,5 @@
 --!nonstrict
--- Persona 5 Royal Phan-Site poll meters for CPU load, CPU temperature and RAM, built from the game's own poll
--- sprites (EN.CPK CALENDAR/GOODGAUGE.PAC -> p5_good_ps4.spd, dumped from the user's own copy, never shipped).
--- Every position below was template-matched against an in-game screenshot (1504x734), so the pieces sit exactly
--- where the game draws them. Our own questions use the game's dialogue font in the style of its question banner.
--- Composed as SVG and rendered with rsvg-convert (desktop widget UI has no rotation or clipping).
+-- sprites: EN.CPK CALENDAR/GOODGAUGE.PAC -> p5_good_ps4.spd; positions matched to a 1504x734 screenshot
 
 local W, ROW_GAP = 480, -16
 local RENDER_SCALE = 2
@@ -11,34 +7,29 @@ local SPRITES_DIR = "~/.local/share/p5-game-assets/agent-a/spd/good"
 local COLOR_FILE = "~/.cache/noctalia/phantom-calendar-color.txt"
 local GAME_RED = "#e93423"
 local PAPER, JET = "#fbf7f2", "#000000"
--- black parts get the terminal's opacity (alacritty opacity 0.88) so the wallpaper shows through
+-- alacritty opacity
 local BLACK_ALPHA = 0.88
--- the game's dialogue font rebuilt as ~/.local/share/fonts/p5-game/P5Dialogue.otf; FOT-Skip Std stands in without it
 local QUESTION_FONT = "P5 Dialogue, FOT-Skip Std"
 
--- { sprite id, width, height } in p5_good_ps4.spd
 local SPR = {
   base = { 1, 930, 156 }, fill = { 2, 816, 102 }, yes = { 28, 132, 96 }, q = { 29, 270, 270 }, logo = { 40, 386, 164 },
 }
-local DIGIT = { front = 4, back = 14, w = 160, h = 222 } -- 0-9 are front + d / back + d
+local DIGIT = { front = 4, back = 14, w = 160, h = 222 }
 local DOT = { front = 25, back = 27, w = 76, h = 74 }
 local PERCENT = { front = 24, back = 26, w = 150, h = 158 }
 
--- { cx, cy, scale, rotation } in the reference screenshot's pixels
+-- { cx, cy, scale, rotation }
 local LAYOUT = {
   base = { 599, 263, 1, 0 }, q = { 199, 153, 0.97, 7 }, logo = { 520.1, 65, 1, -16 }, yes = { 1031, 305, 1, 0 },
 }
-local FILL_X, FILL_Y = 173, 225 -- top-left of the unscaled fill sprite, which is cropped to the percentage
--- question banner center and rotation; text left edge, baseline, size and outline inside it
--- sx: the game squeezes this text to 65.7% width (measured against its "Phantom Thieves" banner)
+local FILL_X, FILL_Y = 173, 225
+-- sx: the game squeezes banner text to 65.7% width
 local QUESTION = { cx = 1034, cy = 103.8, rot = -7, x = -743, baseline = 22, size = 96, stroke = 32, sx = 0.657 }
--- the percentage is laid out right to left from the % sign; the digit after the dot is smaller, like in game
 local NUMBER = {
   unitX = 1412, unitY = 270, fracAdvance = 86.5, fracY = 267.5, fracScale = 0.745,
   dotAdvance = 64.5, dotY = 312, dotScale = 0.97, intAdvance = 44.5, intY = 247, intScale = 0.98, intStep = 77.5,
 }
 
--- question = { before, keyword, after }; the keyword is drawn in the accent color, like in game
 local POLLS = {
   { key = "cpu", question = { "Is your CPU working ", "hard enough", "?" } },
   { key = "temp", question = { "Is it getting ", "hot", " in here?" } },
@@ -64,9 +55,6 @@ local function xml(s)
   return (string.gsub(s, "[&<>\"]", { ["&"] = "&amp;", ["<"] = "&lt;", [">"] = "&gt;", ['"'] = "&quot;" }))
 end
 
--- ── geometry ─────────────────────────────────────────────────────────────────
-
--- the poll's bounds in reference pixels, from every piece's rotated box
 local function pollBounds()
   local x0, y0, x1, y1 = math.huge, math.huge, -math.huge, -math.huge
   local function add(cx, cy, w, h, rot)
@@ -80,7 +68,6 @@ local function pollBounds()
     add(l[1], l[2], s[2] * l[3], s[3] * l[3], l[4])
   end
   add(NUMBER.unitX, NUMBER.unitY, PERCENT.w, PERCENT.h, 0)
-  -- the question text (the banner sprite's ink spans x 25-970 of its 1530 width)
   add(768, 136, 960, 90, QUESTION.rot)
   return x0 - 4, y0 - 4, x1 + 4, y1 + 4
 end
@@ -89,8 +76,6 @@ local PX0, PY0, PX1, PY1 = pollBounds()
 local ROW_SCALE = W / (PX1 - PX0)
 local ROW_H = (PY1 - PY0) * ROW_SCALE
 local H = math.ceil(ROW_H * 3 + ROW_GAP * 2)
-
--- ── values ───────────────────────────────────────────────────────────────────
 
 local function accent()
   if noctalia.getConfig("color") == "wallpaper" then
@@ -111,7 +96,6 @@ local function readings()
   return { cpu = stats.cpu.usagePercent, temp = stats.cpu.tempC, ram = stats.ram.usagePercent }
 end
 
--- two digits and a decimal like the game (05.7), or a whole number from 100 up
 local function valueText(value)
   local v = math.max(value or 0, 0)
   if v >= 99.95 then
@@ -119,8 +103,6 @@ local function valueText(value)
   end
   return string.format("%04.1f", v)
 end
-
--- ── svg ──────────────────────────────────────────────────────────────────────
 
 local function place(id, w, h, cx, cy, scale, rot, filter)
   return string.format(
@@ -134,7 +116,6 @@ local function piece(name, filter)
   return place(s[1], s[2], s[3], l[1], l[2], l[3], l[4], filter)
 end
 
--- the percentage from the game's digit sprites: black backings first, then the tinted fronts
 local function number(text, isTemp)
   local backs, fronts = {}, {}
   local function glyph(front, back, w, h, cx, cy, scale)
@@ -143,7 +124,7 @@ local function number(text, isTemp)
   end
 
   if isTemp then
-    -- the sheet has no degree sign, so draw a ring where the % would go
+    -- no degree sprite
     table.insert(backs, string.format('<g transform="rotate(14 %g %g)"><ellipse cx="%g" cy="%g" rx="17" ry="24" fill="none" stroke="%s" stroke-width="22"/></g>', NUMBER.unitX - 30, NUMBER.unitY - 72, NUMBER.unitX - 30, NUMBER.unitY - 72, JET))
     table.insert(fronts, string.format('<g transform="rotate(14 %g %g)"><ellipse cx="%g" cy="%g" rx="17" ry="24" fill="none" stroke="currentColor" stroke-width="10" filter="url(#tint)"/></g>', NUMBER.unitX - 30, NUMBER.unitY - 72, NUMBER.unitX - 30, NUMBER.unitY - 72))
   else
@@ -198,11 +179,9 @@ end
 local function buildSvg(values, color)
   local out = {
     string.format('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d" color="%s">', W, H, W, H, color),
-    -- the digit and fill sprites are white masks, tinted like the game does
     string.format('<defs><filter id="tint" color-interpolation-filters="sRGB"><feFlood flood-color="%s"/><feComposite in2="SourceAlpha" operator="in"/></filter>', color),
     '<filter id="black" color-interpolation-filters="sRGB"><feFlood flood-color="#000000"/><feComposite in2="SourceAlpha" operator="in"/></filter>',
-    -- glass: scale alpha by brightness on the flattened poll, so black -> BLACK_ALPHA and white/accent stay opaque
-    -- (flattening first keeps overlapping black pieces from stacking darker)
+    -- flatten first so overlapping blacks don't stack darker
     string.format('<filter id="glass" filterUnits="userSpaceOnUse" x="0" y="0" width="%d" height="%d" color-interpolation-filters="sRGB">', W, H),
     '<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8 8 8 0 0"/>',
     string.format('<feComponentTransfer result="alpha"><feFuncA type="linear" slope="%g" intercept="%g"/></feComponentTransfer>', 1 - BLACK_ALPHA, BLACK_ALPHA),
@@ -215,8 +194,6 @@ local function buildSvg(values, color)
   table.insert(out, "</g></svg>")
   return table.concat(out, "\n")
 end
-
--- ── rendering ────────────────────────────────────────────────────────────────
 
 local function render()
   if rendering or not dataDir or not hasRsvg or not hasSprites then
@@ -234,7 +211,7 @@ local function render()
 
   rendering = true
   local svgPath = `{dataDir}/gauges.svg`
-  -- new name every render, so the image can't be served from a stale cache
+  -- new name defeats the image cache
   local pngPath = `{dataDir}/gauges-{noctalia.nowMs()}.png`
   noctalia.writeFile(svgPath, buildSvg(values, color))
   noctalia.runAsync(`FONTCONFIG_FILE={sh(fontsConf)} rsvg-convert -w {W * RENDER_SCALE} {sh(svgPath)} -o {sh(pngPath)}`, function(res)
@@ -268,7 +245,7 @@ if dataDir then
   }, "\n"))
   local source = noctalia.expandPath(SPRITES_DIR)
   if noctalia.fileExists(`{source}/spr_040.png`) then
-    -- rsvg-convert only loads images next to the svg, so copy the poll sprites into the data dir
+    -- rsvg-convert only loads images next to the svg
     noctalia.runAsync(`mkdir -p {sh(dataDir .. "/img/good")} && cp -f {sh(source)}/spr_0[0-4][0-9].png {sh(dataDir .. "/img/good")}/`, function(res)
       hasSprites = res.exitCode == 0
       render()

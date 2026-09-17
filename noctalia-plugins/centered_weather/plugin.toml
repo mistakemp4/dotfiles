@@ -1,4 +1,3 @@
-# Weather desktop widget with every line centered, fed by open-meteo (no api key).
 id = "seal/centered_weather"
 name = "Centered Weather"
 version = "1.0.0"

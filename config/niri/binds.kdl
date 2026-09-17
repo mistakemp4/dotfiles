@@ -26,7 +26,7 @@ binds {
         spawn-sh "noctalia msg notification-dnd-toggle";
     }
 
-    // Keychron knob: turn = volume, press (sends Mute) = mic mute, Shift+press = speaker mute
+    // keychron knob
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "noctalia msg volume-up"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn-sh "noctalia msg volume-down"; }
     XF86AudioMute        allow-when-locked=true { spawn-sh "noctalia msg mic-mute"; }

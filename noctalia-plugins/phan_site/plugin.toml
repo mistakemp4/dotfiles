@@ -1,7 +1,4 @@
-# Persona 5 Phan-Site style desktop widgets: CPU, temperature and RAM as poll meters, and a now-playing
-# speech bubble for the active MPRIS player (click to play/pause). Needs rsvg-convert (librsvg), ImageMagick
-# and busctl. The poll digits come from your own Persona 5 Royal (NET.PAK net_PS4.spd, never shipped here);
-# without them the numbers are drawn in Anton.
+# needs rsvg-convert, imagemagick, busctl; digits from your own P5R copy (never shipped), else Anton
 id = "seal/phan_site"
 name = "Phan-Site"
 version = "1.0.0"

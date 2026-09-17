@@ -1,14 +1,13 @@
 --- a/src/utils/url.ts	2026-09-15 19:55:37.451655289 -0400
 +++ b/src/utils/url.ts
-@@ -364,9 +364,10 @@
+@@ -364,9 +364,9 @@
      if (isURLInEnabledList) {
          return true;
      }
 -    if (isInDarkList || (userSettings.detectDarkTheme && isDarkThemeDetected)) {
 -        return false;
 -    }
-+    // Noctalia: never bow out of a site just because it ships its own dark theme --
-+    // those are exactly the sites that should follow the wallpaper palette.
++    // Noctalia: theme sites even if they ship a dark theme
 +    void isInDarkList;
 +    void isDarkThemeDetected;
      return !isURLInDisabledList;
@@ -16,7 +15,7 @@
  
 --- a/src/background/extension.ts	2026-09-15 19:55:37.756373194 -0400
 +++ b/src/background/extension.ts
-@@ -716,12 +716,9 @@
+@@ -716,12 +716,8 @@
                  theme = {...theme, mode};
              }
              const detectorHints = settings.detectDarkTheme ? getDetectorHintsFor(url, ConfigManager.DETECTOR_HINTS_RAW!, ConfigManager.DETECTOR_HINTS_INDEX!) : null;
@@ -26,13 +25,12 @@
 -                !isURLInList(tabURL, settings.enabledFor) &&
 -                !isPDF(tabURL)
 -            );
-+            // Noctalia: never ask the content script to detect a site's own dark theme --
-+            // it would tear our styles back off exactly where we want the palette applied.
++            // Noctalia: the detector would strip our styles
 +            const detectDarkTheme = false;
  
              logInfo(`Creating CSS for url: ${url}`);
              logInfo(`Custom theme ${custom ? 'was found' : 'was not found'}, Preset theme ${preset ? 'was found' : 'was not found'}
-@@ -769,7 +766,7 @@
+@@ -769,7 +765,7 @@
                              css: theme.stylesheet && theme.stylesheet.trim() ?
                                  theme.stylesheet :
                                  createStaticStylesheet(theme, url, isTopFrame, ConfigManager.STATIC_THEMES_RAW!, ConfigManager.STATIC_THEMES_INDEX!),

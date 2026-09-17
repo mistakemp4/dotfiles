@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""Serve the Noctalia palette to the patched Dark Reader in Brave.
-
-Localhost only, read-only: GET / returns the JSON rendered by the darkreader-colors template.
-"""
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -28,7 +24,7 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def log_message(self, *args):
-        pass  # polled every 2s, don't spam the journal
+        pass
 
 
 if __name__ == "__main__":

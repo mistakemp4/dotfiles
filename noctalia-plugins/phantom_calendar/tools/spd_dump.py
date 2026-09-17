@@ -1,8 +1,4 @@
-"""Dump an Atlus SPD sprite container: every texture as PNG, every sprite cut out as PNG, plus index.json.
-
-Layout (from Secre-C/PersonaSpriteTools): 0x20 header, 0x30-byte texture entries, 0xA0-byte sprite entries,
-then raw DDS texture data.
-"""
+# layout from Secre-C/PersonaSpriteTools
 import io
 import json
 import struct

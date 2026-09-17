@@ -1,6 +1,4 @@
-# Persona 5 Royal field calendar HUD (date, weekday, animated weather, time of day, holidays, special weather
-# banners), drawn from the game's own sprites. Extract them from your own copy with
-# tools/extract-game-assets.sh; they are never shipped here (Atlus material). Needs rsvg-convert (librsvg).
+# needs rsvg-convert; sprites via tools/extract-game-assets.sh from your own copy (never shipped)
 id = "seal/phantom_calendar"
 name = "Phantom Calendar"
 version = "3.1.0"

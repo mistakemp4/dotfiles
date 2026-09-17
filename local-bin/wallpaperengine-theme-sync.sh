@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-# Watches for Wallpaper Engine wallpaper changes and re-derives Noctalia's
-# wallpaper-adaptive theme (and everything templated off it: Brave, Vesktop,
-# terminal, etc.) from whatever's now actually on screen.
-# If no image can be derived, falls back to the custom motherboard palette.
 set -uo pipefail
 
 WORKSHOP_DIR="$HOME/.local/share/Steam/steamapps/workshop/content/431960"
@@ -17,16 +13,13 @@ current_bg_id() {
     pgrep -af linux-wallpaperengine 2>/dev/null | grep -oP -- '--bg\s+\K[0-9]+' | head -1
 }
 
-# bitwarden has no noctalia template, so render its colors ourselves and re-inject.
-# args select the palette source: an image + --scheme, or --theme-json <palette>
+# args: <image> --scheme X | --theme-json <palette>
 theme_bitwarden() {
     noctalia theme "$@" --dark \
         -r "$HOME/.config/noctalia/templates/bitwarden.json:$HOME/.cache/noctalia/bitwarden-colors.json" >/dev/null 2>&1
     python3 "$HOME/.local/bin/theme_bitwarden.py" >/dev/null 2>&1
 }
 
-# spotify + brave only load their theme at startup: restart whichever is running
-# once its template hook has run. backgrounded so polling isn't blocked
 restart_themed_apps() {
     python3 "$HOME/.local/bin/restart-themed-apps.py" "$1" &
 }
@@ -48,7 +41,7 @@ sync_theme_for_id() {
 
     [ -f "$project" ] || { echo "no project.json for $id, skipping"; return 1; }
 
-    # -s, not -f: an empty frame from a failed ffmpeg run shouldn't block retries
+    # -s: a failed ffmpeg run leaves an empty file
     if [ ! -s "$out_image" ]; then
         local type file preview
         type=$(python3 -c "import json; print(json.load(open('$project')).get('type','').lower())" 2>/dev/null)
@@ -66,7 +59,7 @@ sync_theme_for_id() {
     fi
 
     if [ -s "$out_image" ]; then
-        # return 2 = noctalia unreachable: retry later, don't fall back
+        # 2 = noctalia unreachable: retry, don't fall back
         local since
         since=$(date +%s)
         noctalia msg wallpaper-set "$out_image" >/dev/null 2>&1 || return 2
@@ -99,8 +92,6 @@ while true; do
             [ "$id" = "$ipc_down_id" ] || echo "noctalia IPC unreachable (WAYLAND_DISPLAY='${WAYLAND_DISPLAY:-}'), retrying"
             ipc_down_id="$id"
         elif [ "$id" != "$fallback_id" ]; then
-            # keep retrying the sync, but only switch palettes once per failing wallpaper.
-            # forget last_id so switching back to a working wallpaper re-syncs it
             apply_fallback
             fallback_id="$id"
             last_id=""

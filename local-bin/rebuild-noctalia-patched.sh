@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-# Build Noctalia with the patches in dotfiles/patches/noctalia for the version pacman has installed.
-# Installs into a versioned prefix under ~/.local/opt/noctalia-patched and points ~/.local/bin/noctalia
-# (first on niri's PATH) at it. Does nothing if that version + patch set is already built.
-# On failure the link is removed so the stock /usr/bin/noctalia runs instead.
 set -uo pipefail
 
 PATCH_DIR="$HOME/src/dotfiles/patches/noctalia"
@@ -23,7 +19,7 @@ fail() {
     exit 1
 }
 
-# the .path unit fires while pacman is still mid-transaction: wait for it to finish
+# the .path unit fires mid-transaction
 for _ in $(seq 1 600); do
     [ -e /var/lib/pacman/db.lck ] || break
     sleep 1
@@ -59,7 +55,7 @@ for p in "${patches[@]}"; do
     git -C "$SRC" apply "$p" || fail "$(basename "$p") doesn't apply to $tag"
 done
 
-# same options as the upstream justfile's release mode, minus test targets
+# upstream justfile release options
 cpp_std=$(sed -nE "s/^cpp-std[[:space:]]*:=[[:space:]]*['\"]?([^'\"[:space:]]+)['\"]?[[:space:]]*$/\1/p" "$SRC/justfile" 2>/dev/null)
 args=(--buildtype=release -Db_lto=true -Dtests=disabled --prefix "$prefix")
 [ -n "$cpp_std" ] && args+=("-Dcpp_std=$cpp_std")
@@ -73,16 +69,13 @@ meson install --no-rebuild --quiet -C "$BUILD" || fail "install"
 
 "$binary" --version 2>/dev/null | grep -qF "$version" || fail "built binary doesn't report version $version"
 
-# swap the link atomically so nothing ever sees a half-written path
 ln -s "$binary" "$LINK.new" && mv -T "$LINK.new" "$LINK" || fail "linking $LINK"
 log "installed $binary"
 
-# older builds are no longer referenced
 for old in "$ROOT"/*/; do
     [ "${old%/}" = "$prefix" ] || gio trash "${old%/}" 2>/dev/null || true
 done
 
-# restart the shell onto the patched binary if something else is running
 pid=$(pgrep -u "$(id -u)" -x noctalia | head -1)
 if [ -n "$pid" ] && [ "$(readlink "/proc/$pid/exe")" != "$binary" ]; then
     kill -TERM "$pid"

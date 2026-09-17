@@ -1,4 +1,3 @@
-// rendered by noctalia into ~/.config/niri/glow.kdl on every theme change
 layout {
     shadow {
         color          "{{colors.primary.default.hex}}ff"

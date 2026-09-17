@@ -9,7 +9,6 @@ DOTFILES_BACKUP_FOLDER=${DOTFILES_BACKUP_FOLDER:="$HOME/.backup_$(date +%Y%m%d_%
 mkdir -p "$DOTFILES_BACKUP_FOLDER"
 mkdir -p ~/.config/
 
-# paths relative to config/, linked to the same path under ~/.config
 CONFIG_FILES=(
   alacritty
   autostart

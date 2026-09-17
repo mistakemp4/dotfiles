@@ -1,4 +1,3 @@
-// Lists or extracts files from Persona 5 Royal PC CPK archives (read-only; never touches the game files).
 using System.Text.RegularExpressions;
 using CriFsV2Lib;
 using CriFsV2Lib.Definitions;

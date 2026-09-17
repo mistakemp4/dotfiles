@@ -1,6 +1,6 @@
 --- a/src/background/index.ts
 +++ b/src/background/index.ts
-@@ -127,11 +127,9 @@
+@@ -127,11 +127,8 @@
  
      listen();
  } else if (!__DEBUG__ && !__TEST__) {
@@ -9,19 +9,17 @@
 -            chrome.tabs.create({url: getHelpURL()});
 -        }
 -    });
-+    // Noctalia: every local rebuild bumps the version, which chromium treats as a fresh
-+    // install -- don't pop the help tab each time brave restarts.
++    // Noctalia: every rebuild looks like a fresh install
 +    void getHelpURL;
  
      chrome.runtime.setUninstallURL(UNINSTALL_URL);
  }
-@@ -259,3 +257,49 @@
+@@ -259,3 +256,47 @@
      writeInstallationVersion(chrome.storage.local, details);
      writeInstallationVersion(chrome.storage.sync, details);
  });
 +
-+// -------- noctalia palette sync --------
-+// applies the wallpaper palette served by dotfiles local-bin/darkreader-colors-server.py
++// Noctalia: palette from local-bin/darkreader-colors-server.py
 +const PALETTE_URL = 'http://127.0.0.1:6767/';
 +const PALETTE_ALARM = 'noctalia-palette';
 +const HEX_COLOR = /^#[0-9a-f]{6}$/i;
@@ -35,7 +33,7 @@
 +        }
 +        colors = await response.json();
 +    } catch {
-+        return; // server not running: keep the current colors
++        return;
 +    }
 +    const {backgroundColor, textColor} = colors;
 +    if (typeof backgroundColor !== 'string' || typeof textColor !== 'string' ||
@@ -50,13 +48,12 @@
 +        return;
 +    }
 +    await Extension.changeSettings({
-+        // sites that ship their own dark theme should still follow the palette
 +        detectDarkTheme: false,
 +        theme: {...settings.theme, darkSchemeBackgroundColor: backgroundColor, darkSchemeTextColor: textColor},
 +    });
 +}
 +
-+// the MV3 service worker is suspended when idle; the alarm wakes it to catch palette changes
++// wakes the suspended MV3 worker
 +chrome.alarms.create(PALETTE_ALARM, {periodInMinutes: 0.5});
 +chrome.alarms.onAlarm.addListener((alarm) => {
 +    if (alarm.name === PALETTE_ALARM) {

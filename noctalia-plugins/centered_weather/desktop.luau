@@ -1,7 +1,4 @@
 --!nonstrict
--- Weather desktop widget with every line centered. Plugins can't read the shell's
--- own weather or auto-detected location, so this fetches open-meteo itself.
-
 local REFRESH_SECONDS = 15 * 60
 
 noctalia.setUpdateInterval(60 * 1000)
@@ -43,7 +40,7 @@ local function useFahrenheit()
   return unit == "fahrenheit"
 end
 
--- open-meteo weather codes: https://open-meteo.com/en/docs
+-- https://open-meteo.com/en/docs
 local function describe(code, isDay)
   if code == 0 then
     return isDay and "sun" or "moon", "Clear"
@@ -78,8 +75,7 @@ local function render()
   if not weather then
     table.insert(rows, ui.label({ text = status, fontSize = 20, color = color, textAlign = "center" }))
   else
-    -- the persona font's "°" is 1em wide with mostly empty space, which throws off
-    -- centering, so the unit uses jetbrains mono (matches the sysmon gauges)
+    -- the persona font's ° is mostly empty space and breaks centering
     local unitText = weather.fahrenheit and "°F" or "°C"
     table.insert(rows, ui.row({ gap = 12, align = "center", justify = "center" }, {
       ui.glyph({ name = weather.glyph, size = 60, color = color }),
@@ -88,7 +84,6 @@ local function render()
     }))
     table.insert(rows, ui.label({ text = weather.condition, fontSize = 26, color = color, textAlign = "center" }))
 
-    -- two columns instead of rows, so days/icons and temps line up without relying on widths
     if #weather.days > 0 then
       local left, right = {}, {}
       for _, day in weather.days do
@@ -146,11 +141,10 @@ local function fetchForecast()
       condition = condition,
       days = {},
     }
-    -- index 1 is today, which the big block already covers
     for i = 2, #data.daily.time do
       local dayGlyph = describe(data.daily.weather_code[i], true)
       table.insert(result.days, {
-        -- noon avoids landing on the previous day across timezone offsets
+        -- noon avoids timezone day shifts
         name = noctalia.formatTime("%a", data.daily.time[i] + 12 * 3600),
         glyph = dayGlyph,
         low = math.round(data.daily.temperature_2m_min[i]),
@@ -163,7 +157,7 @@ local function fetchForecast()
 end
 
 local function geocode(address)
-  -- open-meteo searches by place name, so match the country/region part ourselves
+  -- open-meteo only searches place names
   local name, rest = string.match(address, "^([^,]+),?%s*(.*)$")
   name = noctalia.string.trim(name or address)
   rest = string.lower(noctalia.string.trim(rest or ""))
@@ -214,7 +208,6 @@ local function refresh()
 end
 
 function update()
-  -- re-fetch on schedule, or right away when the address setting changes
   if lastFetch == nil or now() - lastFetch >= REFRESH_SECONDS or currentAddress() ~= (coordsFor or "") then
     refresh()
   end

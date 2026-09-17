@@ -1,10 +1,9 @@
 [Unit]
 Description=Copy Noctalia's GUI-saved settings into the dotfiles repo
-# GUI saves come in bursts; the default start limit killed the path unit
+# GUI saves come in bursts
 StartLimitIntervalSec=0
 
-# noctalia replaces this file on every save, so a symlink wouldn't survive; copy it instead.
-# the repo is public, so location lines (top-level or inside widget settings) are dropped from the copy.
+# public repo: drop location lines
 [Service]
 Type=oneshot
 ExecStart=/bin/sh -c "sed -E '/^[[:space:]]*(address|latitude|longitude)[[:space:]]*=/d' %h/.local/state/noctalia/settings.toml > %h/src/dotfiles/config/noctalia/state-settings.toml"

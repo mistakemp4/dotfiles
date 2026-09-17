@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""Keep Spotify's PipeWire stream at the volume you last chose.
-
-Spotify's stream can come up with no per-channel volumes (plays at 100%, while
-pactl shows it as 0%), or snap to exactly 100%. Both get reset to the saved
-level. Volumes are read from PipeWire (pw-dump/wpctl), not pactl, which can't
-see this stream's aux channels. pactl subscribe is only used as the event feed.
-"""
+# pactl can't read spotify's stream volume, so use pw-dump/wpctl; pactl is only the event feed
 import json
 import re
 import subprocess
@@ -28,11 +22,10 @@ def save_level(level):
 
 
 def spotify_nodes():
-    """(node id, channelVolumes) for each Spotify playback stream."""
     out = subprocess.run(["pw-dump"], capture_output=True, text=True).stdout
     nodes = []
     for obj in json.loads(out or "[]"):
-        # the Spotify *client* object carries the same props but has no volume
+        # the client object has the same props but no volume
         if obj.get("type") != "PipeWire:Interface:Node":
             continue
         info = obj.get("info") or {}
@@ -55,7 +48,6 @@ def set_volume(node, level):
 
 
 def check(level):
-    """Fix any bad Spotify stream; returns the (possibly updated) saved level."""
     for node, channel_volumes in spotify_nodes():
         if not channel_volumes:
             print(f"node {node} has no channel volumes (plays at 100%), setting {level:.2f}", flush=True)
@@ -79,7 +71,6 @@ def main():
     for line in events.stdout:
         if "on sink-input" in line:
             level = check(level)
-    # pactl exiting (pipewire restart) ends the service; systemd restarts it
     raise SystemExit(events.wait() or 1)
 
 

@@ -11,7 +11,6 @@ mkdir -p "$HOME/.local/bin"
 mkdir -p "$HOME/.config/systemd/user"
 mkdir -p "$HOME/.local/share/applications"
 
-# ~/.local/bin scripts
 for f in "$DOTFILES"/local-bin/*; do
   [ -e "$f" ] || continue
   name=$(basename "$f")
@@ -27,7 +26,6 @@ for f in "$DOTFILES"/local-bin/*; do
   printf "\nInstalled %s to ~/.local/bin\n\n" "$name"
 done
 
-# systemd --user unit drop-ins, preserving directory structure (e.g. wireplumber.service.d/foo.conf)
 while IFS= read -r -d '' src; do
   rel="${src#"$DOTFILES"/systemd-user/}"
   dest="$HOME/.config/systemd/user/$rel"
@@ -43,7 +41,6 @@ while IFS= read -r -d '' src; do
   printf "\nInstalled systemd unit %s\n\n" "$rel"
 done < <(find "$DOTFILES/systemd-user" -type f -print0 2>/dev/null)
 
-# ~/.local/share/applications desktop-file overrides
 for f in "$DOTFILES"/local-share-applications/*; do
   [ -e "$f" ] || continue
   name=$(basename "$f")
@@ -59,7 +56,6 @@ for f in "$DOTFILES"/local-share-applications/*; do
 done
 update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 
-# local noctalia plugins (enable afterwards with: noctalia msg plugins enable <author/plugin>)
 mkdir -p "$HOME/.local/share/noctalia/plugins"
 for d in "$DOTFILES"/noctalia-plugins/*/; do
   [ -d "$d" ] || continue
@@ -68,7 +64,7 @@ for d in "$DOTFILES"/noctalia-plugins/*/; do
   printf "\nInstalled noctalia plugin %s\n\n" "$name"
 done
 
-# spicetify installs to ~/.spicetify, which isn't on PATH for noctalia's template hooks
+# ~/.spicetify isn't on PATH for noctalia's template hooks
 if [ -x "$HOME/.spicetify/spicetify" ]; then
   ln -sfn "$HOME/.spicetify/spicetify" "$HOME/.local/bin/spicetify"
   echo "Linked spicetify into ~/.local/bin"
@@ -76,7 +72,7 @@ fi
 
 systemctl --user daemon-reload
 
-# noctalia replaces its gui-saved settings on every save, so it's copied rather than linked
+# noctalia replaces this file on save, so copy instead of link
 state_settings="$HOME/.local/state/noctalia/settings.toml"
 if [ ! -e "$state_settings" ] && [ -f "$DOTFILES/config/noctalia/state-settings.toml" ]; then
   mkdir -p "$(dirname "$state_settings")"
@@ -84,7 +80,6 @@ if [ ! -e "$state_settings" ] && [ -f "$DOTFILES/config/noctalia/state-settings.
   echo "Restored noctalia state settings"
 fi
 
-# linking a unit doesn't enable it; skip units without [Install] (they're triggered by others)
 for f in "$DOTFILES"/systemd-user/*.service "$DOTFILES"/systemd-user/*.path; do
   [ -e "$f" ] || continue
   grep -q '^\[Install\]' "$f" || continue

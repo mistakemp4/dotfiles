@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# Restarting wireplumber/pipewire drops the A2DP media transport for already-connected
-# Bluetooth audio devices; BlueZ doesn't renegotiate it on its own, only a disconnect+
-# reconnect does. This runs after wireplumber starts to auto-heal that.
+# wireplumber restarts drop A2DP until the device reconnects
 MAC="58:36:53:CB:E2:EC"
 
 sleep 3

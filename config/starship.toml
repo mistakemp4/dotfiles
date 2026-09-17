@@ -10,7 +10,6 @@ $cmd_duration\
 $line_break\
 $character"""
 
-# colors come from the noctalia palette block noctalia appends below
 [directory]
 style = "bold fg:green"
 truncation_length = 3

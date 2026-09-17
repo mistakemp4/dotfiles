@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-"""Restart Spotify and Brave so they pick up a new Noctalia theme.
-
-Both only load their theme at startup. For each running app: wait for its
-template hook to finish, quit it cleanly, relaunch it through niri (so it isn't
-tied to the sync service), then restore playback / tabs.
-
-usage: restart-themed-apps.py <since-epoch> [spotify] [brave]
-"""
 import contextlib
 import fcntl
 import json
@@ -49,11 +41,7 @@ def running(name):
 
 
 def main_pid(name):
-    """PID of the app's main process: the one without --type=.
-
-    Chromium apps rewrite /proc/<pid>/cmdline into one space-joined string, so
-    split on spaces as well as NULs.
-    """
+    # chromium rewrites cmdline into one space-joined string
     out = subprocess.run(["pgrep", "-u", UID, "-x", name], capture_output=True, text=True).stdout
     for pid in out.split():
         try:
@@ -75,8 +63,7 @@ def rendered_since(path, since):
 
 
 def launch(name, args):
-    # via niri so the app gets its own scope instead of living in this service's cgroup.
-    # niri doesn't report exec failures, so confirm the process actually appears
+    # via niri for its own cgroup; niri doesn't report exec failures
     subprocess.run(["niri", "msg", "action", "spawn", "--", *args], check=True)
     if not wait_until(lambda: main_pid(name) is not None, 20):
         raise RuntimeError(f"{args[0]} didn't start")
@@ -108,7 +95,7 @@ def restart_spotify(since):
     playing = player_get("PlaybackStatus") == "Playing"
     track, position = current_track(), player_get("Position")
 
-    # spotify ignores SIGTERM but quits cleanly via MPRIS (Quit is on the root interface)
+    # spotify ignores SIGTERM; MPRIS Quit is on the root interface
     player_call("Quit", interface="org.mpris.MediaPlayer2")
     if not wait_until(lambda: main_pid("spotify") is None, 15):
         log("spotify didn't quit, killing it")
@@ -130,7 +117,6 @@ def restart_spotify(since):
 
 
 def enable_tab_restore():
-    """Set 'Continue where you left off' so restarts keep open tabs. Brave must be stopped."""
     data = json.loads(BRAVE_PREFS.read_text())
     session = data.setdefault("session", {})
     if session.get("restore_on_startup") == 1:
@@ -152,14 +138,14 @@ def restart_brave(since):
         return
 
     with contextlib.suppress(ProcessLookupError):
-        os.kill(pid, signal.SIGTERM)  # clean shutdown, session saved
+        os.kill(pid, signal.SIGTERM)
     if not wait_until(lambda: main_pid("brave") is None, 30):
         log("brave didn't quit within 30s, leaving it running")  # never force-kill: open tabs
         return
     if not wait_until(lambda: not running("brave"), 10):
         log("brave helpers still running after 10s, continuing")
     enable_tab_restore()
-    # with brave stopped, the hook can also write color_scheme + accent into Preferences
+    # apply.sh only writes Preferences while brave is stopped
     mode = subprocess.run(["noctalia", "msg", "theme-mode-get"], capture_output=True, text=True).stdout.strip()
     subprocess.run(["bash", str(BRAVE_APPLY), mode if mode in ("dark", "light") else "dark"],
                    capture_output=True, check=False)
@@ -169,18 +155,18 @@ def restart_brave(since):
 
 def main():
     if len(sys.argv) < 2:
-        sys.exit(__doc__)
+        sys.exit("usage: restart-themed-apps.py <since-epoch> [spotify] [brave]")
     since = float(sys.argv[1])
     apps = sys.argv[2:] or ["spotify", "brave"]
     LOCK.parent.mkdir(parents=True, exist_ok=True)
     with open(LOCK, "w") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)  # one restart round at a time
+        fcntl.flock(lock, fcntl.LOCK_EX)
         for name, restart in (("spotify", restart_spotify), ("brave", restart_brave)):
             if name not in apps:
                 continue
             try:
                 restart(since)
-            except Exception as e:  # one app failing shouldn't block the other
+            except Exception as e:
                 log(f"{name} restart failed: {e}")
 
 

@@ -14,7 +14,7 @@ layout {
         off
     }
 
-    // glow instead of a border; glow.kdl overrides these colors to match the wallpaper
+    // colors overridden by glow.kdl
     shadow {
         on
         softness 8
