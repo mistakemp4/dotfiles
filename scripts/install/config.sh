@@ -13,14 +13,22 @@ CONFIG_FILES=(
   alacritty
   autostart
   btop
+  cava
   environment.d
   fastfetch
   fish
+  gtk-3.0
+  gtk-4.0
   niri
   noctalia
+  obs-studio
   spicetify
   starship.toml
+  Thunar
+  vesktop/settings
+  vesktop/settings.json
   wireplumber
+  zathura
   'Code - OSS/User/settings.json'
 )
 

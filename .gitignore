@@ -17,3 +17,15 @@ config/fish/fish_variables
 # dotnet build output
 obj/
 bin/
+config/cava/themes/
+config/zathura/noctaliarc
+config/gtk-3.0/noctalia.css
+config/gtk-4.0/noctalia.css
+
+# obs keeps logs, caches and the websocket password next to its config: allowlist only
+config/obs-studio/*
+!config/obs-studio/global.ini
+!config/obs-studio/user.ini
+!config/obs-studio/basic/
+config/obs-studio/basic/**/*.bak
+config/obs-studio/basic/profiles/*/service.json

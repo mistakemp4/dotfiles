@@ -1,0 +1,6 @@
+[Unit]
+Description=Save explicitly installed packages to the dotfiles repo
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/save-package-list.sh

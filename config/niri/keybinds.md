@@ -10,7 +10,7 @@
 | `Mod+D` | App launcher |
 | `Mod+B` | Brave |
 | `Mod+S` | Spotify |
-| `Mod+E` | File manager (yazi, in terminal) |
+| `Mod+E` | File manager (thunar) |
 | `Ctrl+Shift+Escape` | System monitor (btop, in terminal) |
 
 ## Windows

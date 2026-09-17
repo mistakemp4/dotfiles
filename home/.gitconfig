@@ -1,0 +1,22 @@
+[credential "https://github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[user]
+	name = Mistake
+	email = sorenmyers@outlook.com
+[core]
+	pager = delta
+	editor = micro
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	line-numbers = true
+	syntax-theme = noctalia
+[merge]
+	conflictstyle = zdiff3
+[diff]
+	colorMoved = default

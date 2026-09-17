@@ -533,7 +533,7 @@ wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "alacritty", "btop", "gtk3", "gtk4", "kcolorscheme", "niri", "starship", "cava" ]
-    community_ids = [ "claude-code", "spicetify", "brave", "discord", "libreoffice", "vscode", "prismlauncher", "bat", "yazi", "fastfetch", "fzf", "lazygit", "micro", "papirus-icons", "zathura", "obs", "steam" ]
+    community_ids = [ "claude-code", "spicetify", "brave", "discord", "libreoffice", "vscode", "prismlauncher", "bat", "fastfetch", "fzf", "lazygit", "micro", "papirus-icons", "zathura", "obs", "steam" ]
 
     [theme.templates.user.niri-glow]
 input_path = "$XDG_CONFIG_HOME/noctalia/templates/niri-glow.kdl"

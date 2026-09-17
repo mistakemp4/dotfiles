@@ -1,0 +1,9 @@
+[Unit]
+Description=Update the dotfiles package list when pacman installs or removes packages
+
+[Path]
+PathChanged=/var/lib/pacman/local
+Unit=save-package-list.service
+
+[Install]
+WantedBy=default.target

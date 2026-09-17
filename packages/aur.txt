@@ -1,0 +1,6 @@
+millennium-bin
+polychromatic
+spotify
+trayscale
+xivlauncher
+xwayland-satellite-git

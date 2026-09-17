@@ -11,6 +11,20 @@ mkdir -p "$HOME/.local/bin"
 mkdir -p "$HOME/.config/systemd/user"
 mkdir -p "$HOME/.local/share/applications"
 
+for f in "$DOTFILES"/home/.[!.]*; do
+  [ -e "$f" ] || continue
+  name=$(basename "$f")
+  dest="$HOME/$name"
+
+  if [ -e "$dest" ] && [ ! -L "$dest" ]; then
+    mv "$dest" "$DOTFILES_BACKUP_FOLDER/$name"
+    echo "Backed up current $name to $DOTFILES_BACKUP_FOLDER/$name"
+  fi
+
+  ln -sf "$f" "$dest"
+  printf "\nInstalled %s to ~\n\n" "$name"
+done
+
 for f in "$DOTFILES"/local-bin/*; do
   [ -e "$f" ] || continue
   name=$(basename "$f")
