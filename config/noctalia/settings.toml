@@ -561,6 +561,10 @@ output_path = "$XDG_CONFIG_HOME/niri/glow.kdl"
     output_path = "$XDG_CACHE_HOME/noctalia/bitwarden-colors.json"
     post_hook = "python3 \"$HOME/.local/bin/theme_bitwarden.py\""
 
+    [theme.templates.user.fontforge]
+    input_path = "$XDG_CONFIG_HOME/noctalia/templates/fontforge.resource"
+    output_path = "$XDG_CONFIG_HOME/fontforge/noctalia.resource"
+
     # detached: restarts wait on other templates' hooks
     [theme.templates.user.theme-reload]
     input_path = "$XDG_CONFIG_HOME/noctalia/templates/theme-reload.txt"
