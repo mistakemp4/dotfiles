@@ -13,23 +13,8 @@ current_bg_id() {
     pgrep -af linux-wallpaperengine 2>/dev/null | grep -oP -- '--bg\s+\K[0-9]+' | head -1
 }
 
-# args: <image> --scheme X | --theme-json <palette>
-theme_bitwarden() {
-    noctalia theme "$@" --dark \
-        -r "$HOME/.config/noctalia/templates/bitwarden.json:$HOME/.cache/noctalia/bitwarden-colors.json" >/dev/null 2>&1
-    python3 "$HOME/.local/bin/theme_bitwarden.py" >/dev/null 2>&1
-}
-
-restart_themed_apps() {
-    python3 "$HOME/.local/bin/restart-themed-apps.py" "$1" &
-}
-
 apply_fallback() {
-    local since
-    since=$(date +%s)
     noctalia msg color-scheme-set custom "$FALLBACK_PALETTE" >/dev/null 2>&1
-    theme_bitwarden --theme-json "$HOME/.config/noctalia/palettes/$FALLBACK_PALETTE.json"
-    restart_themed_apps "$since"
     echo "fell back to $FALLBACK_PALETTE palette"
 }
 
@@ -60,12 +45,8 @@ sync_theme_for_id() {
 
     if [ -s "$out_image" ]; then
         # 2 = noctalia unreachable: retry, don't fall back
-        local since
-        since=$(date +%s)
         noctalia msg wallpaper-set "$out_image" >/dev/null 2>&1 || return 2
         noctalia msg color-scheme-set wallpaper vibrant >/dev/null 2>&1 || return 2
-        theme_bitwarden "$out_image" --scheme vibrant
-        restart_themed_apps "$since"
         echo "synced theme from wallpaper $id -> $out_image"
         return 0
     else

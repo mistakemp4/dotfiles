@@ -556,6 +556,17 @@ output_path = "$XDG_CONFIG_HOME/niri/glow.kdl"
     input_path = "$XDG_CONFIG_HOME/noctalia/templates/darkreader-colors.json"
     output_path = "$XDG_CACHE_HOME/noctalia/darkreader-colors.json"
 
+    [theme.templates.user.bitwarden-colors]
+    input_path = "$XDG_CONFIG_HOME/noctalia/templates/bitwarden.json"
+    output_path = "$XDG_CACHE_HOME/noctalia/bitwarden-colors.json"
+    post_hook = "python3 \"$HOME/.local/bin/theme_bitwarden.py\""
+
+    # detached: restarts wait on other templates' hooks
+    [theme.templates.user.theme-reload]
+    input_path = "$XDG_CONFIG_HOME/noctalia/templates/theme-reload.txt"
+    output_path = "$XDG_CACHE_HOME/noctalia/theme-reload.txt"
+    post_hook = "setsid -f systemd-cat -t restart-themed-apps python3 \"$HOME/.local/bin/restart-themed-apps.py\""
+
 [wallpaper]
 directory = "~/Pictures/WallPapers"
 enabled = true

@@ -5,12 +5,13 @@ import json
 import os
 import signal
 import subprocess
-import sys
 import time
 from pathlib import Path
 
 HOME = Path.home()
-LOCK = HOME / ".cache/wallpaperengine-theme-sync/restart.lock"
+LOCK = HOME / ".cache/theme-reload/restart.lock"
+SIGNATURE = HOME / ".cache/noctalia/theme-reload.txt"
+LAST_SIGNATURE = HOME / ".local/state/theme-reload/last"
 SPOTIFY_CSS = Path("/opt/spotify/Apps/xpui/colors.css")
 BRAVE_THEME = HOME / ".local/share/noctalia/brave-theme"
 BRAVE_PREFS = HOME / ".config/BraveSoftware/Brave-Browser/Default/Preferences"
@@ -18,6 +19,12 @@ BRAVE_APPLY = HOME / ".local/state/noctalia/community-templates/brave/apply.sh"
 # same as niri's Mod+B bind
 DARKREADER = HOME / "src/darkreader-noctalia/build/release/chrome-mv3"
 BRAVE_CMD = ["brave", f"--load-extension={BRAVE_THEME},{DARKREADER}"]
+GTK3_CSS = HOME / ".config/gtk-3.0/noctalia.css"
+PRISM_THEME = HOME / ".local/share/PrismLauncher/themes/Matugen/theme.json"
+PRISM_ID = "org.prismlauncher.PrismLauncher"
+STEAM_CSS = HOME / ".steam/steam/steamui/skins/Material-Theme/css/main/colors/matugen.css"
+LIBREOFFICE_APPLY = HOME / ".local/state/noctalia/community-templates/libreoffice/apply.sh"
+LIBREOFFICE_LOCK = HOME / ".cache/theme-reload/libreoffice.lock"
 PLAYER_BUS = ["org.mpris.MediaPlayer2.spotify", "/org/mpris/MediaPlayer2"]
 PLAYER_IFACE = "org.mpris.MediaPlayer2.Player"
 UID = str(os.getuid())
@@ -62,11 +69,39 @@ def rendered_since(path, since):
     return check
 
 
-def launch(name, args):
+def launch(name, args, timeout=20):
     # via niri for its own cgroup; niri doesn't report exec failures
     subprocess.run(["niri", "msg", "action", "spawn", "--", *args], check=True)
-    if not wait_until(lambda: main_pid(name) is not None, 20):
+    if not wait_until(lambda: main_pid(name) is not None, timeout):
         raise RuntimeError(f"{args[0]} didn't start")
+
+
+def niri_windows(app_id):
+    out = subprocess.run(["niri", "msg", "-j", "windows"], capture_output=True, text=True).stdout
+    return [w for w in json.loads(out or "[]") if w.get("app_id") == app_id]
+
+
+def close_windows(windows):
+    for w in windows:
+        subprocess.run(["niri", "msg", "action", "close-window", "--id", str(w["id"])], capture_output=True)
+
+
+def descendants(pid):
+    children = {}
+    for stat in Path("/proc").glob("[0-9]*/stat"):
+        with contextlib.suppress(OSError, ValueError, IndexError):
+            ppid = int(stat.read_text().rsplit(")", 1)[1].split()[1])
+            children.setdefault(ppid, []).append(int(stat.parent.name))
+    found, todo = [], [pid]
+    while todo:
+        kids = children.get(todo.pop(), [])
+        found += kids
+        todo += kids
+    return found
+
+
+def xfconf(prop, *args):
+    return subprocess.run(["xfconf-query", "-c", "thunar", "-p", prop, *args], capture_output=True, text=True)
 
 
 def player_get(prop):
@@ -153,21 +188,122 @@ def restart_brave(since):
     log("brave restarted")
 
 
+def restart_thunar(since, skipped):
+    if not running("thunar"):
+        return
+    windows = niri_windows("thunar")
+    main = [w for w in windows if (w.get("title") or "").endswith(" - Thunar")]
+    if len(main) != len(windows) or len(main) > 1:
+        skipped.append("Thunar (a dialog or several windows are open)")
+        return
+    if not wait_until(rendered_since(GTK3_CSS, since), 60):
+        log("gtk colors weren't re-applied, leaving thunar alone")
+        return
+    daemon = subprocess.run(["pgrep", "-u", UID, "-f", "thunar --daemon"], capture_output=True).returncode == 0
+    prev = xfconf("/last-restore-tabs")
+    xfconf("/last-restore-tabs", "-n", "-t", "bool", "-s", "true")
+    try:
+        close_windows(main)
+        wait_until(lambda: not niri_windows("thunar"), 10)
+        subprocess.run(["thunar", "-q"], capture_output=True)
+        if not wait_until(lambda: not running("thunar"), 10):
+            skipped.append("Thunar (didn't quit)")
+            return
+        if main:
+            launch("thunar", ["thunar"])
+            wait_until(lambda: niri_windows("thunar"), 10)
+        elif daemon:
+            launch("thunar", ["thunar", "--daemon"])
+        log("thunar restarted")
+    finally:
+        if prev.returncode == 0:
+            xfconf("/last-restore-tabs", "-s", prev.stdout.strip())
+        else:
+            xfconf("/last-restore-tabs", "-r")
+
+
+def restart_prism(since, skipped):
+    pid = main_pid("prismlauncher")
+    if pid is None:
+        return
+    if descendants(pid):
+        skipped.append("PrismLauncher (a game is running)")
+        return
+    if not wait_until(rendered_since(PRISM_THEME, since), 60):
+        log("prism theme wasn't re-applied, leaving prism alone")
+        return
+    close_windows(niri_windows(PRISM_ID))
+    if not wait_until(lambda: main_pid("prismlauncher") is None, 15):
+        skipped.append("PrismLauncher (didn't quit)")
+        return
+    launch("prismlauncher", ["prismlauncher"])
+    log("prism restarted")
+
+
+def restart_steam(since, skipped):
+    if not running("steam"):
+        return
+    if subprocess.run(["pgrep", "-u", UID, "-f", "SteamLaunch AppId="], capture_output=True).returncode == 0:
+        skipped.append("Steam (a game is running)")
+        return
+    if not wait_until(rendered_since(STEAM_CSS, since), 60):
+        log("steam colors weren't re-applied, leaving steam alone")
+        return
+    had_window = bool(niri_windows("steam"))
+    subprocess.run(["steam", "-shutdown"], capture_output=True, timeout=60)
+    if not wait_until(lambda: not running("steam"), 90, step=1):
+        skipped.append("Steam (didn't shut down)")
+        return
+    launch("steam", ["steam"] if had_window else ["steam", "-silent"], timeout=60)
+    log("steam restarted")
+
+
+def update_libreoffice(skipped):
+    if not running("soffice.bin"):
+        return
+    # its hook skips installing while it's open
+    skipped.append("LibreOffice (updates once you close it)")
+    subprocess.Popen(["setsid", "-f", "flock", "-n", str(LIBREOFFICE_LOCK), "bash", "-c",
+                      'while pgrep -u "$UID" -x soffice.bin >/dev/null; do sleep 5; done; bash "$1"',
+                      "_", str(LIBREOFFICE_APPLY)])
+
+
+def palette_changed():
+    current = SIGNATURE.read_text()
+    try:
+        last = LAST_SIGNATURE.read_text()
+    except FileNotFoundError:
+        last = None
+    LAST_SIGNATURE.parent.mkdir(parents=True, exist_ok=True)
+    LAST_SIGNATURE.write_text(current)
+    return last is not None and last != current
+
+
 def main():
-    if len(sys.argv) < 2:
-        sys.exit("usage: restart-themed-apps.py <since-epoch> [spotify] [brave]")
-    since = float(sys.argv[1])
-    apps = sys.argv[2:] or ["spotify", "brave"]
     LOCK.parent.mkdir(parents=True, exist_ok=True)
     with open(LOCK, "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
+        if not palette_changed():
+            return
+        # outputs rendered earlier in the same apply run
+        since = SIGNATURE.stat().st_mtime - 30
+        skipped = []
         for name, restart in (("spotify", restart_spotify), ("brave", restart_brave)):
-            if name not in apps:
-                continue
             try:
                 restart(since)
             except Exception as e:
                 log(f"{name} restart failed: {e}")
+        for name, restart in (("thunar", restart_thunar), ("prism", restart_prism), ("steam", restart_steam)):
+            try:
+                restart(since, skipped)
+            except Exception as e:
+                log(f"{name} restart failed: {e}")
+                skipped.append(f"{name} (restart failed)")
+        update_libreoffice(skipped)
+        if skipped:
+            log("skipped: " + ", ".join(skipped))
+            subprocess.run(["notify-send", "-a", "Theme", "Some apps still have the old colors", "\n".join(skipped)],
+                           capture_output=True)
 
 
 if __name__ == "__main__":
