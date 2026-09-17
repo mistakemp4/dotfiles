@@ -86,6 +86,14 @@ fi
 
 systemctl --user daemon-reload
 
+# fontforge rewrites prefs on exit and it lists recent files, so only ensure the theme pref
+ff_prefs="$HOME/.config/fontforge/prefs"
+if ! grep -q "^ResourceFile:" "$ff_prefs" 2>/dev/null; then
+  mkdir -p "$(dirname "$ff_prefs")"
+  printf 'ResourceFile:\t%s\n' "$HOME/.config/fontforge/noctalia.resource" >> "$ff_prefs"
+  echo "Set fontforge ResourceFile"
+fi
+
 # noctalia replaces this file on save, so copy instead of link
 state_settings="$HOME/.local/state/noctalia/settings.toml"
 if [ ! -e "$state_settings" ] && [ -f "$DOTFILES/config/noctalia/state-settings.toml" ]; then

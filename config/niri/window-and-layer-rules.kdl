@@ -75,6 +75,7 @@ window-rule {
   match app-id=r#"^XIVLauncher\.Core$"#
   match app-id="^code-oss$"
   match app-id="^steam$"
+  match app-id="^fontforge$"
 
   draw-border-with-background false
   opacity 0.9
