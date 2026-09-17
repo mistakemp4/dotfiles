@@ -565,6 +565,11 @@ output_path = "$XDG_CONFIG_HOME/niri/glow.kdl"
     input_path = "$XDG_CONFIG_HOME/noctalia/templates/fontforge.resource"
     output_path = "$XDG_CONFIG_HOME/fontforge/noctalia.resource"
 
+    [theme.templates.user.th65-lighting]
+    input_path = "$XDG_CONFIG_HOME/noctalia/templates/th65-lighting.txt"
+    output_path = "$XDG_CACHE_HOME/noctalia/th65-lighting.txt"
+    post_hook = "python3 \"$HOME/.local/bin/th65-lighting.py\" --quiet --file \"$HOME/.cache/noctalia/th65-lighting.txt\""
+
     # detached: restarts wait on other templates' hooks
     [theme.templates.user.theme-reload]
     input_path = "$XDG_CONFIG_HOME/noctalia/templates/theme-reload.txt"

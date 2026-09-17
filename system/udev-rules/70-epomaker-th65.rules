@@ -1,0 +1,23 @@
+# Epomaker TH65 (SONiX 0c45:8011) -- let the logged-in local user reach the two
+# vendor HID interfaces, so WebHID and our own tooling can talk to the board.
+#
+# Scoped deliberately: interface 3 (usage page 0xff68, the SONiX config channel)
+# and interface 4 (usage page 0xff70). Interfaces 0 and 1 are the actual keyboard
+# and mouse endpoints and are left root-only on purpose -- nothing needs them, and
+# opening them would hand any local process a keystroke feed.
+#
+# Two things this file gets right that the obvious version does not:
+#   * match on ENV{}, not ATTRS{}. All ATTRS{} in one rule must resolve on the
+#     SAME parent, but idVendor/idProduct live on the USB device while
+#     bInterfaceNumber lives on the USB interface -- so an ATTRS{} rule combining
+#     them never matches. The ID_* properties below are all set on the hidraw
+#     device itself by the usb_id builtin.
+#   * the 70- prefix. Those ID_* properties are imported by
+#     60-persistent-hidraw.rules, so this must sort after it, and before
+#     73-seat-late.rules, which is what actually applies the uaccess ACL.
+#
+# TAG+="uaccess" grants an ACL to whoever is physically logged in at the seat,
+# rather than a static group, so access disappears with the session.
+
+SUBSYSTEM=="hidraw", ENV{ID_VENDOR_ID}=="0c45", ENV{ID_MODEL_ID}=="8011", ENV{ID_USB_INTERFACE_NUM}=="03", TAG+="uaccess"
+SUBSYSTEM=="hidraw", ENV{ID_VENDOR_ID}=="0c45", ENV{ID_MODEL_ID}=="8011", ENV{ID_USB_INTERFACE_NUM}=="04", TAG+="uaccess"
