@@ -82,8 +82,8 @@ widget_order = [
     [desktop_widgets.widget.desktop-widget-0000000000000014]
     box_height = 396.0
     box_width = 480.0
-    cx = 1800.0
-    cy = 948.0
+    cx = 1788.0
+    cy = 934.0
     output = "DP-1"
     placement_height = 1152.0
     placement_width = 2048.0
@@ -145,8 +145,8 @@ enabled = [
     "seal/centered_weather",
     "dotnetrob/cat",
     "tranzem/media-lyrics",
-    "seal/phantom_calendar",
-    "seal/phan_site"
+    "seal/phan_site",
+    "seal/phantom_calendar"
 ]
 
 [shell]
@@ -181,13 +181,13 @@ wallpaper_scheme = "vibrant"
     ]
 
 [wallpaper.default]
-path = "/home/seal/Pictures/WallPapers/we-3493003914-hd.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3792056955-hd.jpg"
 
 [wallpaper.last]
-path = "/home/seal/Pictures/WallPapers/we-3493003914-hd.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3792056955-hd.jpg"
 
 [wallpaper.monitors.DP-1]
-path = "/home/seal/Pictures/WallPapers/we-3493003914-hd.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3792056955-hd.jpg"
 
 [weather]
 unit = "imperial"

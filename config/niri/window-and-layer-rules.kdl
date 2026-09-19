@@ -74,7 +74,6 @@ window-rule {
   match app-id=r#"^com\.obsproject\.Studio$"#
   match app-id=r#"^XIVLauncher\.Core$"#
   match app-id="^code-oss$"
-  match app-id="^steam$"
   match app-id="^fontforge$"
 
   draw-border-with-background false
@@ -111,4 +110,14 @@ window-rule {
   open-on-workspace "1"
   open-focused false
   open-maximized true
+}
+
+// Steam draws its menus INSIDE its own window rather than as real popups, so any
+// window opacity or blur applies to every menu and makes them unreadable. It is
+// deliberately kept out of the translucent group above; only the border styling
+// is shared. (2026-09-18)
+window-rule {
+  match app-id="^steam$"
+
+  draw-border-with-background false
 }

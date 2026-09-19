@@ -182,7 +182,11 @@
             "enableEmojiBypass": true,
             "transformEmojis": true,
             "transformStickers": true,
-            "transformCompoundSentence": false
+            "transformCompoundSentence": false,
+            "stickerSize": 160,
+            "hyperLinkText": "{{NAME}}",
+            "useHyperLinks": true,
+            "disableEmbedPermissionCheck": false
         },
         "FakeProfileThemes": {
             "enabled": false
@@ -619,6 +623,6 @@
         "authenticated": true,
         "url": "https://api.vencord.dev/",
         "settingsSync": true,
-        "settingsSyncVersion": 1789520839736
+        "settingsSyncVersion": 1789766751586
     }
 }

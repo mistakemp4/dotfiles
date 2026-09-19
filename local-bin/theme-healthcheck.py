@@ -42,6 +42,22 @@ DOWNSTREAM = [
     ("bitwarden", CACHE / "noctalia/bitwarden-colors.json", ["primary", "surface"]),
     ("gtk3", CONFIG / "gtk-3.0/noctalia.css", ["primary", "surface"]),
     ("gtk4", CONFIG / "gtk-4.0/noctalia.css", ["primary", "surface"]),
+    # these hooks INLINE the palette into the app's own config rather than
+    # referencing a theme file, so the colours really are the hook's artifact.
+    # fastfetch only gets "primary" checked: its hook nudges light channels, so
+    # other entries can legitimately come out altered.
+    ("fastfetch", CONFIG / "fastfetch/config.jsonc", ["primary"]),
+    ("lazygit", CONFIG / "lazygit/config.yml", ["primary", "on_surface"]),
+    ("starship", CONFIG / "starship.toml", ["primary", "surface"]),
+]
+
+# Hooks whose job is wiring, not colour: they point an app at the noctalia theme.
+# Nothing here changes per palette, so a colour check would be meaningless -- the
+# failure mode is the app losing the reference entirely.
+WIRING = [
+    ("bat", CONFIG / "bat/config", "--theme=noctalia"),
+    ("micro", CONFIG / "micro/settings.json", "noctalia"),
+    ("libreoffice", STATE / "noctalia/community-templates/libreoffice/build/noctalia-theme.oxt", None),
 ]
 
 UNITS = [
@@ -278,6 +294,23 @@ def check_hook_log(report, since):
         report.ok("hooks:log", "no hook failures during this run")
 
 
+def check_wiring(report):
+    for name, path, needle in WIRING:
+        if not path.exists():
+            report.bad(f"wiring:{name}", f"{path} is missing -- the hook never wired it up")
+            continue
+        if needle is None:
+            report.ok(f"wiring:{name}", str(path))
+            continue
+        try:
+            if needle in path.read_text(errors="replace"):
+                report.ok(f"wiring:{name}", str(path))
+            else:
+                report.bad(f"wiring:{name}", f"{path} no longer references {needle!r}")
+        except OSError as e:
+            report.bad(f"wiring:{name}", f"{path}: {e}")
+
+
 def check_units(report):
     for unit in UNITS:
         state = run(["systemctl", "--user", "is-active", unit]).stdout.strip()
@@ -325,6 +358,7 @@ def main():
         else:
             check_templates(report, settings)
             check_downstream(report, palette())
+            check_wiring(report)
             check_hook_log(report, started)
     check_units(report)
     check_wallpaper(report)

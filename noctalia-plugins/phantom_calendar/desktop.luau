@@ -3,7 +3,7 @@ local REFRESH_SECONDS = 15 * 60
 local SETUP_RETRY_SECONDS = 60
 local SVG_W, SVG_H = 640, 400
 -- layout is in 1920x1080 screenshot pixels
-local ORIGIN_X, ORIGIN_Y = 50, 45
+local ORIGIN_X, ORIGIN_Y = -39, 2
 local SHOW_W, SHOW_H = 681, 426
 local RENDER_W = 1536
 local WEATHER_FRAMES = 3
@@ -30,7 +30,7 @@ local LAYOUT = {
   single = { 227, 85, 0.42, -3 },
   weather = { 365, 62, 0.42, 10 },
   weekday = { 279, 155, 0.47, -26 },
-  timeOfDay = { 102, 259, 0.43, -24 },
+  timeOfDay = { 150, 262, 0.43, -24 },   -- x is recomputed per-day, see timeOfDayLayout
   banner = { 445, 188, 0.46, -5 },
 }
 
@@ -251,6 +251,26 @@ local function sprite(id, layout, filter)
   )
 end
 
+-- How far the time-of-day sticker's right edge reaches past the weekday's left
+-- edge. Tuned by eye against an in-game screenshot on Evening + THURSDAY.
+local TOD_OVERLAP = 76
+
+-- The weekday and time-of-day sprites are different widths per day and per time
+-- of day (SUNDAY 522px vs WEDNESDAY 618px; AfterSchool 256px vs Lunch 338px) and
+-- every sprite is centre-anchored, so a fixed x makes the overlap swing by ~40px
+-- across combinations. Anchor the time-of-day to the weekday's actual left edge
+-- instead, so the overlap looks the same every day.
+local function timeOfDayLayout(s)
+  local base = LAYOUT.timeOfDay
+  local weekday, tod = sizes[67 + s.weekday], sizes[125 + s.timeOfDay]
+  if not weekday or not tod then
+    return base
+  end
+  local weekdayLeft = LAYOUT.weekday[1] - weekday.w * LAYOUT.weekday[3] / 2
+  local todHalf = tod.w * base[3] / 2
+  return { weekdayLeft + TOD_OVERLAP - todHalf, base[2], base[3], base[4] }
+end
+
 local function elements(s, frame)
   local holiday = if s.holiday then HOLIDAYS[s.holiday] else {}
   local numerals = holiday.numerals or {}
@@ -275,7 +295,7 @@ local function elements(s, frame)
   local letters = if holiday.tuesday and w == 2 then holiday.tuesday else 287 + w
   table.insert(list, { layout = LAYOUT.weekday, layers = { { 67 + w }, { 74 + w, "black" }, { 81 + w, "accent" }, { letters, "black" } } })
   local t = s.timeOfDay
-  table.insert(list, { layout = LAYOUT.timeOfDay, layers = { { 88 + t }, { 125 + t, "dark" } } })
+  table.insert(list, { layout = timeOfDayLayout(s), layers = { { 88 + t }, { 125 + t, "dark" } } })
   return list, holiday.extras or {}
 end
 

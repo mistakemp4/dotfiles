@@ -27,8 +27,34 @@ VENDOR, PRODUCT, IFACE = "0c45", "8011", "03"
 PALETTE = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "noctalia/bitwarden-colors.json"
 
 MODE_STATIC = 0x01
+MODE_PRESERVE = "keep"
 DEFAULT_SPEED = 0x05
 DEFAULT_BRIGHTNESS = 0x03
+# Matching screen colour on LEDs needs two corrections, tuned by eye on this board
+# against a light-sky-blue wallpaper (2026-09-17):
+#   BALANCE: the green die is far more luminous than red/blue at the same PWM, so
+#     green must be driven to ~0.30 or a light blue reads as teal. This is the big
+#     one -- gamma alone could not fix it even pushed to 2.8.
+#   GAMMA: sRGB is gamma-encoded, LED PWM is linear. Kept low (1.4) because heavy
+#     gamma oversaturates into navy, and the target here is a LIGHT colour.
+# correct() renormalises to the original peak afterwards, so neither knob costs
+# brightness. Both are cosmetic; --raw disables them.
+DEFAULT_GAMMA = 1.4
+DEFAULT_BALANCE = (1.0, 0.30, 1.0)
+
+
+def correct(rgb, gamma, balance, normalize=True):
+    """Gamma pulls the channel ratios apart (that's what kills the teal cast) but
+    also darkens everything. Rescaling back to the original peak keeps the new
+    ratios and returns the lost output, so gamma can be raised for saturation
+    without trading away brightness."""
+    out = [(value / 255.0) ** gamma * gain for value, gain in zip(rgb, balance)]
+    if normalize:
+        peak = max(out)
+        target = max(rgb) / 255.0
+        if peak > 0:
+            out = [v * target / peak for v in out]
+    return tuple(max(0, min(255, round(v * 255))) for v in out)
 HEX = re.compile(r"#?([0-9a-fA-F]{6})$")
 
 
@@ -83,6 +109,21 @@ class Keyboard:
                 time.sleep(0.03)
         return None
 
+    def current_mode(self, tries=6):
+        """The live effect id, or None if it genuinely can't be read.
+
+        Only the MODE byte of 0x13 is trustworthy -- its colour field goes stale
+        after a write, so never verify a colour with it. The read itself is flaky:
+        measured ~2 failures in 12 back-to-back attempts, so retry. A single
+        attempt silently cost the user their ripple effect roughly every sixth
+        theme apply."""
+        for attempt in range(tries):
+            r = self.xfer(packet(0x13, bytes(16), last=1))
+            if r and len(r) > 24 and r[1] == 0x13 and r[22:24] == b"\xaa\x55":
+                return r[8]
+            time.sleep(0.08 * (attempt + 1))
+        return None
+
     def set_colour(self, rgb, mode, speed, brightness, direction=0):
         body = bytes([mode, *rgb, 0xFF, 0, 0, 0, direction, speed, brightness, 0, 0, 0, 0xAA, 0x55])
         return self.xfer(packet(0x23, body, last=1))
@@ -127,10 +168,19 @@ def main():
                         "the template's own freshly-rendered output, so there's no ordering dependency "
                         "on other templates")
     p.add_argument("--key", default="primary", help="palette entry to use (default: primary)")
-    p.add_argument("--mode", type=lambda v: int(v, 0), default=MODE_STATIC,
-                   help="lighting mode; only a static mode shows a fixed colour (default: 1)")
+    p.add_argument("--mode", default=MODE_PRESERVE,
+                   help="lighting effect id, or 'keep' (default) to leave the current effect alone and "
+                        "only recolour it -- so applying a theme doesn't drop you back to static. "
+                        "0x01 is static, 0x0f is the press-to-light ripple")
     p.add_argument("--speed", type=lambda v: int(v, 0), default=DEFAULT_SPEED)
     p.add_argument("--brightness", type=lambda v: int(v, 0), default=DEFAULT_BRIGHTNESS)
+    p.add_argument("--gamma", type=float, default=DEFAULT_GAMMA,
+                   help=f"gamma correction for the LEDs (default {DEFAULT_GAMMA}; 1.0 disables)")
+    p.add_argument("--balance", default=",".join(str(v) for v in DEFAULT_BALANCE),
+                   help="per-channel gain R,G,B applied after gamma (default %(default)s)")
+    p.add_argument("--no-normalize", dest="normalize", action="store_false",
+                   help="don't rescale back to the original peak after gamma (leaves it dimmer)")
+    p.add_argument("--raw", action="store_true", help="skip gamma and balance entirely")
     p.add_argument("--verify", action="store_true", help="read the framebuffer back and report")
     p.add_argument("--quiet", action="store_true")
     args = p.parse_args()
@@ -154,6 +204,16 @@ def main():
     else:
         rgb = palette_colour(args.key)
 
+    if not args.raw:
+        try:
+            balance = tuple(float(v) for v in args.balance.split(","))
+            assert len(balance) == 3
+        except (ValueError, AssertionError):
+            sys.exit(f"--balance wants three numbers like 1.0,0.85,1.0, got {args.balance!r}")
+        shown, rgb = rgb, correct(rgb, args.gamma, balance, args.normalize)
+    else:
+        shown = rgb
+
     path = find_device()
     if not path:
         sys.exit(f"no TH65 vendor interface found ({VENDOR}:{PRODUCT} iface {IFACE}); is it plugged in?")
@@ -163,11 +223,25 @@ def main():
     except PermissionError:
         sys.exit(f"{path} is not writable -- install system/udev-rules/70-epomaker-th65.rules")
 
+    if args.mode == MODE_PRESERVE:
+        mode = kb.current_mode()
+        if mode is None:
+            # Never guess here. Forcing a mode would silently replace whatever
+            # effect the user chose, which is worse than leaving the colour stale.
+            kb.close()
+            print("could not read the current effect after retries; leaving the keyboard alone "
+                  "(pass --mode to set one explicitly)", file=sys.stderr)
+            return 1
+    else:
+        mode = int(args.mode, 0)
+
     try:
-        echo = kb.set_colour(rgb, args.mode, args.speed, args.brightness)
+        echo = kb.set_colour(rgb, mode, args.speed, args.brightness)
         ok = bool(echo) and len(echo) > 12 and echo[1] == 0x23 and tuple(echo[9:12]) == rgb
         if not args.quiet:
-            print(f"{path}: set #{rgb[0]:02x}{rgb[1]:02x}{rgb[2]:02x} mode={args.mode} "
+            kept = " (kept)" if args.mode == MODE_PRESERVE else ""
+            adj = "" if args.raw else f" (from #{shown[0]:02x}{shown[1]:02x}{shown[2]:02x})"
+            print(f"{path}: set #{rgb[0]:02x}{rgb[1]:02x}{rgb[2]:02x}{adj} mode={mode:#04x}{kept} "
                   f"({'acked' if ok else 'NO ACK'})")
         if args.verify:
             time.sleep(0.5)

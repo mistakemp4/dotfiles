@@ -1,0 +1,10 @@
+[Unit]
+Description=Restart linux-wallpaperengine if its surface shrank into the corner
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/wallpaper-watchdog.py --fix --quiet
+# a detection is reported through the exit code, not a unit failure
+SuccessExitStatus=0 1
