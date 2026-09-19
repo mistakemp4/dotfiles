@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# wireplumber restarts drop A2DP until the device reconnects
 MAC="58:36:53:CB:E2:EC"
 
 sleep 3

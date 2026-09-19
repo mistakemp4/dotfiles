@@ -1,18 +1,3 @@
-#!/usr/bin/env python3
-"""Set the Epomaker TH65's key lighting, by default from the current Noctalia palette.
-
-Only the key zone is host-controllable. The side and front strips are cycled by
-firmware actions bound to Fn keys (Fn+.> / Fn+/? and Fn+PgUp / Fn+PgDn) and have
-no host command at all, so they can't follow the wallpaper -- set them by hand.
-
-Protocol (SONiX 0c45:8011, vendor interface 3, usage page 0xff68/usage 0x61):
-  packet = aa <cmd> <len> <off_lo> <off_hi> 00 <last> 00 + payload, padded to 64
-  hidraw wants a leading 0x00 report-ID byte, so 65 bytes go out
-  cmd 0x23 writes the 16-byte lighting struct:
-      <mode> <R> <G> <B> ff 00 00 00 <dir> <speed> <brightness> 00 00 00 aa 55
-  cmd 0x33 reads back the 128-LED framebuffer -- the only trustworthy check, as
-  cmd 0x13 can return a stale struct right after a write.
-"""
 
 import argparse
 import glob
@@ -30,24 +15,10 @@ MODE_STATIC = 0x01
 MODE_PRESERVE = "keep"
 DEFAULT_SPEED = 0x05
 DEFAULT_BRIGHTNESS = 0x03
-# Matching screen colour on LEDs needs two corrections, tuned by eye on this board
-# against a light-sky-blue wallpaper (2026-09-17):
-#   BALANCE: the green die is far more luminous than red/blue at the same PWM, so
-#     green must be driven to ~0.30 or a light blue reads as teal. This is the big
-#     one -- gamma alone could not fix it even pushed to 2.8.
-#   GAMMA: sRGB is gamma-encoded, LED PWM is linear. Kept low (1.4) because heavy
-#     gamma oversaturates into navy, and the target here is a LIGHT colour.
-# correct() renormalises to the original peak afterwards, so neither knob costs
-# brightness. Both are cosmetic; --raw disables them.
 DEFAULT_GAMMA = 1.4
 DEFAULT_BALANCE = (1.0, 0.30, 1.0)
 
-
 def correct(rgb, gamma, balance, normalize=True):
-    """Gamma pulls the channel ratios apart (that's what kills the teal cast) but
-    also darkens everything. Rescaling back to the original peak keeps the new
-    ratios and returns the lost output, so gamma can be raised for saturation
-    without trading away brightness."""
     out = [(value / 255.0) ** gamma * gain for value, gain in zip(rgb, balance)]
     if normalize:
         peak = max(out)
@@ -57,9 +28,7 @@ def correct(rgb, gamma, balance, normalize=True):
     return tuple(max(0, min(255, round(v * 255))) for v in out)
 HEX = re.compile(r"#?([0-9a-fA-F]{6})$")
 
-
 def find_device():
-    """The vendor config interface, by USB ids -- hidraw numbering isn't stable."""
     for dev in sorted(glob.glob("/sys/bus/hid/devices/*")):
         usb = Path(dev).resolve().parent
         try:
@@ -76,11 +45,9 @@ def find_device():
             return f"/dev/{nodes[0].name}"
     return None
 
-
 def packet(cmd, payload, offset=0, last=1):
     head = bytes([0xAA, cmd, len(payload), offset & 0xFF, (offset >> 8) & 0xFF, 0, last, 0])
     return (head + bytes(payload)).ljust(64, b"\x00")
-
 
 class Keyboard:
     def __init__(self, path):
@@ -100,7 +67,7 @@ class Keyboard:
     def xfer(self, pkt, tries=30):
         self._drain()
         os.set_blocking(self.fd, True)
-        os.write(self.fd, b"\x00" + pkt)          # leading report id, reports are unnumbered
+        os.write(self.fd, b"\x00" + pkt)
         os.set_blocking(self.fd, False)
         for _ in range(tries):
             try:
@@ -110,13 +77,6 @@ class Keyboard:
         return None
 
     def current_mode(self, tries=6):
-        """The live effect id, or None if it genuinely can't be read.
-
-        Only the MODE byte of 0x13 is trustworthy -- its colour field goes stale
-        after a write, so never verify a colour with it. The read itself is flaky:
-        measured ~2 failures in 12 back-to-back attempts, so retry. A single
-        attempt silently cost the user their ripple effect roughly every sixth
-        theme apply."""
         for attempt in range(tries):
             r = self.xfer(packet(0x13, bytes(16), last=1))
             if r and len(r) > 24 and r[1] == 0x13 and r[22:24] == b"\xaa\x55":
@@ -145,7 +105,6 @@ class Keyboard:
             off += ln
         return leds
 
-
 def palette_colour(key):
     try:
         raw = json.loads(PALETTE.read_text())
@@ -158,7 +117,6 @@ def palette_colour(key):
         sys.exit(f"palette entry '{key}' is not a hex colour: {raw[key]!r}")
     h = m.group(1)
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
-
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -226,8 +184,6 @@ def main():
     if args.mode == MODE_PRESERVE:
         mode = kb.current_mode()
         if mode is None:
-            # Never guess here. Forcing a mode would silently replace whatever
-            # effect the user chose, which is worse than leaving the colour stale.
             kb.close()
             print("could not read the current effect after retries; leaving the keyboard alone "
                   "(pass --mode to set one explicitly)", file=sys.stderr)
@@ -251,12 +207,10 @@ def main():
             top = Counter(lit).most_common(1)
             if top:
                 c, n = top[0]
-                # the board applies brightness as a scale, so expect a proportional match
                 print(f"   framebuffer: {n} LEDs at {c[0]:02x} {c[1]:02x} {c[2]:02x}")
         return 0 if ok else 1
     finally:
         kb.close()
-
 
 if __name__ == "__main__":
     sys.exit(main())

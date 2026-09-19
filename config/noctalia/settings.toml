@@ -570,7 +570,14 @@ output_path = "$XDG_CONFIG_HOME/niri/glow.kdl"
     output_path = "$XDG_CACHE_HOME/noctalia/th65-lighting.txt"
     post_hook = "python3 \"$HOME/.local/bin/th65-lighting.py\" --quiet --file \"$HOME/.cache/noctalia/th65-lighting.txt\""
 
-    # detached: restarts wait on other templates' hooks
+    [theme.templates.user.mangohud]
+    input_path = "$XDG_CONFIG_HOME/noctalia/templates/mangohud.conf"
+    output_path = "$XDG_CONFIG_HOME/MangoHud/MangoHud.conf"
+
+    [theme.templates.user.vtrgb]
+    input_path = "$XDG_CONFIG_HOME/noctalia/templates/vtrgb.txt"
+    output_path = "$XDG_CACHE_HOME/noctalia/vtrgb"
+
     [theme.templates.user.theme-reload]
     input_path = "$XDG_CONFIG_HOME/noctalia/templates/theme-reload.txt"
     output_path = "$XDG_CACHE_HOME/noctalia/theme-reload.txt"
@@ -634,7 +641,6 @@ artist_first = true
 hide_when_no_media = true
 title_scroll = "always"
 
-# "theme" mode is hardcoded to secondary
 [widget."dotnetrob/cat:cat"]
 cat_color_mode = "custom"
 cat_color = "primary"

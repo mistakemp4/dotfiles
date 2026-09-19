@@ -7,6 +7,5 @@ include "other.kdl"
 include "binds.kdl"
 
 include "noctalia.kdl"
-// rendered on theme change, missing on a fresh install
 include optional=true "glow.kdl"
 include optional=true "cursor.kdl"

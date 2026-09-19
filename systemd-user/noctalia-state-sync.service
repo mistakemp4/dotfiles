@@ -1,6 +1,5 @@
 [Unit]
 Description=Copy Noctalia's GUI-saved settings into the dotfiles repo
-# GUI saves come in bursts
 StartLimitIntervalSec=0
 
 # public repo: drop location lines

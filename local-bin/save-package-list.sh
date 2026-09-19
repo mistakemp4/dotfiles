@@ -3,7 +3,6 @@ set -euo pipefail
 
 OUT="$(dirname "$(readlink -f "$0")")/../packages"
 
-# the .path unit fires mid-transaction
 for _ in $(seq 1 600); do
     [ -e /var/lib/pacman/db.lck ] || break
     sleep 1

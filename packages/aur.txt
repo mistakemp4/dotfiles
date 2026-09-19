@@ -1,5 +1,4 @@
 millennium-bin
-polychromatic
 spotify
 trayscale
 xivlauncher

@@ -3,7 +3,6 @@ set -uo pipefail
 
 PORT=9333
 
-# log to the journal: if the launching terminal closes, bitwarden crashes on EIO
 bitwarden-desktop --remote-debugging-port="$PORT" "$@" </dev/null 2>&1 | systemd-cat -t bitwarden-desktop &
 BW_PID=$!
 

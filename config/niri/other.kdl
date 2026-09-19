@@ -4,7 +4,6 @@ prefer-no-csd
 
 environment {
     QT_QPA_PLATFORMTHEME "gtk3"
-    // for apps that load cursors themselves; niri uses cursor.kdl
     XCURSOR_THEME "Noctalia-Cursors"
 }
 
@@ -32,7 +31,6 @@ workspace "1"
 workspace "2"
 
 debug {
-    // vesktop focus stealing via stale notification activation serials
     honor-xdg-activation-with-invalid-serial
 }
 

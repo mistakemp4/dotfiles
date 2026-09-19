@@ -1,5 +1,3 @@
---!nonstrict
--- sprites: EN.CPK CALENDAR/GOODGAUGE.PAC -> p5_good_ps4.spd; positions matched to a 1504x734 screenshot
 
 local W, ROW_GAP = 480, -16
 local RENDER_SCALE = 2
@@ -7,7 +5,6 @@ local SPRITES_DIR = "~/.local/share/p5-game-assets/agent-a/spd/good"
 local COLOR_FILE = "~/.cache/noctalia/phantom-calendar-color.txt"
 local GAME_RED = "#e93423"
 local PAPER, JET = "#fbf7f2", "#000000"
--- alacritty opacity
 local BLACK_ALPHA = 0.88
 local QUESTION_FONT = "P5 Dialogue, FOT-Skip Std"
 
@@ -18,12 +15,10 @@ local DIGIT = { front = 4, back = 14, w = 160, h = 222 }
 local DOT = { front = 25, back = 27, w = 76, h = 74 }
 local PERCENT = { front = 24, back = 26, w = 150, h = 158 }
 
--- { cx, cy, scale, rotation }
 local LAYOUT = {
   base = { 599, 263, 1, 0 }, q = { 199, 153, 0.97, 7 }, logo = { 520.1, 65, 1, -16 }, yes = { 1031, 305, 1, 0 },
 }
 local FILL_X, FILL_Y = 173, 225
--- sx: the game squeezes banner text to 65.7% width
 local QUESTION = { cx = 1034, cy = 103.8, rot = -7, x = -743, baseline = 22, size = 96, stroke = 32, sx = 0.657 }
 local NUMBER = {
   unitX = 1412, unitY = 270, fracAdvance = 86.5, fracY = 267.5, fracScale = 0.745,
@@ -124,7 +119,6 @@ local function number(text, isTemp)
   end
 
   if isTemp then
-    -- no degree sprite
     table.insert(backs, string.format('<g transform="rotate(14 %g %g)"><ellipse cx="%g" cy="%g" rx="17" ry="24" fill="none" stroke="%s" stroke-width="22"/></g>', NUMBER.unitX - 30, NUMBER.unitY - 72, NUMBER.unitX - 30, NUMBER.unitY - 72, JET))
     table.insert(fronts, string.format('<g transform="rotate(14 %g %g)"><ellipse cx="%g" cy="%g" rx="17" ry="24" fill="none" stroke="currentColor" stroke-width="10" filter="url(#tint)"/></g>', NUMBER.unitX - 30, NUMBER.unitY - 72, NUMBER.unitX - 30, NUMBER.unitY - 72))
   else
@@ -181,7 +175,6 @@ local function buildSvg(values, color)
     string.format('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d" color="%s">', W, H, W, H, color),
     string.format('<defs><filter id="tint" color-interpolation-filters="sRGB"><feFlood flood-color="%s"/><feComposite in2="SourceAlpha" operator="in"/></filter>', color),
     '<filter id="black" color-interpolation-filters="sRGB"><feFlood flood-color="#000000"/><feComposite in2="SourceAlpha" operator="in"/></filter>',
-    -- flatten first so overlapping blacks don't stack darker
     string.format('<filter id="glass" filterUnits="userSpaceOnUse" x="0" y="0" width="%d" height="%d" color-interpolation-filters="sRGB">', W, H),
     '<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8 8 8 0 0"/>',
     string.format('<feComponentTransfer result="alpha"><feFuncA type="linear" slope="%g" intercept="%g"/></feComponentTransfer>', 1 - BLACK_ALPHA, BLACK_ALPHA),
@@ -211,7 +204,6 @@ local function render()
 
   rendering = true
   local svgPath = `{dataDir}/gauges.svg`
-  -- new name defeats the image cache
   local pngPath = `{dataDir}/gauges-{noctalia.nowMs()}.png`
   noctalia.writeFile(svgPath, buildSvg(values, color))
   noctalia.runAsync(`FONTCONFIG_FILE={sh(fontsConf)} rsvg-convert -w {W * RENDER_SCALE} {sh(svgPath)} -o {sh(pngPath)}`, function(res)
@@ -245,7 +237,6 @@ if dataDir then
   }, "\n"))
   local source = noctalia.expandPath(SPRITES_DIR)
   if noctalia.fileExists(`{source}/spr_040.png`) then
-    -- rsvg-convert only loads images next to the svg
     noctalia.runAsync(`mkdir -p {sh(dataDir .. "/img/good")} && cp -f {sh(source)}/spr_0[0-4][0-9].png {sh(dataDir .. "/img/good")}/`, function(res)
       hasSprites = res.exitCode == 0
       render()

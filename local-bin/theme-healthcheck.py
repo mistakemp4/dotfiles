@@ -1,12 +1,3 @@
-#!/usr/bin/env python3
-"""Report theme templates and post-hooks that didn't land.
-
-Noctalia only rewrites a template output when its content changed, so staleness
-can't be read from mtimes. Instead this re-applies the templates (idempotent,
-and the theme-reload hook self-guards on an unchanged palette) and reports every
-output that changed as a result -- those were stale. Hook-produced files live
-outside the template system, so they're checked against the palette by content.
-"""
 
 import argparse
 import hashlib
@@ -31,8 +22,6 @@ BUILTIN_DIR = BUILTIN_TOML.parent
 COMMUNITY_DIR = STATE / "noctalia/community-templates"
 PALETTE = CACHE / "noctalia/bitwarden-colors.json"
 
-# Files written by post-hooks, not by the template engine: the only way to catch
-# a hook that failed silently. Each entry names palette keys that must appear.
 DOWNSTREAM = [
     ("spotify", Path("/opt/spotify/Apps/xpui/colors.css"), ["primary", "surface"]),
     ("steam", HOME / ".steam/steam/steamui/skins/Material-Theme/css/main/colors/matugen.css",
@@ -42,18 +31,11 @@ DOWNSTREAM = [
     ("bitwarden", CACHE / "noctalia/bitwarden-colors.json", ["primary", "surface"]),
     ("gtk3", CONFIG / "gtk-3.0/noctalia.css", ["primary", "surface"]),
     ("gtk4", CONFIG / "gtk-4.0/noctalia.css", ["primary", "surface"]),
-    # these hooks INLINE the palette into the app's own config rather than
-    # referencing a theme file, so the colours really are the hook's artifact.
-    # fastfetch only gets "primary" checked: its hook nudges light channels, so
-    # other entries can legitimately come out altered.
     ("fastfetch", CONFIG / "fastfetch/config.jsonc", ["primary"]),
     ("lazygit", CONFIG / "lazygit/config.yml", ["primary", "on_surface"]),
     ("starship", CONFIG / "starship.toml", ["primary", "surface"]),
 ]
 
-# Hooks whose job is wiring, not colour: they point an app at the noctalia theme.
-# Nothing here changes per palette, so a colour check would be meaningless -- the
-# failure mode is the app losing the reference entirely.
 WIRING = [
     ("bat", CONFIG / "bat/config", "--theme=noctalia"),
     ("micro", CONFIG / "micro/settings.json", "noctalia"),
@@ -72,7 +54,6 @@ HEX = re.compile(r"#([0-9a-fA-F]{6})\b")
 RGB_FUNC = re.compile(r"rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})")
 RGB_LIST = re.compile(r"\[\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\]")
 
-
 class Report:
     def __init__(self):
         self.problems = []
@@ -88,7 +69,6 @@ class Report:
         self.lines.append(f"  FAIL  {what}{'  ' + detail if detail else ''}")
         self.problems.append(f"{what}{': ' + detail if detail else ''}")
 
-
 XDG = {
     "XDG_CONFIG_HOME": CONFIG,
     "XDG_CACHE_HOME": CACHE,
@@ -97,18 +77,14 @@ XDG = {
     "HOME": HOME,
 }
 
-
 def expand(value):
-    """Templates use $XDG_* even when the vars are unset in this process."""
     text = str(value)
     for name, target in XDG.items():
         text = text.replace(f"${{{name}}}", str(target)).replace(f"${name}", str(target))
     return Path(os.path.expandvars(os.path.expanduser(text)))
 
-
 def run(cmd, **kw):
     return subprocess.run(cmd, capture_output=True, text=True, **kw)
-
 
 def load_toml(path):
     try:
@@ -117,15 +93,12 @@ def load_toml(path):
     except (OSError, tomllib.TOMLDecodeError):
         return None
 
-
 def dynamic_output(command, config_dir):
-    """output_path_dynamic: a shell command whose stdout is the real path."""
     rendered = command.replace("{{ config_dir }}", str(config_dir)).replace("{{config_dir}}", str(config_dir))
     result = run(["bash", "-lc", rendered])
     if result.returncode != 0:
         return []
     return [expand(line) for line in result.stdout.split("\n") if line.strip()]
-
 
 def outputs_of(entry, config_dir):
     raw = entry.get("output_path")
@@ -135,9 +108,7 @@ def outputs_of(entry, config_dir):
         return dynamic_output(entry["output_path_dynamic"], config_dir)
     return []
 
-
 def collect_templates(settings):
-    """Every enabled template as (label, [output paths], requires_path or None)."""
     tpl = settings.get("theme", {}).get("templates", {})
     found = []
 
@@ -163,17 +134,13 @@ def collect_templates(settings):
 
     return found
 
-
 def digest(path):
     try:
         return hashlib.sha256(path.read_bytes()).hexdigest()
     except OSError:
         return None
 
-
 def settle(paths, min_wait=8.0, quiet_for=3.0, timeout=90.0):
-    """templates-apply returns `ok` a few seconds before it starts writing, so
-    hold for min_wait first -- otherwise 'nothing changed yet' reads as done."""
     start = time.monotonic()
     snapshot = {p: digest(p) for p in paths}
     stable_since = start
@@ -188,9 +155,7 @@ def settle(paths, min_wait=8.0, quiet_for=3.0, timeout=90.0):
             break
     return snapshot
 
-
 def colors_in(path):
-    """Every colour in a file, as RGB triples -- hex, rgb(), and [r, g, b] all count."""
     try:
         text = path.read_text(errors="replace")
     except OSError:
@@ -199,7 +164,6 @@ def colors_in(path):
     for pattern in (RGB_FUNC, RGB_LIST):
         found |= {tuple(int(v) for v in m) for m in pattern.findall(text)}
     return found
-
 
 def palette():
     try:
@@ -214,14 +178,12 @@ def palette():
             out[key] = tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
     return out
 
-
 def check_noctalia(report):
     if run(["pgrep", "-u", str(os.getuid()), "-x", "noctalia"]).returncode != 0:
         report.bad("noctalia", "not running -- nothing else here is meaningful")
         return False
     report.ok("noctalia", "running")
     return True
-
 
 def check_templates(report, settings):
     templates = collect_templates(settings)
@@ -248,8 +210,6 @@ def check_templates(report, settings):
             if not path.is_absolute():
                 report.skip(label, f"hook-managed target ({path})")
             elif after[path] is None:
-                # noctalia creates the theme dir itself, so a missing parent
-                # means the target app was never installed here.
                 if path.parent.is_dir():
                     report.bad(label, f"never rendered: {path}")
                 else:
@@ -258,7 +218,6 @@ def check_templates(report, settings):
                 report.bad(label, f"was stale, re-rendered now: {path}")
             else:
                 report.ok(label, str(path))
-
 
 def check_downstream(report, colors):
     if not colors:
@@ -275,10 +234,7 @@ def check_downstream(report, colors):
         else:
             report.ok(f"hook:{name}", str(path))
 
-
 def check_hook_log(report, since):
-    """Noctalia logs failing post_hooks as [WRN] [hook_runner] with the command.
-    Cheap, generic, and catches hooks whose damage isn't visible in any file."""
     log = CACHE / "noctalia/noctalia.log"
     try:
         lines = log.read_text(errors="replace").splitlines()
@@ -292,7 +248,6 @@ def check_hook_log(report, since):
             report.bad("hooks:log", line.split("[hook_runner]", 1)[-1].strip()[:160])
     else:
         report.ok("hooks:log", "no hook failures during this run")
-
 
 def check_wiring(report):
     for name, path, needle in WIRING:
@@ -310,7 +265,6 @@ def check_wiring(report):
         except OSError as e:
             report.bad(f"wiring:{name}", f"{path}: {e}")
 
-
 def check_units(report):
     for unit in UNITS:
         state = run(["systemctl", "--user", "is-active", unit]).stdout.strip()
@@ -320,9 +274,7 @@ def check_units(report):
             failed = run(["systemctl", "--user", "is-failed", unit]).stdout.strip()
             report.bad(f"unit:{unit}", failed if failed == "failed" else state or "unknown")
 
-
 def check_wallpaper(report):
-    """Surface-size drift isn't visible over IPC, so this only covers what is."""
     procs = run(["pgrep", "-u", str(os.getuid()), "-af", "linux-wallpaperengine --screen-root"]).stdout
     if not procs.strip():
         report.bad("wallpaper", "linux-wallpaperengine is not running")
@@ -341,7 +293,6 @@ def check_wallpaper(report):
                    f"palette came from {synced}, engine is showing {', '.join(sorted(running_ids)) or 'nothing'}")
     else:
         report.ok("wallpaper:theme", f"palette matches wallpaper {synced}")
-
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -379,7 +330,6 @@ def main():
     if not args.quiet:
         print("\nall good")
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

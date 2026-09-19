@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch the Noctalia console palette
+
+[Path]
+PathChanged=/home/seal/.cache/noctalia/vtrgb
+Unit=vtcolors.service
+
+[Install]
+WantedBy=multi-user.target

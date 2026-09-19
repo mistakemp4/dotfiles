@@ -1,4 +1,3 @@
---!nonstrict
 local REFRESH_SECONDS = 15 * 60
 
 noctalia.setUpdateInterval(60 * 1000)
@@ -40,7 +39,6 @@ local function useFahrenheit()
   return unit == "fahrenheit"
 end
 
--- https://open-meteo.com/en/docs
 local function describe(code, isDay)
   if code == 0 then
     return isDay and "sun" or "moon", "Clear"
@@ -75,7 +73,6 @@ local function render()
   if not weather then
     table.insert(rows, ui.label({ text = status, fontSize = 20, color = color, textAlign = "center" }))
   else
-    -- the persona font's ° is mostly empty space and breaks centering
     local unitText = weather.fahrenheit and "°F" or "°C"
     table.insert(rows, ui.row({ gap = 12, align = "center", justify = "center" }, {
       ui.glyph({ name = weather.glyph, size = 60, color = color }),
@@ -144,7 +141,6 @@ local function fetchForecast()
     for i = 2, #data.daily.time do
       local dayGlyph = describe(data.daily.weather_code[i], true)
       table.insert(result.days, {
-        -- noon avoids timezone day shifts
         name = noctalia.formatTime("%a", data.daily.time[i] + 12 * 3600),
         glyph = dayGlyph,
         low = math.round(data.daily.temperature_2m_min[i]),
@@ -157,7 +153,6 @@ local function fetchForecast()
 end
 
 local function geocode(address)
-  -- open-meteo only searches place names
   local name, rest = string.match(address, "^([^,]+),?%s*(.*)$")
   name = noctalia.string.trim(name or address)
   rest = string.lower(noctalia.string.trim(rest or ""))

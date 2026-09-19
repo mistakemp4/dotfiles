@@ -1,6 +1,5 @@
 [Unit]
 Description=Sync Noctalia's wallpaper-adaptive theme when Wallpaper Engine's wallpaper changes
-# noctalia msg needs WAYLAND_DISPLAY, only imported at session start
 After=graphical-session.target
 PartOf=graphical-session.target
 

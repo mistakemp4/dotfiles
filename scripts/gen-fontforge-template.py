@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# regenerate config/noctalia/templates/fontforge.resource from fontforge's own defaults
 import re
 import sys
 from pathlib import Path
@@ -33,7 +31,6 @@ KEY_RULES = [
     (r"Foreground$|GlyphFGColor$|LabelColor$|TextColor$|GlyphColor$|ForegroundOutlineColor$|WidthColor$|GuideDragColor$"
      r"|TransformOriginColor$|MeasureToolLineColor$|OverviewColor$|SlotOutlineColor$|TitleFG$|CVPaletteForegroundColor$", "on_surface"),
 ]
-# remaining Gdraw widget colors, grouped by their role in the light default theme
 HEX_ROLES = {
     "surface_container": "edeceb e5e4e3 e6e6e3 e6e3e3 e3e6e6 ffffff",
     "outline_variant": "f9f8f7 fcfbfa f1f0ef dddcdb dedede ededed",

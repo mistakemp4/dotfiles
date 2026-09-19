@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import contextlib
 import fcntl
 import json
@@ -16,7 +15,6 @@ SPOTIFY_CSS = Path("/opt/spotify/Apps/xpui/colors.css")
 BRAVE_THEME = HOME / ".local/share/noctalia/brave-theme"
 BRAVE_PREFS = HOME / ".config/BraveSoftware/Brave-Browser/Default/Preferences"
 BRAVE_APPLY = HOME / ".local/state/noctalia/community-templates/brave/apply.sh"
-# same as niri's Mod+B bind
 DARKREADER = HOME / "src/darkreader-noctalia/build/release/chrome-mv3"
 BRAVE_CMD = ["brave", f"--load-extension={BRAVE_THEME},{DARKREADER}"]
 GTK3_CSS = HOME / ".config/gtk-3.0/noctalia.css"
@@ -29,10 +27,8 @@ PLAYER_BUS = ["org.mpris.MediaPlayer2.spotify", "/org/mpris/MediaPlayer2"]
 PLAYER_IFACE = "org.mpris.MediaPlayer2.Player"
 UID = str(os.getuid())
 
-
 def log(msg):
     print(f"restart-themed-apps: {msg}", flush=True)
-
 
 def wait_until(check, timeout, step=0.5):
     deadline = time.monotonic() + timeout
@@ -42,23 +38,20 @@ def wait_until(check, timeout, step=0.5):
         time.sleep(step)
     return True
 
-
 def running(name):
     return subprocess.run(["pgrep", "-u", UID, "-x", name], capture_output=True).returncode == 0
 
-
 def main_pid(name):
-    # chromium rewrites cmdline into one space-joined string
     out = subprocess.run(["pgrep", "-u", UID, "-x", name], capture_output=True, text=True).stdout
     for pid in out.split():
         try:
+            # chromium rewrites cmdline into one space-joined string
             tokens = Path(f"/proc/{pid}/cmdline").read_bytes().replace(b"\0", b" ").split()
         except OSError:
             continue
         if tokens and not any(t.startswith(b"--type=") for t in tokens):
             return int(pid)
     return None
-
 
 def rendered_since(path, since):
     def check():
@@ -68,23 +61,18 @@ def rendered_since(path, since):
             return False
     return check
 
-
 def launch(name, args, timeout=20):
-    # via niri for its own cgroup; niri doesn't report exec failures
     subprocess.run(["niri", "msg", "action", "spawn", "--", *args], check=True)
     if not wait_until(lambda: main_pid(name) is not None, timeout):
         raise RuntimeError(f"{args[0]} didn't start")
-
 
 def niri_windows(app_id):
     out = subprocess.run(["niri", "msg", "-j", "windows"], capture_output=True, text=True).stdout
     return [w for w in json.loads(out or "[]") if w.get("app_id") == app_id]
 
-
 def close_windows(windows):
     for w in windows:
         subprocess.run(["niri", "msg", "action", "close-window", "--id", str(w["id"])], capture_output=True)
-
 
 def descendants(pid):
     children = {}
@@ -99,26 +87,21 @@ def descendants(pid):
         todo += kids
     return found
 
-
 def xfconf(prop, *args):
     return subprocess.run(["xfconf-query", "-c", "thunar", "-p", prop, *args], capture_output=True, text=True)
-
 
 def player_get(prop):
     r = subprocess.run(["busctl", "--user", "--json=short", "get-property", *PLAYER_BUS, PLAYER_IFACE, prop],
                        capture_output=True, text=True)
     return json.loads(r.stdout)["data"] if r.returncode == 0 else None
 
-
 def player_call(method, *args, interface=PLAYER_IFACE):
     subprocess.run(["busctl", "--user", "call", *PLAYER_BUS, interface, method, *map(str, args)],
                    capture_output=True, check=False)
 
-
 def current_track():
     meta = player_get("Metadata") or {}
     return (meta.get("mpris:trackid") or {}).get("data")
-
 
 def restart_spotify(since):
     pid = main_pid("spotify")
@@ -150,7 +133,6 @@ def restart_spotify(since):
         player_call("SetPosition", "ox", track, position)
     log(f"spotify resumed {track} at {(position or 0) // 1_000_000}s")
 
-
 def enable_tab_restore():
     data = json.loads(BRAVE_PREFS.read_text())
     session = data.setdefault("session", {})
@@ -162,7 +144,6 @@ def enable_tab_restore():
     os.chmod(tmp, BRAVE_PREFS.stat().st_mode & 0o7777)
     tmp.replace(BRAVE_PREFS)
     log("enabled brave tab restore")
-
 
 def restart_brave(since):
     pid = main_pid("brave")
@@ -180,13 +161,11 @@ def restart_brave(since):
     if not wait_until(lambda: not running("brave"), 10):
         log("brave helpers still running after 10s, continuing")
     enable_tab_restore()
-    # apply.sh only writes Preferences while brave is stopped
     mode = subprocess.run(["noctalia", "msg", "theme-mode-get"], capture_output=True, text=True).stdout.strip()
     subprocess.run(["bash", str(BRAVE_APPLY), mode if mode in ("dark", "light") else "dark"],
                    capture_output=True, check=False)
     launch("brave", BRAVE_CMD)
     log("brave restarted")
-
 
 def restart_thunar(since, skipped):
     if not running("thunar"):
@@ -221,7 +200,6 @@ def restart_thunar(since, skipped):
         else:
             xfconf("/last-restore-tabs", "-r")
 
-
 def restart_prism(since, skipped):
     pid = main_pid("prismlauncher")
     if pid is None:
@@ -238,7 +216,6 @@ def restart_prism(since, skipped):
         return
     launch("prismlauncher", ["prismlauncher"])
     log("prism restarted")
-
 
 def restart_steam(since, skipped):
     if not running("steam"):
@@ -257,16 +234,13 @@ def restart_steam(since, skipped):
     launch("steam", ["steam"] if had_window else ["steam", "-silent"], timeout=60)
     log("steam restarted")
 
-
 def update_libreoffice(skipped):
     if not running("soffice.bin"):
         return
-    # its hook skips installing while it's open
     skipped.append("LibreOffice (updates once you close it)")
     subprocess.Popen(["setsid", "-f", "flock", "-n", str(LIBREOFFICE_LOCK), "bash", "-c",
                       'while pgrep -u "$UID" -x soffice.bin >/dev/null; do sleep 5; done; bash "$1"',
                       "_", str(LIBREOFFICE_APPLY)])
-
 
 def palette_changed():
     current = SIGNATURE.read_text()
@@ -278,14 +252,12 @@ def palette_changed():
     LAST_SIGNATURE.write_text(current)
     return last is not None and last != current
 
-
 def main():
     LOCK.parent.mkdir(parents=True, exist_ok=True)
     with open(LOCK, "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         if not palette_changed():
             return
-        # outputs rendered earlier in the same apply run
         since = SIGNATURE.stat().st_mtime - 30
         skipped = []
         for name, restart in (("spotify", restart_spotify), ("brave", restart_brave)):
@@ -304,7 +276,6 @@ def main():
             log("skipped: " + ", ".join(skipped))
             subprocess.run(["notify-send", "-a", "Theme", "Some apps still have the old colors", "\n".join(skipped)],
                            capture_output=True)
-
 
 if __name__ == "__main__":
     main()

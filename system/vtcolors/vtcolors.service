@@ -1,0 +1,10 @@
+[Unit]
+Description=Apply the Noctalia palette to the virtual consoles
+ConditionPathExists=/home/seal/.cache/noctalia/vtrgb
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/vtcolors-apply /home/seal/.cache/noctalia/vtrgb
+
+[Install]
+WantedBy=multi-user.target

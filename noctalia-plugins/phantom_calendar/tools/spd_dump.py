@@ -1,4 +1,3 @@
-# layout from Secre-C/PersonaSpriteTools
 import io
 import json
 import struct
@@ -11,8 +10,7 @@ from PIL import Image
 HEADER = struct.Struct("<5i2h2i")
 TEXTURE = struct.Struct("<8i16s")
 SPRITE = struct.Struct("<28I48s")
-SPD_MAGIC = 0x30525053  # "SPR0"
-
+SPD_MAGIC = 0x30525053
 
 def load_dds(data: bytes, scratch: Path) -> Image.Image:
     try:
@@ -20,17 +18,14 @@ def load_dds(data: bytes, scratch: Path) -> Image.Image:
         img.load()
         return img.convert("RGBA")
     except Exception:
-        # Pillow can't decode every DDS pixel format; ImageMagick handles more
         src = scratch.with_suffix(".dds")
         dst = scratch.with_suffix(".magick.png")
         src.write_bytes(data)
         subprocess.run(["magick", str(src), str(dst)], check=True)
         return Image.open(dst).convert("RGBA")
 
-
 def cstr(raw: bytes) -> str:
     return raw.split(b"\0", 1)[0].decode("ascii", "replace")
-
 
 def dump(spd_path: Path, out_dir: Path) -> None:
     data = spd_path.read_bytes()
@@ -62,7 +57,6 @@ def dump(spd_path: Path, out_dir: Path) -> None:
 
     (out_dir / "index.json").write_text(json.dumps(index, indent=1))
     print(f"{spd_path.name}: {tex_count} textures, {spr_count} sprites -> {out_dir}")
-
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:

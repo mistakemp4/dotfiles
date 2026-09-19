@@ -17,7 +17,6 @@ image_width() {
     ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 "$1" 2>/dev/null
 }
 
-# scenes have no video to grab from, and their workshop preview is tiny
 capture_scene() {
     local id="$1" out="$2" png="$CACHE_DIR/capture-$1.png" size pid last=""
     size=$(niri msg -j outputs | python3 -c "import json,sys; o=next(iter(json.load(sys.stdin).values())); m=o['modes'][o['current_mode']]; print(f\"{m['width']}x{m['height']}\")")
@@ -46,12 +45,10 @@ sync_theme_for_id() {
     local id="$1"
     local item_dir="$WORKSHOP_DIR/$id"
     local project="$item_dir/project.json"
-    # new name for full-res frames: noctalia ignores wallpaper-set with an unchanged path
     local out_image="$FRAME_DIR/we-${id}-hd.jpg" old_image="$FRAME_DIR/we-${id}.jpg"
 
     [ -f "$project" ] || { echo "no project.json for $id, skipping"; return 1; }
 
-    # -s: a failed ffmpeg run leaves an empty file
     local width
     width=$(image_width "$out_image")
     if [ ! -s "$out_image" ] || [ "${width:-0}" -lt 1000 ]; then
@@ -75,7 +72,7 @@ sync_theme_for_id() {
 
     if [ -s "$out_image" ]; then
         [ -e "$old_image" ] && gio trash "$old_image"
-        # 2 = noctalia unreachable: retry, don't fall back
+        # 2 = noctalia unreachable: retry, do not fall back
         noctalia msg wallpaper-set "$out_image" >/dev/null 2>&1 || return 2
         noctalia msg color-scheme-set wallpaper vibrant >/dev/null 2>&1 || return 2
         echo "synced theme from wallpaper $id -> $out_image"

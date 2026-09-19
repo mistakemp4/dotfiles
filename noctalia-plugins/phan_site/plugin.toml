@@ -1,4 +1,4 @@
-# needs rsvg-convert, imagemagick, busctl; digits from your own P5R copy (never shipped), else Anton
+# digits come from your own P5R copy, never shipped
 id = "seal/phan_site"
 name = "Phan-Site"
 version = "1.0.0"

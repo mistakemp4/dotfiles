@@ -94,6 +94,7 @@ khal
 krita
 lazygit
 less
+lib32-mangohud
 lib32-nvidia-utils
 lib32-opencl-nvidia
 lib32-vulkan-icd-loader
@@ -168,7 +169,6 @@ protontricks
 pv
 python
 python-defusedxml
-python-openrazer
 python-packaging
 python-pip
 python-psutil

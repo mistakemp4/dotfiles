@@ -1,0 +1,16 @@
+{{colors.terminal_normal_black.default.hex}}
+{{colors.terminal_normal_red.default.hex}}
+{{colors.terminal_normal_green.default.hex}}
+{{colors.terminal_normal_yellow.default.hex}}
+{{colors.terminal_normal_blue.default.hex}}
+{{colors.terminal_normal_magenta.default.hex}}
+{{colors.terminal_normal_cyan.default.hex}}
+{{colors.terminal_normal_white.default.hex}}
+{{colors.terminal_bright_black.default.hex}}
+{{colors.terminal_bright_red.default.hex}}
+{{colors.terminal_bright_green.default.hex}}
+{{colors.terminal_bright_yellow.default.hex}}
+{{colors.terminal_bright_blue.default.hex}}
+{{colors.terminal_bright_magenta.default.hex}}
+{{colors.terminal_bright_cyan.default.hex}}
+{{colors.terminal_bright_white.default.hex}}

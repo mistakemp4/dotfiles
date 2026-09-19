@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# pactl can't read spotify's stream volume, so use pw-dump/wpctl; pactl is only the event feed
 import json
 import re
 import subprocess
@@ -8,24 +6,20 @@ from pathlib import Path
 STATE = Path.home() / ".local/state/spotify-volume-watchdog/level"
 DEFAULT_LEVEL = 0.5
 
-
 def load_level():
     try:
         return float(STATE.read_text())
     except (OSError, ValueError):
         return DEFAULT_LEVEL
 
-
 def save_level(level):
     STATE.parent.mkdir(parents=True, exist_ok=True)
     STATE.write_text(f"{level:.2f}\n")
-
 
 def spotify_nodes():
     out = subprocess.run(["pw-dump"], capture_output=True, text=True).stdout
     nodes = []
     for obj in json.loads(out or "[]"):
-        # the client object has the same props but no volume
         if obj.get("type") != "PipeWire:Interface:Node":
             continue
         info = obj.get("info") or {}
@@ -36,16 +30,13 @@ def spotify_nodes():
         nodes.append((obj["id"], params[0].get("channelVolumes")))
     return nodes
 
-
 def get_volume(node):
     out = subprocess.run(["wpctl", "get-volume", str(node)], capture_output=True, text=True).stdout
     match = re.search(r"Volume: ([0-9.]+)", out)
     return float(match.group(1)) if match else None
 
-
 def set_volume(node, level):
     subprocess.run(["wpctl", "set-volume", str(node), f"{level:.2f}"], check=False)
-
 
 def check(level):
     for node, channel_volumes in spotify_nodes():
@@ -64,7 +55,6 @@ def check(level):
             save_level(level)
     return level
 
-
 def main():
     level = check(load_level())
     events = subprocess.Popen(["pactl", "subscribe"], stdout=subprocess.PIPE, text=True)
@@ -72,7 +62,6 @@ def main():
         if "on sink-input" in line:
             level = check(level)
     raise SystemExit(events.wait() or 1)
-
 
 if __name__ == "__main__":
     main()

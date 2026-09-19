@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# output is Atlus material: never commit it
 set -euo pipefail
 
+# output is Atlus material: never commit it
 TOOLS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GAME="${P5R_DIR:-$HOME/.local/share/Steam/steamapps/common/P5R}"
 OUT="${P5_ASSETS_DIR:-$HOME/.local/share/p5-game-assets}"

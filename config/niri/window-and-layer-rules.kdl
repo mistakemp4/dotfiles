@@ -31,7 +31,6 @@ window-rule {
 }
 
 window-rule {
-  // wallpaperengine-theme-sync.sh frame capture
   match title="^wallpaperengine$"
 
   open-floating true
@@ -39,7 +38,6 @@ window-rule {
 }
 
 window-rule {
-  // steam toasts
   match title=r#"^notificationtoasts_"#
 
   open-floating true
@@ -112,10 +110,7 @@ window-rule {
   open-maximized true
 }
 
-// Steam draws its menus INSIDE its own window rather than as real popups, so any
-// window opacity or blur applies to every menu and makes them unreadable. It is
-// deliberately kept out of the translucent group above; only the border styling
-// is shared. (2026-09-18)
+// steam draws menus inside its own window, so opacity here makes them unreadable
 window-rule {
   match app-id="^steam$"
 

@@ -6,5 +6,4 @@ PartOf=graphical-session.target
 [Service]
 Type=oneshot
 ExecStart=%h/.local/bin/wallpaper-watchdog.py --fix --quiet
-# a detection is reported through the exit code, not a unit failure
 SuccessExitStatus=0 1

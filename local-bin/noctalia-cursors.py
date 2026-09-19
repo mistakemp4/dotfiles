@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import os
 import re
 import shutil
@@ -14,13 +13,11 @@ COLORS = Path.home() / ".cache/noctalia/cursor-colors.txt"
 NIRI_INCLUDE = Path.home() / ".config/niri/cursor.kdl"
 XCURSOR_IMAGE = 0xFFFD0002
 
-
 def parse_hex(text):
     text = text.strip().lstrip("#")
     if len(text) != 6:
         raise ValueError(f"not a #rrggbb color: {text!r}")
     return tuple(int(text[i:i + 2], 16) for i in (0, 2, 4))
-
 
 def make_recolor(fill, outline):
     cache = {}
@@ -31,7 +28,6 @@ def make_recolor(fill, outline):
         alpha = pixel >> 24
         out = pixel
         if alpha:
-            # xcursor pixels are premultiplied ARGB
             r, g, b = (min(255, ((pixel >> s) & 255) * 255 // alpha) for s in (16, 8, 0))
             lum = (r * 299 + g * 587 + b * 114) / 255000
             shadow = alpha <= 64 and lum < 0.25
@@ -43,7 +39,6 @@ def make_recolor(fill, outline):
         return out
 
     return recolor
-
 
 def recolor_file(data, recolor):
     magic, header_size, _, count = struct.unpack_from("<4sIII", data)
@@ -60,19 +55,16 @@ def recolor_file(data, recolor):
         struct.pack_into(fmt, out, pos + chunk_size, *map(recolor, pixels))
     return bytes(out)
 
-
 def write_atomic(path, data):
     tmp = path.with_name(f".{path.name}.tmp")
     tmp.write_bytes(data)
     os.replace(tmp, path)
-
 
 def stamp_of(name):
     try:
         return (ICONS / name / ".colors").read_text()
     except FileNotFoundError:
         return None
-
 
 def build(name, recolor, stamp):
     theme = ICONS / name
@@ -89,14 +81,12 @@ def build(name, recolor, stamp):
                  "Comment=Adwaita cursors in the Noctalia palette\nInherits=Adwaita\n".encode())
     write_atomic(theme / ".colors", stamp.encode())
 
-
 def current_name():
     try:
         match = re.search(r'xcursor-theme "([^"]+)"', NIRI_INCLUDE.read_text())
     except FileNotFoundError:
         return None
     return match.group(1) if match else None
-
 
 def main():
     lines = sys.argv[1:3] if len(sys.argv) == 3 else COLORS.read_text().split()
@@ -107,22 +97,20 @@ def main():
 
     active = current_name()
     target = NAMES[1] if active == NAMES[0] else NAMES[0]
+    # niri only reloads cursors on a name change
     other = NAMES[0] if target == NAMES[1] else NAMES[1]
     recolor = make_recolor(fill, outline)
 
-    # niri only reloads cursors on a name change, so alternate between two identical themes
     build(target, recolor, stamp)
     write_atomic(NIRI_INCLUDE, f'cursor {{\n    xcursor-theme "{target}"\n}}\n'.encode())
     if shutil.which("gsettings"):
         subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "cursor-theme", target], check=False)
     build(other, recolor, stamp)
 
-    # for apps that ignore XCURSOR_THEME (steam's pressure-vessel)
     default_theme = ICONS.parent.parent / ".icons/default"
     default_theme.mkdir(parents=True, exist_ok=True)
     write_atomic(default_theme / "index.theme", f"[Icon Theme]\nName=Default\n"
                  f"Comment=Fallback for apps that ignore XCURSOR_THEME\nInherits={NAMES[0]}\n".encode())
-
 
 if __name__ == "__main__":
     main()

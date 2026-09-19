@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import base64
 import hashlib
 import json
@@ -6,7 +5,6 @@ import os
 import socket
 import struct
 import urllib.request
-
 
 def get_ws_url(port, title_contains=None):
     with urllib.request.urlopen(f"http://localhost:{port}/json") as r:
@@ -16,7 +14,6 @@ def get_ws_url(port, title_contains=None):
             if title_contains is None or title_contains.lower() in (t.get("title") or "").lower():
                 return t["webSocketDebuggerUrl"]
     raise RuntimeError("no matching page target found")
-
 
 class CDP:
     def __init__(self, ws_url):
@@ -41,7 +38,7 @@ class CDP:
         self._id = 0
 
     def _send_frame(self, data: bytes):
-        header = bytearray([0x81])  # FIN + text frame
+        header = bytearray([0x81])
         length = len(data)
         mask_bit = 0x80
         if length <= 125:

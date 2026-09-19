@@ -4,8 +4,6 @@ Description=Check the wallpaper surface every few minutes
 [Timer]
 OnStartupSec=3min
 OnUnitActiveSec=5min
-# the check is skipped whenever a window is on screen, so run it often enough
-# that an empty workspace gets caught soon after the user switches to one
 AccuracySec=30s
 
 [Install]

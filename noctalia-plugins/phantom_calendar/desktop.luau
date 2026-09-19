@@ -1,8 +1,6 @@
---!nonstrict
 local REFRESH_SECONDS = 15 * 60
 local SETUP_RETRY_SECONDS = 60
 local SVG_W, SVG_H = 640, 400
--- layout is in 1920x1080 screenshot pixels
 local ORIGIN_X, ORIGIN_Y = -39, 2
 local SHOW_W, SHOW_H = 681, 426
 local RENDER_W = 1536
@@ -12,7 +10,6 @@ local COLOR_FILE = "~/.cache/noctalia/phantom-calendar-color.txt"
 local GAME_RED = "#e6191e"
 local DARK = "#1a0d0a"
 
--- P5_FIELD_DAY.SPD ids; weather 0 sunny, 1 rain, 2 cloudy, 3 snow
 local WEATHER_CARD = 96
 local WEATHER_ICONS = { [0] = { 97, 109, 110 }, [1] = { 98, 111, 112 }, [2] = { 99, 113, 114 }, [3] = { 100, 115, 116 } }
 local WEEKDAY = { Sun = 0, Mon = 1, Tue = 2, Wed = 3, Thu = 4, Fri = 5, Sat = 6 }
@@ -22,7 +19,6 @@ local BANNERS = {
   heat_wave = 106, flu_season = 107, hot_night = 117, cold_wave = 300,
 }
 
--- { cx, cy, scale, rotation }
 local LAYOUT = {
   month = { 95, 92, 0.45, -6 },
   tens = { 188, 88, 0.42, -4 },
@@ -70,7 +66,6 @@ local HOLIDAYS = {
 
 noctalia.setUpdateInterval(1000)
 
--- builtin sysmon widgets need Anton
 local antonFamily, antonErr = noctalia.loadFont("assets/Anton-Regular.ttf")
 if not antonFamily then
   noctalia.log(`phantom_calendar: couldn't load Anton ({antonErr})`)
@@ -148,7 +143,6 @@ local function timeOfDay(hour, weekend)
   return TIME_OF_DAY.LATE_NIGHT
 end
 
--- https://open-meteo.com/en/docs
 local function conditionFor(code)
   if code <= 1 then
     return 0
@@ -179,7 +173,6 @@ local function holidayFor(month, day, tod)
   return nil
 end
 
--- first match wins; °C, mm/h, km/h
 local function bannerFor(month, day, w)
   if not w then
     return nil
@@ -251,15 +244,8 @@ local function sprite(id, layout, filter)
   )
 end
 
--- How far the time-of-day sticker's right edge reaches past the weekday's left
--- edge. Tuned by eye against an in-game screenshot on Evening + THURSDAY.
 local TOD_OVERLAP = 76
 
--- The weekday and time-of-day sprites are different widths per day and per time
--- of day (SUNDAY 522px vs WEDNESDAY 618px; AfterSchool 256px vs Lunch 338px) and
--- every sprite is centre-anchored, so a fixed x makes the overlap swing by ~40px
--- across combinations. Anchor the time-of-day to the weekday's actual left edge
--- instead, so the overlap looks the same every day.
 local function timeOfDayLayout(s)
   local base = LAYOUT.timeOfDay
   local weekday, tod = sizes[67 + s.weekday], sizes[125 + s.timeOfDay]
@@ -306,7 +292,6 @@ local function buildSvg(s, frame)
       .. retintFilter("banner", s.accent) .. "</defs>",
     string.format('<g transform="translate(%d %d)">', ORIGIN_X, ORIGIN_Y),
   }
-  -- white bases first so they merge into one sticker
   local list, extras = elements(s, frame)
   local passes = { {}, {}, {}, {} }
   for pass = 1, 4 do
@@ -320,7 +305,6 @@ local function buildSvg(s, frame)
   local whites, blacks = table.concat(passes[1], "\n"), table.concat(passes[2], "\n")
 
   if s.blackOpacity < 1 then
-    -- cut black out of the white sticker, fade it as one group
     table.insert(out, string.format(
       '<mask id="knockout" maskUnits="userSpaceOnUse" x="%d" y="%d" width="%d" height="%d"><rect x="%d" y="%d" width="%d" height="%d" fill="#fff"/>%s</mask>',
       -ORIGIN_X, -ORIGIN_Y, SVG_W, SVG_H, -ORIGIN_X, -ORIGIN_Y, SVG_W, SVG_H, blacks
@@ -436,7 +420,6 @@ local function redraw()
       return
     end
     local svgPath = `{dataDir}/hud-{i}.svg`
-    -- new name defeats the image cache
     local pngPath = `{dataDir}/hud-{stamp}-{i}.png`
     local ok, err = noctalia.writeFile(svgPath, buildSvg(s, i - 1))
     if not ok then
@@ -488,7 +471,6 @@ local function setup()
     end
   end
 
-  -- rsvg-convert refuses images outside the svg's dir, even symlinks
   local cmd = `mkdir -p {sh(imgDir)} && cp -f {sh(root)}/spr_*.png {sh(imgDir)}/`
   settingUp = true
   noctalia.runAsync(cmd, function(res)
@@ -527,7 +509,6 @@ local function fetchCurrent()
       fail("unexpected forecast response")
       return
     end
-    -- current values cover `interval` seconds
     local interval = if type(current.interval) == "number" and current.interval > 0 then current.interval else 3600
     weather = {
       condition = conditionFor(current.weather_code),
@@ -541,7 +522,6 @@ local function fetchCurrent()
 end
 
 local function geocode(address)
-  -- open-meteo only searches place names
   local name, rest = string.match(address, "^([^,]+),?%s*(.*)$")
   name = noctalia.string.trim(name or address)
   rest = string.lower(noctalia.string.trim(rest or ""))

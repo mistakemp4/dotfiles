@@ -1,14 +1,3 @@
-#!/usr/bin/env python3
-"""Log every WebHID report a page sends or receives.
-
-For reverse-engineering hub.epomaker.com: the vendor web app drives the keyboard
-over WebHID, so hooking HIDDevice is a far cleaner capture than usbmon -- it
-gives report IDs and payloads already split per call, with no USB framing.
-
-Start the browser with a debugging port first, e.g.
-    brave --remote-debugging-port=9333 --user-data-dir=/tmp/webhid-sniff
-then run this, then drive the page by hand.
-"""
 
 import argparse
 import json
@@ -17,13 +6,12 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from cdp_client import CDP, get_ws_url  # noqa: E402
+from cdp_client import CDP, get_ws_url
 
 HOOK = r"""
 (() => {
   if (window.__hidHooked) return;
-  // WebHID only exists in a secure context, so a plain http page or about:blank
-  // has no HIDDevice to wrap. Leave a marker so the tool can say why.
+  // no HIDDevice outside a secure context; mark it so the tool can say why
   if (typeof HIDDevice === "undefined") {
     window.__hidUnavailable = true;
     return;
@@ -85,11 +73,9 @@ HOOK = r"""
 })();
 """
 
-
 def drain(cdp):
     raw = cdp.evaluate("JSON.stringify((window.__hidLog||[]).splice(0))")
     return json.loads(raw) if raw else []
-
 
 def render(entry):
     stamp = time.strftime("%H:%M:%S", time.localtime(entry["t"] / 1000))
@@ -98,7 +84,6 @@ def render(entry):
         detail = {k: v for k, v in entry.items() if k not in ("t", "dir", "what")}
         return f"{stamp} {entry['dir']} {what:20} {detail}"
     return f"{stamp} {entry['dir']} {what:20} id={entry.get('id')} {entry.get('hex','')}"
-
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -116,7 +101,6 @@ def main():
                  f"start the browser with --remote-debugging-port={args.port}")
 
     cdp.call("Page.enable")
-    # survives reloads and navigations, and runs before the page's own scripts
     cdp.call("Page.addScriptToEvaluateOnNewDocument", {"source": HOOK})
     cdp.evaluate(HOOK)
     if args.reload:
@@ -146,7 +130,6 @@ def main():
         if out:
             out.close()
         cdp.close()
-
 
 if __name__ == "__main__":
     main()

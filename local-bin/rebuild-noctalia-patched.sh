@@ -19,7 +19,6 @@ fail() {
     exit 1
 }
 
-# the .path unit fires mid-transaction
 for _ in $(seq 1 600); do
     [ -e /var/lib/pacman/db.lck ] || break
     sleep 1
@@ -55,7 +54,6 @@ for p in "${patches[@]}"; do
     git -C "$SRC" apply "$p" || fail "$(basename "$p") doesn't apply to $tag"
 done
 
-# upstream justfile release options
 cpp_std=$(sed -nE "s/^cpp-std[[:space:]]*:=[[:space:]]*['\"]?([^'\"[:space:]]+)['\"]?[[:space:]]*$/\1/p" "$SRC/justfile" 2>/dev/null)
 args=(--buildtype=release -Db_lto=true -Dtests=disabled --prefix "$prefix")
 [ -n "$cpp_std" ] && args+=("-Dcpp_std=$cpp_std")

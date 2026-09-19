@@ -1,17 +1,13 @@
---!nonstrict
 local W, H = 420, 150
 local SPLIT_X, SPLIT_Y = 118, 62
--- noctalia antialiases image edges, so tiles overlap to hide seams
 local OVERLAP = 3
 local SCALE = 2
 local SCAN_SECONDS = 5
 local COLOR_FILE = "~/.cache/noctalia/phantom-calendar-color.txt"
 local FALLBACK_ACCENT = "#e6191e"
 local PAPER, JET, INK_SOFT, TRACK = "#fbf7f2", "#0d0908", "#5b4a44", "#2b1a15"
--- alacritty opacity
 local BLACK_ALPHA = 0.88
 local MPRIS = "org.mpris.MediaPlayer2."
--- half-width units, CJK counts double
 local TITLE_UNITS, ARTIST_UNITS = 200, 44
 local MARQUEE_PAD, MARQUEE_GAP, MARQUEE_STEP, MARQUEE_AVAIL = 8, 96, 4, 562
 local MARQUEE_FRAME_MS, MARQUEE_HOLD_MS = 50, 1500
@@ -101,7 +97,6 @@ local function clock(us)
   return string.format("%d:%02d", math.floor(seconds / 60), seconds % 60)
 end
 
--- busctl --json wraps every variant as { type, data }
 local function prop(props, name)
   local v = props[name]
   return if type(v) == "table" then v.data else nil
@@ -256,7 +251,6 @@ local function renderBottom(color)
 
   bottom.busy = true
   local svgPath = `{dataDir}/bottom.svg`
-  -- new name defeats the image cache
   local pngPath = `{dataDir}/bottom-{noctalia.nowMs()}.png`
   noctalia.writeFile(svgPath, svgDoc(sceneBody(track, color), 0, SPLIT_Y, W, H - SPLIT_Y))
   noctalia.runAsync(`FONTCONFIG_FILE={sh(fontsConf)} rsvg-convert -w {W * SCALE} {sh(svgPath)} -o {sh(pngPath)}`, function(res)
@@ -287,10 +281,8 @@ redraw = function()
   renderBottom(color)
 end
 
--- rsvg-convert only loads images next to the svg
 local function refreshArt()
   local url = if track then track.artUrl else ""
-  -- brave reuses one art file name for every track
   local key = url .. "|" .. (if track then track.title else "")
   if key == artKey or artLoading then
     return
@@ -438,7 +430,6 @@ function onFrameTick(deltaMs)
 end
 
 if dataDir then
-  -- rsvg-convert only sees fontconfig fonts
   noctalia.writeFile(fontsConf, table.concat({
     '<?xml version="1.0"?>',
     '<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">',

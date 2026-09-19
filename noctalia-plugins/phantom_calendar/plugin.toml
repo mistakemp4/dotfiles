@@ -1,4 +1,4 @@
-# needs rsvg-convert; sprites via tools/extract-game-assets.sh from your own copy (never shipped)
+# sprites come from your own P5R copy, never shipped
 id = "seal/phantom_calendar"
 name = "Phantom Calendar"
 version = "3.1.0"

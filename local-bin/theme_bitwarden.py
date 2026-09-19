@@ -21,24 +21,19 @@ if not COLORS.exists():
 
 c = json.loads(COLORS.read_text())
 
-
 def rgb(hex_color):
     h = hex_color.lstrip("#")
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
-
 def darken(hex_color, amount):
     return "#" + "".join(f"{round(v * (1 - amount)):02x}" for v in rgb(hex_color))
-
 
 def rgb_str(hex_color):
     return " ".join(str(v) for v in rgb(hex_color))
 
-
 def rgba(hex_color, alpha):
     r, g, b = rgb(hex_color)
     return f"rgb({r} {g} {b} / {alpha})"
-
 
 hex_vars = {
     "--color-bg-primary": c["surface"],
@@ -99,7 +94,6 @@ hex_vars = {
     "--tw-ring-color": rgba(c["primary"], 0.5),
 }
 
-# "R G B" for rgb(var(--x) / a)
 rgb_vars = {
     "--color-background": rgb_str(c["surface"]),
     "--color-background-alt": rgb_str(c["surface_variant"]),
@@ -127,7 +121,6 @@ rgb_vars = {
     "--color-warning-600": rgb_str(c["secondary"]),
 }
 
-# legacy html.theme_dark rules hardcode colors instead of vars
 legacy_map = {
     "19,21,24": c["surface_container_lowest"],
     "21,24,30": c["surface"],
@@ -242,7 +235,6 @@ js = (JS_TEMPLATE
 cdp = CDP(get_ws_url(PORT))
 print("applied:", cdp.evaluate(js))
 
-# survive navigation (lock screen -> vault)
 cdp.call("Page.enable")
 cdp.call("Page.addScriptToEvaluateOnNewDocument", {"source": js})
 

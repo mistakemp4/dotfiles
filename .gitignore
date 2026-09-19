@@ -1,20 +1,16 @@
 local-bin/__pycache__/
 *.pyc
 
-# working notes for claude sessions
 HANDOFF.md
 
-# rendered by noctalia on every theme change
 config/alacritty/themes/
 config/btop/themes/
 config/fastfetch/themes/
 config/niri/glow.kdl
 config/niri/cursor.kdl
 
-# machine state fish rewrites on its own
 config/fish/fish_variables
 
-# dotnet build output
 obj/
 bin/
 config/cava/themes/
@@ -22,7 +18,7 @@ config/zathura/noctaliarc
 config/gtk-3.0/noctalia.css
 config/gtk-4.0/noctalia.css
 
-# obs keeps logs, caches and the websocket password next to its config: allowlist only
+# obs keeps the websocket password next to its config: allowlist only
 config/obs-studio/*
 !config/obs-studio/global.ini
 !config/obs-studio/user.ini

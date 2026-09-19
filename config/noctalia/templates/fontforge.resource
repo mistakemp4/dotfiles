@@ -359,7 +359,6 @@ Gdraw.GComboBoxMenu.Box.BorderInnerCol: {{colors.outline_variant.default.hex}}
 Gdraw.GComboBoxMenu.Box.BorderOuterCol: {{colors.outline_variant.default.hex}}
 Gdraw.GComboBoxMenu.Box.Padding: 2
 
-
 Gdraw.GNumericFieldSpinner.Box.BorderOuter: True
 Gdraw.GNumericFieldSpinner.Box.GradientBG: True
 Gdraw.GNumericFieldSpinner.Box.GradientStartCol: {{colors.surface_container_highest.default.hex}}
@@ -490,5 +489,4 @@ Gdraw.GTabSet.Box.BorderWidth: 1
 Gdraw.GTabSet.Box.Radius: 2
 Gdraw.GTabSet.Font: 83% ^View.DefaultFont
 Gdraw.GTabSet.CloseColor: {{colors.error.default.hex}}
-
 

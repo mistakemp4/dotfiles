@@ -5,10 +5,8 @@ PartOf=graphical-session.target
 
 [Service]
 Type=oneshot
-# noctalia and the template hooks need to be up before the first apply
 ExecStartPre=/usr/bin/sleep 25
 ExecStart=%h/.local/bin/theme-healthcheck.py --notify
-# a failing check is a report, not a unit failure
 SuccessExitStatus=0 1
 
 [Install]
