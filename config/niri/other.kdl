@@ -29,6 +29,7 @@ overview {
 
 workspace "1"
 workspace "2"
+workspace "gaming"
 
 debug {
     honor-xdg-activation-with-invalid-serial

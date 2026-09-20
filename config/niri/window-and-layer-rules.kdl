@@ -116,3 +116,19 @@ window-rule {
 
   draw-border-with-background false
 }
+
+// Steam games (XWayland app-id is steam_app_<appid>): own workspace,
+// fullscreen on open, and VRR — the output is on-demand=true, so games
+// only get variable refresh if a rule asks for it.
+window-rule {
+  match app-id=r#"^steam_app_"#
+
+  open-on-workspace "gaming"
+  open-fullscreen true
+  open-focused true
+  variable-refresh-rate true
+
+  geometry-corner-radius 0
+  clip-to-geometry false
+  draw-border-with-background false
+}

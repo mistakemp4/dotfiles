@@ -92,3 +92,45 @@
 | `Mod+Shift+P` | Power off monitors |
 | `Mod+Escape` | Toggle keyboard shortcut inhibit |
 | `Ctrl+Alt+Delete` | Quit niri |
+
+## mpv — Anime4K
+
+Pick by **source resolution**, not by taste. A shader chain has to upscale 4x
+total, so a 1080p source needs less work than a 480p one.
+
+| Key | Action |
+|---|---|
+| `Ctrl+1` | Mode A (HQ) — 1080p source ← the usual one |
+| `Ctrl+2` | Mode B (HQ) — 720p source |
+| `Ctrl+3` | Mode C (HQ) — 480p / noisy / old rip |
+| `Ctrl+4` | Mode A+A — doubled restore pass, heavier |
+| `Ctrl+5` | Mode B+B |
+| `Ctrl+6` | Mode C+A |
+| `Ctrl+7` | Mode A + line darken/thin — restyle, not accuracy |
+| `Alt+1/2/3` | Light A/B/C (M networks) — 4K source, or a game is running |
+| `Ctrl+0` | Shaders off |
+
+| Key | Action |
+|---|---|
+| `d` | Toggle deband (fixes gradient banding) |
+| `i` / `I` | Stats overlay / page 4 (frame timings) |
+| `Alt+S` | Toggle interpolation |
+
+## Window animation shaders
+
+Not keybinds — a terminal command. `niri-shader` swaps the GLSL that runs
+when a window opens, closes or resizes. niri hot-reloads it instantly.
+
+| Command | Action |
+|---|---|
+| `niri-shader list` | All installed, `*` = active |
+| `niri-shader tour` | **Preview every one in turn**, changes nothing |
+| `niri-shader tour close` | Preview just the close ones |
+| `niri-shader demo close glitch-out` | Preview one, then revert |
+| `niri-shader close glitch-out` | Set it for real |
+| `niri-shader close glitch-out 800` | Set it and override the duration (ms) |
+| `niri-shader open off` | Back to niri's default |
+| `niri-shader status` | What's active |
+
+Shaders live in `~/.config/niri/shaders/*.frag` — edit them and re-run
+`niri-shader <slot> <name>` to reload.

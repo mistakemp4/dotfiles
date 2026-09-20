@@ -8,6 +8,10 @@ config/btop/themes/
 config/fastfetch/themes/
 config/niri/glow.kdl
 config/niri/cursor.kdl
+config/niri/shaders.kdl
+config/mpv/theme.conf
+config/mpv/shaders/
+config/mpv/watch_later/
 
 config/fish/fish_variables
 
