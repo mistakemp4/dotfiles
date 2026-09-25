@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python3
 import argparse
 import hashlib
 import json
@@ -33,7 +33,8 @@ DOWNSTREAM = [
     ("gtk4", CONFIG / "gtk-4.0/noctalia.css", ["primary", "surface"]),
     ("fastfetch", CONFIG / "fastfetch/config.jsonc", ["primary"]),
     ("lazygit", CONFIG / "lazygit/config.yml", ["primary", "on_surface"]),
-    ("starship", CONFIG / "starship.toml", ["primary", "surface"]),
+    # starship renders accents from terminal_* colors, never raw primary
+    ("starship", CONFIG / "starship.toml", ["primary_fixed_dim", "surface"]),
 ]
 
 WIRING = [

@@ -89,6 +89,8 @@ binds {
     Mod+8       hotkey-overlay-title=null { focus-workspace 8; }
     Mod+9       hotkey-overlay-title=null { focus-workspace 9; }
 
+    Mod+G       hotkey-overlay-title="Focus the gaming workspace" { focus-workspace "gaming"; }
+
     Mod+Shift+1 hotkey-overlay-title=null { move-column-to-workspace 1; }
     Mod+Shift+2 hotkey-overlay-title=null { move-column-to-workspace 2; }
     Mod+Shift+3 hotkey-overlay-title=null { move-column-to-workspace 3; }

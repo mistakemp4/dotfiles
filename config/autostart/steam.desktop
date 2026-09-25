@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Steam
+Comment=Steam autostart (silent, to tray)
+Exec=/usr/bin/steam -silent
+StartupNotify=false
+Terminal=false
+Icon=steam

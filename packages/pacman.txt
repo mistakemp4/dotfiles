@@ -79,6 +79,7 @@ grub-hook
 gst-libav
 gst-plugin-pipewire
 gst-plugins-bad
+gst-plugins-good
 gst-plugins-ugly
 gwenview
 haruna
@@ -200,6 +201,7 @@ ttf-meslo-nerd
 ttf-opensans
 ufw
 ufw-extras
+umu-launcher
 unrar
 unzip
 upower

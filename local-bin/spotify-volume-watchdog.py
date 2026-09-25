@@ -1,10 +1,17 @@
+#!/usr/bin/env python3
 import json
 import re
 import subprocess
+import time
 from pathlib import Path
 
 STATE = Path.home() / ".local/state/spotify-volume-watchdog/level"
 DEFAULT_LEVEL = 0.5
+# Anything at/above this is Spotify resetting itself, never a deliberate choice.
+# To run louder than this on purpose, write the value into STATE by hand.
+SNAP_MIN = 0.90
+# A real hand on the slider persists; a Spotify reset does not.
+CONFIRM_DELAY = 0.3
 
 def load_level():
     try:
@@ -47,12 +54,17 @@ def check(level):
         vol = get_volume(node)
         if vol is None:
             continue
-        if abs(vol - 1.0) < 0.005 and level < 0.995:
-            print(f"node {node} snapped to 100%, restoring {level:.2f}", flush=True)
+        if vol >= SNAP_MIN and level < SNAP_MIN:
+            print(f"node {node} snapped to {vol:.2f}, restoring {level:.2f}", flush=True)
             set_volume(node, level)
         elif abs(vol - level) >= 0.005:
-            level = vol
+            time.sleep(CONFIRM_DELAY)
+            settled = get_volume(node)
+            if settled is None or abs(settled - vol) >= 0.005:
+                continue
+            level = settled
             save_level(level)
+            print(f"node {node} set to {level:.2f} by hand, adopting", flush=True)
     return level
 
 def main():

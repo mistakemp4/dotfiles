@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python3
 import argparse
 import glob
 import json
@@ -16,7 +16,7 @@ MODE_PRESERVE = "keep"
 DEFAULT_SPEED = 0x05
 DEFAULT_BRIGHTNESS = 0x03
 DEFAULT_GAMMA = 1.4
-DEFAULT_BALANCE = (1.0, 0.30, 1.0)
+DEFAULT_BALANCE = (1.0, 0.5, 0.8)
 
 def correct(rgb, gamma, balance, normalize=True):
     out = [(value / 255.0) ** gamma * gain for value, gain in zip(rgb, balance)]
@@ -79,7 +79,8 @@ class Keyboard:
     def current_mode(self, tries=6):
         for attempt in range(tries):
             r = self.xfer(packet(0x13, bytes(16), last=1))
-            if r and len(r) > 24 and r[1] == 0x13 and r[22:24] == b"\xaa\x55":
+            # aa55 trailer is absent after a firmware reset, so only check the header
+            if r and len(r) > 8 and r[0] == 0x55 and r[1] == 0x13 and r[2] >= 1:
                 return r[8]
             time.sleep(0.08 * (attempt + 1))
         return None

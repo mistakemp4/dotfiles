@@ -181,13 +181,13 @@ wallpaper_scheme = "vibrant"
     ]
 
 [wallpaper.default]
-path = "/home/seal/Pictures/WallPapers/we-3792056955-hd.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3516294127-hd.jpg"
 
 [wallpaper.last]
-path = "/home/seal/Pictures/WallPapers/we-3792056955-hd.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3516294127-hd.jpg"
 
 [wallpaper.monitors.DP-1]
-path = "/home/seal/Pictures/WallPapers/we-3792056955-hd.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3516294127-hd.jpg"
 
 [weather]
 unit = "imperial"

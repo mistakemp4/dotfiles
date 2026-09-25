@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Spotify
+Comment=Spotify autostart
+Exec=/usr/bin/spotify
+StartupNotify=false
+Terminal=false
+Icon=spotify-client
