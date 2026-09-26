@@ -18,6 +18,7 @@
 | Key | Action |
 |---|---|
 | `Mod+Q` | Close window |
+| `Mod+Shift+Q` | Force close window (kills its process) |
 | `Mod+F` | Maximize column |
 | `Mod+Shift+F` | Fullscreen |
 | `Mod+Ctrl+F` | Expand column to available width |

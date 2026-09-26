@@ -35,6 +35,7 @@ binds {
     Mod+O hotkey-overlay-title="Toggle overview" repeat=false { toggle-overview; }
 
     Mod+Q repeat=false { close-window; }
+    Mod+Shift+Q hotkey-overlay-title="Force close window" repeat=false { spawn "niri-force-close.py"; }
 
     Mod+Left  { focus-column-left; }
     Mod+H     { focus-column-left; }

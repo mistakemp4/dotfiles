@@ -1,0 +1,134 @@
+layer-rule {
+  match namespace="^noctalia-wallpaper$"
+  place-within-backdrop true
+}
+
+layer-rule {
+  match namespace="^noctalia-(panel|osd|notification)$"
+
+  background-effect {
+    blur true
+    xray false
+  }
+}
+
+layer-rule {
+  match namespace="^noctalia-notification$"
+
+  block-out-from "screen-capture"
+}
+
+window-rule {
+  geometry-corner-radius 12
+  clip-to-geometry true
+  open-maximized-to-edges false
+}
+
+window-rule {
+  match app-id=r#"^com\.obsproject\.Studio$"#
+
+  block-out-from "screen-capture"
+}
+
+window-rule {
+  match title="^wallpaperengine$"
+
+  open-floating true
+  open-focused false
+}
+
+window-rule {
+  match title=r#"^notificationtoasts_"#
+
+  open-floating true
+  open-focused false
+  default-floating-position x=16 y=16 relative-to="bottom-right"
+}
+
+window-rule {
+  match title=r#"^Picture in picture$"#
+
+  open-floating true
+  open-focused false
+  default-floating-position x=950 y=300 relative-to="bottom-left"
+  default-column-width { fixed 900; }
+  default-window-height { fixed 500; }
+}
+
+window-rule {
+  match app-id=r#"^brave"#
+  match app-id=r#"^org\.gnome\.Nautilus$"#
+  match app-id="^thunar$"
+  match app-id="^xdg-desktop-portal-gtk$"
+  match app-id=r#"^org\.pulseaudio\.pavucontrol$"#
+  match app-id="^blueman-manager$"
+  match app-id=r#"^dev\.noctalia\.Noctalia$"#
+  match app-id="^vesktop$"
+  match app-id="^Bitwarden$"
+  match app-id="^Spotify$"
+  match app-id=r#"^org\.prismlauncher\.PrismLauncher$"#
+  match app-id=r#"^org\.kde\.filelight$"#
+  match app-id="^krita$"
+  match app-id=r#"^com\.obsproject\.Studio$"#
+  match app-id=r#"^XIVLauncher\.Core$"#
+  match app-id="^code-oss$"
+  match app-id="^fontforge$"
+
+  draw-border-with-background false
+  opacity 0.9
+  background-effect {
+    blur true
+    xray true
+  }
+
+  popups {
+    opacity 0.6
+    geometry-corner-radius 12
+
+    background-effect {
+      xray false
+      blur true
+    }
+  }
+}
+
+window-rule {
+  match app-id="^Alacritty$"
+
+  draw-border-with-background false
+  background-effect {
+    blur true
+    xray true
+  }
+}
+
+window-rule {
+  match app-id=r#"^brave-browser$"#
+
+  open-on-workspace "1"
+  open-focused false
+  open-maximized true
+}
+
+// steam draws menus inside its own window, so opacity here makes them unreadable
+window-rule {
+  match app-id="^steam$"
+
+  draw-border-with-background false
+}
+
+// Steam games (XWayland app-id is steam_app_<appid>): own workspace,
+// fullscreen on open, and VRR — the output is on-demand=true, so games
+// only get variable refresh if a rule asks for it.
+window-rule {
+  match app-id=r#"^steam_app_"#
+
+  open-on-workspace "gaming"
+  open-fullscreen true
+  open-focused true
+  variable-refresh-rate true
+
+  geometry-corner-radius 0
+  clip-to-geometry false
+  draw-border-with-background false
+}
