@@ -19,6 +19,11 @@ BRAVE_APPLY = HOME / ".local/state/noctalia/community-templates/brave/apply.sh"
 DARKREADER = HOME / "src/darkreader-noctalia/build/release/chrome-mv3"
 BRAVE_CMD = ["brave", f"--load-extension={BRAVE_THEME},{DARKREADER}"]
 GTK3_CSS = HOME / ".config/gtk-3.0/noctalia.css"
+GTK4_CSS = HOME / ".config/gtk-4.0/noctalia.css"
+PORTALS = ["xdg-desktop-portal-gnome", "xdg-desktop-portal-gtk"]
+PORTAL_LOCK = HOME / ".cache/theme-reload/portals.lock"
+# niri exposes live casts as Mutter ScreenCast sessions
+CAST_CHECK = "busctl --user tree --list org.gnome.Mutter.ScreenCast 2>/dev/null | grep -q /Session/"
 PRISM_THEME = HOME / ".local/share/PrismLauncher/themes/Matugen/theme.json"
 PRISM_ID = "org.prismlauncher.PrismLauncher"
 STEAM_CSS = HOME / ".steam/steam/steamui/skins/Material-Theme/css/main/colors/matugen.css"
@@ -243,6 +248,25 @@ def update_libreoffice(skipped):
                       'while pgrep -u "$UID" -x soffice.bin >/dev/null; do sleep 5; done; bash "$1"',
                       "_", str(LIBREOFFICE_APPLY)])
 
+def restart_portals(since, skipped):
+    # GTK4 reads gtk.css only at startup, so the screen share picker keeps old colors
+    if not wait_until(rendered_since(GTK4_CSS, since), 60):
+        log("gtk4 colors weren't re-applied, leaving portals alone")
+        return
+    found = subprocess.run(["pgrep", "-u", UID, "-f", f"^/usr/lib/({'|'.join(PORTALS)})$"],
+                           capture_output=True, text=True).stdout
+    pids = {int(p) for p in found.split()}
+    out = subprocess.run(["niri", "msg", "-j", "windows"], capture_output=True, text=True).stdout
+    if any(w.get("pid") in pids for w in json.loads(out or "[]")):
+        skipped.append("screen share / file picker (a dialog is open)")
+        return
+    if subprocess.run(["bash", "-c", CAST_CHECK]).returncode == 0:
+        skipped.append("screen share picker (updates once the share ends)")
+    # restarting mid-share would end the stream, so wait for it to finish
+    subprocess.Popen(["setsid", "-f", "flock", "-n", str(PORTAL_LOCK), "bash", "-c",
+                      f"while {CAST_CHECK}; do sleep 5; done; systemctl --user try-restart {' '.join(PORTALS)}"])
+    log("portals restart queued")
+
 def palette_changed():
     current = SIGNATURE.read_text()
     try:
@@ -266,7 +290,8 @@ def main():
                 restart(since)
             except Exception as e:
                 log(f"{name} restart failed: {e}")
-        for name, restart in (("thunar", restart_thunar), ("prism", restart_prism), ("steam", restart_steam)):
+        for name, restart in (("thunar", restart_thunar), ("prism", restart_prism), ("steam", restart_steam),
+                              ("portals", restart_portals)):
             try:
                 restart(since, skipped)
             except Exception as e:

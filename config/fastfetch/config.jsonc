@@ -8,20 +8,20 @@
       "right": 2
     },
     "color": {
-      "1": "#63e46f",
-      "2": "#add65c"
+      "1": "#63e3e9",
+      "2": "#63b0e3"
     }
   },
   "display": {
     "separator": "  ",
     "color": {
-      "keys": "#67e46f",
-      "title": "#add65c"
+      "keys": "#82e3e9",
+      "title": "#88b0e3"
     },
     "percent": {
       "color": {
-        "green": "#66c6cc",
-        "yellow": "#93ec98",
+        "green": "#e9ce49",
+        "yellow": "#93e7ec",
         "red": "#fd4663"
       }
     }
