@@ -1,0 +1,240 @@
+#!/usr/bin/env python3
+# AULA F75 (wired) lighting colour from the Noctalia palette.
+# Protocol: keylux-linux docs/PROTOCOL.md + aula-rgb-controller tools/protocol_notes.md
+import fcntl
+import glob
+import os
+import re
+import sys
+import time
+from pathlib import Path
+
+VID_PID = "0000258A:0000010C"
+DEFAULT_SRC = Path("/home/seal/.cache/noctalia/f75-lighting.txt")
+STAMP = Path("/var/lib/f75-lighting/last")
+
+REPORT_ID = 0x06
+PACKET_LEN = 520
+ADDR = bytes([0x00, 0x00, 0x01, 0x00])
+READ_CONFIG, WRITE_CONFIG, WRITE_STATIC, WRITE_SOLID = 0x84, 0x04, 0x06, 0x0A
+SOLID_LEN = 0x200
+GAMMA, BALANCE = 1.4, (0.8, 1.0, 0.8)
+CONFIG_SETTLE = 0.4
+CONFIG_LEN, STATIC_SLOTS = 128, 126
+MAGIC = b"\x5a\xa5"
+MODE_OFFSETS = (9, 10, 59)
+PER_KEY_FLAG = 9
+FEATURE_DESC = bytes.fromhex("96 07 02 b1 02")  # Report Count 519, Feature
+HEX = re.compile(r"#?([0-9a-fA-F]{6})$")
+
+
+def ioc(nr, size):
+    return (3 << 30) | (size << 16) | (ord("H") << 8) | nr
+
+
+def packet(cmd, length, payload=b""):
+    head = bytes([REPORT_ID, cmd]) + ADDR + length.to_bytes(2, "little")
+    return (head + payload).ljust(PACKET_LEN, b"\x00")
+
+
+class F75:
+    def __init__(self, path):
+        self.path = path
+        self.fd = os.open(path, os.O_RDWR)
+
+    def close(self):
+        os.close(self.fd)
+
+    def send(self, pkt):
+        fcntl.ioctl(self.fd, ioc(0x06, len(pkt)), bytearray(pkt))
+
+    def receive(self):
+        buf = bytearray(PACKET_LEN)
+        buf[0] = REPORT_ID
+        n = fcntl.ioctl(self.fd, ioc(0x07, PACKET_LEN), buf, True)
+        return bytes(buf[:max(n, 1)])
+
+    # Busy firmware returns zeroed blocks; only trust one ending in 5A A5.
+    def read_config(self, tries=4):
+        for _ in range(tries):
+            self.send(packet(READ_CONFIG, CONFIG_LEN))
+            r = self.receive()
+            cfg = r[8:8 + CONFIG_LEN]
+            if len(cfg) == CONFIG_LEN and cfg[-2:] == MAGIC:
+                return cfg
+            time.sleep(0.02)
+        return None
+
+    # Some reads pass 5A A5 but carry header bytes (06 84) in cfg[0:2];
+    # only a block read identically three times, 0.3 s apart, is safe to write back.
+    def stable_config(self, tries=10):
+        seen = []
+        for _ in range(tries):
+            cfg = self.read_config()
+            if cfg and cfg[0] == 0x00 and cfg[1] != READ_CONFIG:
+                seen = (seen + [cfg])[-3:]
+                if len(seen) == 3 and seen[0] == seen[1] == seen[2]:
+                    return cfg
+            time.sleep(0.3)
+        return None
+
+
+def find_device():
+    for node in sorted(glob.glob("/sys/class/hidraw/hidraw*")):
+        try:
+            uevent = Path(node, "device/uevent").read_text()
+            desc = Path(node, "device/report_descriptor").read_bytes()
+        except OSError:
+            continue
+        # Only the interface declaring report 0x06 as a 519-byte feature report.
+        if f"HID_ID=0003:{VID_PID}" not in uevent or FEATURE_DESC not in desc:
+            continue
+        path = f"/dev/{os.path.basename(node)}"
+        try:
+            kb = F75(path)
+        except OSError:
+            continue
+        try:
+            if kb.read_config(tries=2):
+                return kb
+        except OSError:
+            pass
+        kb.close()
+    return None
+
+
+def read_colour(src):
+    try:
+        line = src.read_text().strip().splitlines()[0].strip()
+    except (OSError, IndexError) as e:
+        sys.exit(f"cannot read a colour from {src}: {e}")
+    m = HEX.match(line)
+    if not m:
+        sys.exit(f"{src}: expected RRGGBB, got {line!r}")
+    h = m.group(1).lower()
+    return h, tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+
+# LEDs wash pale colours out to white; same correction as th65-lighting.py.
+def correct(rgb, gamma=GAMMA, balance=BALANCE):
+    out = [(v / 255.0) ** gamma * gain for v, gain in zip(rgb, balance)]
+    peak, target = max(out), max(rgb) / 255.0
+    if peak > 0:
+        out = [v * target / peak for v in out]
+    return tuple(max(0, min(255, round(v * 255))) for v in out)
+
+
+def planar_frame(rgb):
+    return bytes([rgb[0]] * STATIC_SLOTS + [rgb[1]] * STATIC_SLOTS + [rgb[2]] * STATIC_SLOTS)
+
+
+# 0x0A colour profile, laid out as aula-rgb-controller's capture: triplets from 29, 5A A5 at 514.
+def solid_frame(rgb):
+    pkt = bytearray(PACKET_LEN)
+    for i in range(29, 514 - 2, 3):
+        pkt[i:i + 3] = bytes(rgb)
+    pkt[514:516] = MAGIC
+    return bytes(pkt[8:8 + SOLID_LEN])
+
+
+# The vendor app follows a colour write with an unchanged config write-back,
+# which makes the firmware load the new colours.
+def commit(kb, cfg, cmd, payload):
+    kb.send(packet(cmd, len(payload), payload))
+    time.sleep(0.1)
+    now = kb.stable_config()
+    if now is None or now[9:11] != cfg[9:11]:
+        sys.exit(f"{kb.path}: no stable config read, colours written but not committed")
+    kb.send(packet(WRITE_CONFIG, CONFIG_LEN, now))
+    time.sleep(CONFIG_SETTLE)
+
+
+def main():
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    flags = {a for a in sys.argv[1:] if a.startswith("--")}
+    opts = dict(a[2:].split("=", 1) for a in flags if "=" in a)
+    try:
+        tune = {"gamma": float(opts.get("gamma", GAMMA)),
+                "balance": tuple(float(v) for v in opts["balance"].split(",")) if "balance" in opts else BALANCE}
+        assert len(tune["balance"]) == 3
+    except (ValueError, AssertionError):
+        sys.exit("want --gamma=1.4 --balance=1,0.8,0.8")
+
+    kb = find_device()
+    if not kb:
+        print("no wired AULA F75 found, nothing to do")
+        return 0
+
+    try:
+        cfg = kb.read_config()
+        if cfg is None:
+            sys.exit(f"{kb.path}: config read had no 5A A5 signature, leaving the keyboard alone")
+
+        if "--dump-config" in flags:
+            print(kb.path)
+            print(cfg.hex(" "))
+            print("mode bytes:", [hex(cfg[i]) for i in MODE_OFFSETS])
+            return 0
+
+        if "--watch-mode" in flags:
+            last = cfg
+            print("mode bytes:", [hex(cfg[i]) for i in MODE_OFFSETS], flush=True)
+            while True:
+                time.sleep(0.5)
+                c = kb.read_config()
+                if not c or c == last:
+                    continue
+                diff = [f"{i}:{last[i]:02x}->{c[i]:02x}" for i in range(CONFIG_LEN) if c[i] != last[i]]
+                tag = "  <- per-key mode" if c[PER_KEY_FLAG] == 0x01 else ""
+                print(time.strftime("%H:%M:%S"), " ".join(diff) + tag, flush=True)
+                last = c
+
+        hexcol, rgb = read_colour(Path(args[0]) if args else DEFAULT_SRC)
+
+        # Poll while the user cycles effects with Fn+\, then paint.
+        # --wait targets per-key mode, --goto=0x07 a firmware effect.
+        goto = int(opts["goto"], 0) if "goto" in opts else None
+        if "--wait" in flags or goto is not None:
+            target = goto if goto is not None else 0x12
+            last = None
+            while cfg[10] != target:
+                if cfg[10] != last:
+                    print(f"effect {cfg[10]:#04x}: not this one, press Fn + \\ again", flush=True)
+                    last = cfg[10]
+                time.sleep(0.5)
+                cfg = kb.read_config() or cfg
+            print("found it, STOP pressing Fn + \\", flush=True)
+            time.sleep(0.5)
+            flags.add("--force")
+
+        # Per-key mode (0x12) keeps its own table; firmware effects share the 0x0A
+        # profile. The mode itself is never changed: the user picks it with Fn+\.
+        per_key = cfg[PER_KEY_FLAG] == 0x01
+        if cfg[10] == 0x00:
+            print(f"{kb.path}: lighting is off, leaving it alone")
+            return 0
+        target = "per-key" if per_key else "effect"
+        stamp = f"{hexcol} {target}"
+        try:
+            if "--force" not in flags and STAMP.read_text().strip() == stamp:
+                print(f"{kb.path}: already #{hexcol} ({target}), nothing to do")
+                return 0
+        except OSError:
+            pass
+
+        if "--raw" not in flags:
+            rgb = correct(rgb, **tune)
+        if per_key:
+            commit(kb, cfg, WRITE_STATIC, planar_frame(rgb))
+        else:
+            commit(kb, cfg, WRITE_SOLID, solid_frame(rgb))
+        STAMP.parent.mkdir(parents=True, exist_ok=True)
+        STAMP.write_text(stamp + "\n")
+        print(f"{kb.path}: set #{hexcol} as #{rgb[0]:02x}{rgb[1]:02x}{rgb[2]:02x} ({target}, effect {cfg[10]:#04x})")
+        return 0
+    finally:
+        kb.close()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

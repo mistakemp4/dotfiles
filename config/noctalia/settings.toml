@@ -574,6 +574,10 @@ output_path = "$XDG_CONFIG_HOME/niri/glow.kdl"
     output_path = "$XDG_CACHE_HOME/noctalia/th65-lighting.txt"
     post_hook = "python3 \"$HOME/.local/bin/th65-lighting.py\" --quiet --file \"$HOME/.cache/noctalia/th65-lighting.txt\""
 
+    [theme.templates.user.f75-lighting]
+    input_path = "$XDG_CONFIG_HOME/noctalia/templates/f75-lighting.txt"
+    output_path = "$XDG_CACHE_HOME/noctalia/f75-lighting.txt"
+
     [theme.templates.user.mangohud]
     input_path = "$XDG_CONFIG_HOME/noctalia/templates/mangohud.conf"
     output_path = "$XDG_CONFIG_HOME/MangoHud/MangoHud.conf"

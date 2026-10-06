@@ -1,0 +1,7 @@
+[Unit]
+Description=Apply the Noctalia palette to the AULA F75 lighting
+ConditionPathExists=/home/seal/.cache/noctalia/f75-lighting.txt
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/f75-lighting-apply /home/seal/.cache/noctalia/f75-lighting.txt

@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch the Noctalia AULA F75 colour
+
+[Path]
+PathChanged=/home/seal/.cache/noctalia/f75-lighting.txt
+Unit=f75-lighting.service
+
+[Install]
+WantedBy=multi-user.target
