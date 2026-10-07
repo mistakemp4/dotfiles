@@ -485,9 +485,6 @@
         "SuperReactionTweaks": {
             "enabled": false
         },
-        "TenorGifSearch": {
-            "enabled": false
-        },
         "TextReplace": {
             "enabled": false
         },
@@ -607,6 +604,9 @@
         },
         "WebContextMenus": {
             "enabled": true
+        },
+        "GifProviderSwitcher": {
+            "enabled": false
         }
     },
     "uiElements": {
@@ -623,7 +623,7 @@
         "authenticated": true,
         "url": "https://api.vencord.dev/",
         "settingsSync": true,
-        "settingsSyncVersion": 1791058317980
+        "settingsSyncVersion": 1791409608332
     },
     "nativeTitleBar": false
 }

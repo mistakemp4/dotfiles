@@ -175,6 +175,8 @@ def main():
 
     path = find_device()
     if not path:
+        if args.quiet:
+            return 0  # unplugged isn't a theme failure
         sys.exit(f"no TH65 vendor interface found ({VENDOR}:{PRODUCT} iface {IFACE}); is it plugged in?")
 
     try:
