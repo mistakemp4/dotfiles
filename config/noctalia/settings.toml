@@ -215,8 +215,8 @@ pre_action_fade_seconds = 0
 
     [idle.behavior.screen-off]
     action = "screen_off"
-    enabled = false
-    timeout = 660.0
+    enabled = true
+    timeout = 900.0
 
 [keybinds]
 down = [ "Down", "Ctrl+j" ]

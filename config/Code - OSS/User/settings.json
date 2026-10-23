@@ -9,5 +9,8 @@
     "workbench.editorAssociations": {
         "*.copilotmd": "vscode.markdown.preview.editor",
         "*.md": "default"
-    }
+    },
+    "python.languageServer": "Default",
+    "claudeCode.preferredLocation": "panel",
+    "claudeCode.hideOnboarding": true
 }

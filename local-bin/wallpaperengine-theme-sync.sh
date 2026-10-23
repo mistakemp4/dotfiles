@@ -9,8 +9,18 @@ FALLBACK_PALETTE="motherboard"
 
 mkdir -p "$CACHE_DIR" "$FRAME_DIR"
 
+# the running engine's command line (the gui's own path also contains the name)
+engine_cmdline() {
+    pgrep -af linux-wallpaperengine 2>/dev/null | grep -- '--bg' | head -1
+}
+
 current_bg_id() {
-    pgrep -af linux-wallpaperengine 2>/dev/null | grep -oP -- '--bg\s+\K[0-9]+' | head -1
+    engine_cmdline | grep -oP -- '--bg\s+\K[0-9]+' | head -1
+}
+
+# the wallpaper's own options (colour variants and such), e.g. "backroundred=1 reired=1"
+current_props() {
+    engine_cmdline | grep -oP -- '--set-property\s+\K\S+' | sort | tr '\n' ' ' | sed 's/ $//'
 }
 
 image_width() {
@@ -18,9 +28,11 @@ image_width() {
 }
 
 capture_scene() {
-    local id="$1" out="$2" png="$CACHE_DIR/capture-$1.png" size pid last=""
+    local id="$1" out="$2" props="$3" png="$CACHE_DIR/capture-$1.png" size pid last="" prop
+    local -a prop_args=()
+    for prop in $props; do prop_args+=(--set-property "$prop"); done
     size=$(niri msg -j outputs | python3 -c "import json,sys; o=next(iter(json.load(sys.stdin).values())); m=o['modes'][o['current_mode']]; print(f\"{m['width']}x{m['height']}\")")
-    linux-wallpaperengine --window "0x0x$size" --silent --screenshot "$png" --screenshot-delay 60 "$id" >/dev/null 2>&1 &
+    linux-wallpaperengine --window "0x0x$size" --silent --screenshot "$png" --screenshot-delay 60 "${prop_args[@]}" "$id" >/dev/null 2>&1 &
     pid=$!
     for _ in $(seq 1 60); do
         kill -0 "$pid" 2>/dev/null || break
@@ -42,10 +54,13 @@ apply_fallback() {
 }
 
 sync_theme_for_id() {
-    local id="$1"
+    local id="$1" props="$2"
     local item_dir="$WORKSHOP_DIR/$id"
     local project="$item_dir/project.json"
-    local out_image="$FRAME_DIR/we-${id}-hd.jpg" old_image="$FRAME_DIR/we-${id}.jpg"
+    # each set of options gets its own frame, so a red variant isn't themed from the blue one
+    local tag=""
+    [ -n "$props" ] && tag="-$(printf '%s' "$props" | md5sum | cut -c1-8)"
+    local out_image="$FRAME_DIR/we-${id}${tag}-hd.jpg" old_image="$FRAME_DIR/we-${id}.jpg"
 
     [ -f "$project" ] || { echo "no project.json for $id, skipping"; return 1; }
 
@@ -62,7 +77,7 @@ sync_theme_for_id() {
             ffmpeg -y -ss 5 -i "$item_dir/$file" -frames:v 1 -q:v 2 -update 1 "$out_image" >/dev/null 2>&1
             [ -s "$out_image" ] || ffmpeg -y -ss 0 -i "$item_dir/$file" -frames:v 1 -q:v 2 -update 1 "$out_image" >/dev/null 2>&1
         elif [ "${type,,}" = "scene" ]; then
-            capture_scene "$id" "$out_image"
+            capture_scene "$id" "$out_image" "$props"
         fi
 
         if [ ! -s "$out_image" ] && [ -n "$preview" ] && [ -f "$item_dir/$preview" ]; then
@@ -75,7 +90,7 @@ sync_theme_for_id() {
         # 2 = noctalia unreachable: retry, do not fall back
         noctalia msg wallpaper-set "$out_image" >/dev/null 2>&1 || return 2
         noctalia msg color-scheme-set wallpaper vibrant >/dev/null 2>&1 || return 2
-        echo "synced theme from wallpaper $id -> $out_image"
+        echo "synced theme from wallpaper $id${props:+ ($props)} -> $out_image"
         return 0
     else
         echo "failed to derive an image for wallpaper $id"
@@ -83,27 +98,30 @@ sync_theme_for_id() {
     fi
 }
 
-last_id=""
-[ -f "$STATE_FILE" ] && last_id=$(cat "$STATE_FILE")
+# id plus options: switching an option re-themes just like switching wallpapers
+last_key=""
+[ -f "$STATE_FILE" ] && last_key=$(cat "$STATE_FILE")
 fallback_id=""
 ipc_down_id=""
 
 while true; do
     id=$(current_bg_id)
-    if [ -n "$id" ] && [ "$id" != "$last_id" ]; then
-        sync_theme_for_id "$id"
+    props=$(current_props)
+    key="$id${props:+ $props}"
+    if [ -n "$id" ] && [ "$key" != "$last_key" ]; then
+        sync_theme_for_id "$id" "$props"
         rc=$?
         if [ "$rc" -eq 0 ]; then
-            last_id="$id"
+            last_key="$key"
             fallback_id=""
-            echo "$last_id" > "$STATE_FILE"
+            echo "$last_key" > "$STATE_FILE"
         elif [ "$rc" -eq 2 ]; then
             [ "$id" = "$ipc_down_id" ] || echo "noctalia IPC unreachable (WAYLAND_DISPLAY='${WAYLAND_DISPLAY:-}'), retrying"
             ipc_down_id="$id"
-        elif [ "$id" != "$fallback_id" ]; then
+        elif [ "$key" != "$fallback_id" ]; then
             apply_fallback
-            fallback_id="$id"
-            last_id=""
+            fallback_id="$key"
+            last_key=""
             : > "$STATE_FILE"
         fi
     fi
