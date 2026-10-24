@@ -1,0 +1,9 @@
+[Unit]
+Description=Pull new soren land messages into the discord archive
+ConditionPathExists=%h/Documents/discord-archive/.token
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I %h/Documents/discord-archive/scripts/update.py
