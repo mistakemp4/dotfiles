@@ -29,3 +29,7 @@ config/obs-studio/*
 !config/obs-studio/basic/
 config/obs-studio/basic/**/*.bak
 config/obs-studio/basic/profiles/*/service.json
+
+# sysupdate links its own fish snippet here
+config/fish/conf.d/sysupdate.fish
+config/noctalia/*.bak-*

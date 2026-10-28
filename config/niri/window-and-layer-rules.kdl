@@ -68,7 +68,6 @@ window-rule {
   match app-id="^Spotify$"
   match app-id=r#"^org\.prismlauncher\.PrismLauncher$"#
   match app-id=r#"^org\.kde\.filelight$"#
-  match app-id="^krita$"
   match app-id=r#"^com\.obsproject\.Studio$"#
   match app-id=r#"^XIVLauncher\.Core$"#
   match app-id="^code-oss$"
@@ -89,6 +88,18 @@ window-rule {
       xray false
       blur true
     }
+  }
+}
+
+// krita: solid menus
+window-rule {
+  match app-id=r#"^(org\.kde\.)?krita$"#
+
+  draw-border-with-background false
+  opacity 0.9
+  background-effect {
+    blur true
+    xray true
   }
 }
 

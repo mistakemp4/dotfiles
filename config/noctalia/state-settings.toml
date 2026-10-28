@@ -1,4 +1,4 @@
-config_version = 14
+config_version = 16
 
 [bar.default]
 background_opacity = 0.87999998033046722
@@ -119,7 +119,7 @@ widget_order = [ "lockscreen-login-box@DP-1" ]
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@DP-1".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -167,27 +167,29 @@ wallpaper_scheme = "vibrant"
         "brave",
         "discord",
         "libreoffice",
+        "micro",
         "vscode",
         "prismlauncher",
-        "bat",
+        "steam",
         "fastfetch",
+        "obs",
+        "zathura",
+        "papirus-icons",
+        "bat",
         "fzf",
         "lazygit",
-        "micro",
-        "papirus-icons",
-        "zathura",
-        "obs",
-        "steam"
+        "starship"
     ]
+    enable_builtin_templates = true
 
 [wallpaper.default]
-path = "/home/seal/Pictures/WallPapers/we-3120284004-b27518fb-hd.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3358465068-hd.jpg"
 
 [wallpaper.last]
-path = "/home/seal/Pictures/WallPapers/we-3120284004-b27518fb-hd.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3358465068-hd.jpg"
 
 [wallpaper.monitors.DP-1]
-path = "/home/seal/Pictures/WallPapers/we-3120284004-b27518fb-hd.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3358465068-hd.jpg"
 
 [weather]
 unit = "imperial"

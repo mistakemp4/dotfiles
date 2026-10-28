@@ -6,7 +6,7 @@
 	helper = !/usr/bin/gh auth git-credential
 [user]
 	name = Mistake
-	email = sorenmyers@outlook.com
+	email = 138896325+mistakemp4@users.noreply.github.com
 [core]
 	pager = delta
 	editor = micro
@@ -20,3 +20,5 @@
 	conflictstyle = zdiff3
 [diff]
 	colorMoved = default
+[init]
+	defaultBranch = main

@@ -258,7 +258,7 @@ widget_order = [
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@WL-1".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -312,7 +312,7 @@ widget_order = [
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@winit".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -532,8 +532,8 @@ source = "wallpaper"
 wallpaper_scheme = "m3-content"
 
     [theme.templates]
-    builtin_ids = [ "alacritty", "btop", "gtk3", "gtk4", "kcolorscheme", "niri", "starship", "cava" ]
-    community_ids = [ "claude-code", "spicetify", "brave", "discord", "libreoffice", "vscode", "prismlauncher", "bat", "fastfetch", "fzf", "lazygit", "micro", "papirus-icons", "zathura", "obs", "steam" ]
+    builtin_ids = [ "alacritty", "btop", "gtk3", "gtk4", "kcolorscheme", "niri", "cava" ]
+    community_ids = [ "claude-code", "spicetify", "brave", "discord", "libreoffice", "vscode", "prismlauncher", "bat", "fastfetch", "fzf", "lazygit", "micro", "papirus-icons", "zathura", "obs", "steam", "starship" ]
 
     [theme.templates.user.mpv-theme]
     input_path = "$XDG_CONFIG_HOME/noctalia/templates/mpv-theme.conf"
@@ -673,3 +673,6 @@ hidden = [ "nm-applet", "blueman-tray" ]
 
 [widget.weather]
 show_condition = false
+
+[audio]
+sound_theme = "seal"

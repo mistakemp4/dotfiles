@@ -63,12 +63,14 @@ f2fs-tools
 fastfetch
 ffmpegthumbnailer
 filelight
+fio
 flatpak
 fontforge
 fsarchiver
 git
 git-delta
 github-cli
+glmark2
 go
 greetd
 greetd-tuigreet
@@ -188,6 +190,7 @@ sof-firmware
 starship
 stb
 steam
+stress-ng
 sudo
 sysfsutils
 systemd-resolvconf
@@ -209,6 +212,7 @@ usb_modeswitch
 usbutils
 vdirsyncer
 vesktop-bin
+vkmark
 vulkan-icd-loader
 wayland-protocols
 wget

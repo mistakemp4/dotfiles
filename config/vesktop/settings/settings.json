@@ -186,7 +186,8 @@
             "stickerSize": 160,
             "hyperLinkText": "{{NAME}}",
             "useHyperLinks": true,
-            "disableEmbedPermissionCheck": false
+            "disableEmbedPermissionCheck": false,
+            "emojiSize": 48
         },
         "FakeProfileThemes": {
             "enabled": false
@@ -246,7 +247,7 @@
         "ImageZoom": {
             "enabled": true,
             "size": 328.9757414093062,
-            "zoom": 2.0820358908369574,
+            "zoom": 3.164071781673915,
             "nearestNeighbour": false,
             "square": false,
             "invertScroll": true,
@@ -326,10 +327,15 @@
             "enabled": false
         },
         "NoReplyMention": {
-            "enabled": true
+            "enabled": true,
+            "userList": "1234567890123445,1234567890123445",
+            "roleList": "1234567890123445,1234567890123445",
+            "shouldPingListed": true,
+            "inverseShiftReply": false
         },
         "NoServerEmojis": {
-            "enabled": true
+            "enabled": true,
+            "shownEmojis": "onlyUnicode"
         },
         "NoTypingAnimation": {
             "enabled": false
@@ -443,7 +449,8 @@
         "ShowHiddenChannels": {
             "enabled": true,
             "showMode": 0,
-            "hideUnreads": true
+            "hideUnreads": true,
+            "defaultAllowedUsersAndRolesDropdownState": true
         },
         "ShowHiddenThings": {
             "enabled": false
@@ -607,6 +614,12 @@
         },
         "GifProviderSwitcher": {
             "enabled": false
+        },
+        "DirectFileDownload": {
+            "enabled": false
+        },
+        "JumpToTop": {
+            "enabled": false
         }
     },
     "uiElements": {
@@ -623,7 +636,7 @@
         "authenticated": true,
         "url": "https://api.vencord.dev/",
         "settingsSync": true,
-        "settingsSyncVersion": 1791409608332
+        "settingsSyncVersion": 1792891568230
     },
     "nativeTitleBar": false
 }

@@ -6,7 +6,8 @@ include "window-and-layer-rules.kdl"
 include "other.kdl"
 include "binds.kdl"
 
-include "noctalia.kdl"
 include optional=true "glow.kdl"
 include optional=true "cursor.kdl"
 include "shaders.kdl"
+
+include "noctalia.kdl"

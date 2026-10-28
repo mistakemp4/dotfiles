@@ -1,0 +1,10 @@
+[Unit]
+Description=Reconnect velvetroom headphones after login
+After=pipewire.service wireplumber.service
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/bt-autoconnect.sh
+
+[Install]
+WantedBy=default.target
