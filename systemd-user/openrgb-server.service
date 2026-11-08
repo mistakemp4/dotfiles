@@ -1,0 +1,10 @@
+[Unit]
+Description=OpenRGB SDK server (localhost) for the case RGB
+
+[Service]
+ExecStart=/usr/bin/openrgb --server --noautoconnect
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

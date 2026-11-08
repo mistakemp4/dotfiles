@@ -99,6 +99,11 @@ if [ ! -e "$state_settings" ] && [ -f "$DOTFILES/config/noctalia/state-settings.
   echo "Restored noctalia state settings"
 fi
 
+# case-aurora.py needs openrgb-python
+if [ ! -x "$HOME/.venvs/rgb/bin/python" ]; then
+  python3 -m venv "$HOME/.venvs/rgb" && "$HOME/.venvs/rgb/bin/pip" install -q openrgb-python
+fi
+
 for f in "$DOTFILES"/systemd-user/*.service "$DOTFILES"/systemd-user/*.path; do
   [ -e "$f" ] || continue
   grep -q '^\[Install\]' "$f" || continue

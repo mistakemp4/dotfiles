@@ -1,0 +1,12 @@
+[Unit]
+Description=Case RGB aurora in the Noctalia colour
+Requires=openrgb-server.service
+After=openrgb-server.service
+
+[Service]
+ExecStart=%h/.venvs/rgb/bin/python -I %h/.local/bin/case-aurora.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
