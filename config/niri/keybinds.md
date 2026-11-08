@@ -135,3 +135,24 @@ when a window opens, closes or resizes. niri hot-reloads it instantly.
 
 Shaders live in `~/.config/niri/shaders/*.frag` — edit them and re-run
 `niri-shader <slot> <name>` to reload.
+
+## git diff / man / less
+
+`git diff`, `git log` & `man` open in `less`.
+
+| Key | Action |
+|---|---|
+| `q` | Quit back to the terminal |
+| `Space` / `b` | Page down / up |
+| `j` / `k` or arrows | Scroll down / up |
+| `/word` then `Enter` | Search |
+| `n` / `N` | Next / previous match |
+
+## git commit message (micro)
+
+`git commit` without `-m` opens micro. Lines starting with `#` are ignored.
+
+| Key | Action |
+|---|---|
+| `Ctrl+S` then `Ctrl+Q` | Save & quit, commit goes through |
+| `Ctrl+Q` then `n` | Quit without saving, commit is cancelled |

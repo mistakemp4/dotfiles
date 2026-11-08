@@ -2,7 +2,7 @@
 Type=Application
 Name=Vesktop
 Comment=Vesktop autostart script
-Exec=/opt/vesktop/vesktop
+Exec=/usr/bin/vesktop
 StartupNotify=false
 Terminal=false
 Icon=vesktop
