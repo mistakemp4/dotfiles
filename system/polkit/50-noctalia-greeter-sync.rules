@@ -1,0 +1,7 @@
+// noctalia greeter sync (wallpaper/colours/layout) without a password, seal's active local session only
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.noctalia.greeter.sync-appearance" &&
+        subject.user == "seal" && subject.local && subject.active) {
+        return polkit.Result.YES;
+    }
+});

@@ -450,7 +450,7 @@ time_format = "{:%I:%M}"
     enabled = true
 
     [shell.greeter_sync]
-    auto_sync = false
+    auto_sync = true
 
     [shell.launcher]
     app_grid = true
