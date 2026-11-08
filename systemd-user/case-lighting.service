@@ -1,0 +1,11 @@
+[Unit]
+Description=Apply the Noctalia colour to the case RGB (ASUS Aura headers)
+ConditionPathExists=%h/.cache/noctalia/f75-lighting.txt
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/case-lighting-apply.py
+TimeoutStartSec=2min
+
+[Install]
+WantedBy=default.target

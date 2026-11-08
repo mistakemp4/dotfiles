@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch the Noctalia colour for the case RGB
+
+[Path]
+PathChanged=%h/.cache/noctalia/f75-lighting.txt
+Unit=case-lighting.service
+
+[Install]
+WantedBy=default.target

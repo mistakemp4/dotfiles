@@ -23,6 +23,7 @@ CONFIG_FILES=(
   noctalia
   obs-studio
   spicetify
+  spotify-flags.conf
   starship.toml
   Thunar
   vesktop/settings

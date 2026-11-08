@@ -10,7 +10,8 @@ connected() {
 for _ in $(seq 12); do
     connected && exit 0
     if bluetoothctl show 2>/dev/null | grep -q "Powered: yes"; then
-        bluetoothctl connect "$MAC" >/dev/null 2>&1
+        # connect can hang forever on this adapter
+        timeout 20 bluetoothctl connect "$MAC" >/dev/null 2>&1
     fi
     sleep 10
 done

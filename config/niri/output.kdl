@@ -1,7 +1,7 @@
-output "DP-1" {
-    mode "2560x1440@164.847"
+output "Dell Inc. AW3225QF 3N526B4" {
+    mode "3840x2160@239.991"
 
-    scale 1.25
+    scale 1.5
 
     transform "normal"
 

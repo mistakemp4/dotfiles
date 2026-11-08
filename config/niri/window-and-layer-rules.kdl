@@ -65,7 +65,7 @@ window-rule {
   match app-id=r#"^dev\.noctalia\.Noctalia$"#
   match app-id="^vesktop$"
   match app-id="^Bitwarden$"
-  match app-id="^Spotify$"
+  match app-id="(?i)^spotify$"
   match app-id=r#"^org\.prismlauncher\.PrismLauncher$"#
   match app-id=r#"^org\.kde\.filelight$"#
   match app-id=r#"^com\.obsproject\.Studio$"#
