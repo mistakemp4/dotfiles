@@ -131,8 +131,14 @@ window-rule {
 // Steam games (XWayland app-id is steam_app_<appid>): own workspace,
 // fullscreen on open. No VRR — it flickers on this panel (Rivals, DJMAX).
 // Output is on-demand=true, so a per-game rule can still opt in.
+// Non-Steam: Minecraft (needs SDL_VIDEO_DRIVER=wayland), Sober,
+// plain-wine games like FFXIV (app-id is the exe name).
 window-rule {
   match app-id=r#"^steam_app_"#
+  match app-id=r#"^com\.mojang\.minecraft$"#
+  match app-id=r#"^org\.vinegarhq\.Sober$"#
+  match app-id=r#"(?i)\.exe$"#
+  exclude app-id=r#"(?i)^(winecfg|regedit|explorer|wineboot|control|notepad|winefile|msiexec|setup|.*install.*|unins\d*)\.exe$"#
 
   open-on-workspace "gaming"
   open-fullscreen true
