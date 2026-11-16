@@ -209,6 +209,7 @@ upower
 usb_modeswitch
 usbutils
 vdirsyncer
+ventoy-bin
 vesktop-bin
 vkmark
 vulkan-icd-loader

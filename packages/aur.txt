@@ -1,4 +1,5 @@
-millennium-bin
+deadlock-modmanager-bin
+millennium-git
 spotify
 trayscale
 xivlauncher

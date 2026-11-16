@@ -1,4 +1,4 @@
-config_version = 16
+config_version = 20
 
 [bar.default]
 background_opacity = 0.87999998033046722
@@ -184,13 +184,13 @@ wallpaper_scheme = "vibrant"
     enable_builtin_templates = true
 
 [wallpaper.default]
-path = "/home/seal/Pictures/WallPapers/we-3516294127-hd.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3058466347-hd.jpg"
 
 [wallpaper.last]
-path = "/home/seal/Pictures/WallPapers/we-3516294127-hd.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3058466347-hd.jpg"
 
 [wallpaper.monitors.DP-2]
-path = "/home/seal/Pictures/WallPapers/we-3516294127-hd.jpg"
+path = "/home/seal/Pictures/WallPapers/we-3058466347-hd.jpg"
 
 [weather]
 unit = "imperial"
