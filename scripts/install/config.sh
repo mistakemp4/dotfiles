@@ -12,6 +12,7 @@ mkdir -p ~/.config/
 CONFIG_FILES=(
   alacritty
   autostart
+  brave-flags.conf
   btop
   cava
   environment.d
